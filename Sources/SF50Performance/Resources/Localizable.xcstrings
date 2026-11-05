@@ -1,0 +1,254 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "AC 91-79B landing distance factors are applied. The configured safety factor is not applied to RwyCC landing distances.": {
+      "comment": "A performance note.",
+      "extractionState": "manual"
+    },
+    "Airport elevation of %@ is outside the AFM’s %@ to %@ limits.": {
+      "comment": "A performance note. The arguments are the elevation and the approved range.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Airport elevation of %1$@ is outside the AFM’s %2$@ to %3$@ limits."
+          }
+        }
+      }
+    },
+    "Apple Weather": {
+      "comment": "The name of Apple’s weather service.",
+      "extractionState": "manual"
+    },
+    "Contaminated runway performance data is considered supplemental and is not FAA approved.": {
+      "comment": "A performance note.",
+      "extractionState": "manual"
+    },
+    "Contamination": {
+      "comment": "A distance adjustment for a contaminated runway.",
+      "extractionState": "manual"
+    },
+    "Crosswind of %@ exceeds the %@ limit.": {
+      "comment": "A performance note. The arguments are the crosswind and its limit.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crosswind of %1$@ exceeds the %2$@ limit."
+          }
+        }
+      }
+    },
+    "Data table couldn’t be loaded.": {
+      "comment": "Error description for a performance data table that could not be read.",
+      "extractionState": "manual"
+    },
+    "Downhill — %@": {
+      "comment": "A distance adjustment. The argument is the runway slope, as a percentage.",
+      "extractionState": "manual"
+    },
+    "Equation type mismatch: expected %@, got %@.": {
+      "comment": "Failure reason for a regression equation. The arguments are equation types.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equation type mismatch: expected %1$@, got %2$@."
+          }
+        }
+      }
+    },
+    "Fuel quantity of %@ exceeds the %@ usable capacity.": {
+      "comment": "A performance note. The arguments are the fuel quantity and the capacity.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fuel quantity of %1$@ exceeds the %2$@ usable capacity."
+          }
+        }
+      }
+    },
+    "Go-around climb gradient requirement is not met.": {
+      "comment": "A performance note.",
+      "extractionState": "manual"
+    },
+    "Headwind — %@": {
+      "comment": "A distance adjustment. The argument is the headwind component.",
+      "extractionState": "manual"
+    },
+    "Landing distance of %@ exceeds the available %@.": {
+      "comment": "A performance note. The arguments are the required and available distances.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Landing distance of %1$@ exceeds the available %2$@."
+          }
+        }
+      }
+    },
+    "Landing distances include an AC 91-79B §5.2.2 adjustment for the VREF additive. This is an approximation.": {
+      "comment": "A performance note.",
+      "extractionState": "manual"
+    },
+    "Missing %@ equation definition.": {
+      "comment": "Failure reason for a regression equation file. The argument is the equation type.",
+      "extractionState": "manual"
+    },
+    "NWS": {
+      "comment": "The National Weather Service.",
+      "extractionState": "manual"
+    },
+    "No residuals were found for the regression table “%@”.": {
+      "comment": "Failure reason for bundled performance data. The argument is a table name.",
+      "extractionState": "manual"
+    },
+    "Open-Meteo": {
+      "comment": "The name of the Open-Meteo forecast service.",
+      "extractionState": "manual"
+    },
+    "Performance data couldn’t be loaded.": {
+      "comment": "Error description for missing or damaged bundled performance data.",
+      "extractionState": "manual"
+    },
+    "Regression equation couldn’t be loaded.": {
+      "comment": "Error description for a regression equation file that could not be read.",
+      "extractionState": "manual"
+    },
+    "Required climb gradient may exceed actual climb performance.": {
+      "comment": "A performance note.",
+      "extractionState": "manual"
+    },
+    "Required input variable “%@” is missing.": {
+      "comment": "Failure reason for a regression equation. The argument is the variable name.",
+      "extractionState": "manual"
+    },
+    "Safety Factor — %@": {
+      "comment": "A distance adjustment. The argument is the safety factor multiplier.",
+      "extractionState": "manual"
+    },
+    "Schema version “%@” is not supported.": {
+      "comment": "Failure reason for a regression equation file. The argument is its schema version.",
+      "extractionState": "manual"
+    },
+    "Tailwind of %@ exceeds the %@ limit.": {
+      "comment": "A performance note. The arguments are the tailwind and its limit.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tailwind of %1$@ exceeds the %2$@ limit."
+          }
+        }
+      }
+    },
+    "Tailwind — %@": {
+      "comment": "A distance adjustment. The argument is the tailwind component.",
+      "extractionState": "manual"
+    },
+    "Takeoff distance of %@ exceeds the available %@.": {
+      "comment": "A performance note. The arguments are the required and available distances.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takeoff distance of %1$@ exceeds the available %2$@."
+          }
+        }
+      }
+    },
+    "Takeoff run of %@ exceeds the available %@.": {
+      "comment": "A performance note. The arguments are the required and available distances.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takeoff run of %1$@ exceeds the available %2$@."
+          }
+        }
+      }
+    },
+    "The JSON schema is invalid: %@": {
+      "comment": "Failure reason for a malformed regression equation file. The argument is the decoding error.",
+      "extractionState": "manual"
+    },
+    "The data file “%@” couldn’t be read: %@": {
+      "comment": "Failure reason for bundled performance data. The arguments are a file path and the underlying error.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The data file “%1$@” couldn’t be read: %2$@"
+          }
+        }
+      }
+    },
+    "The data file “%@” is missing.": {
+      "comment": "Failure reason for bundled performance data. The argument is a file path.",
+      "extractionState": "manual"
+    },
+    "The file data could not be decoded as UTF-8.": {
+      "comment": "Failure reason for a performance data table that is not UTF-8 text.",
+      "extractionState": "manual"
+    },
+    "The file data could not be decoded.": {
+      "comment": "Failure reason for an unreadable regression equation file.",
+      "extractionState": "manual"
+    },
+    "The input values are above the maximums specified in the AFM table. Proceed with extreme caution.": {
+      "comment": "A performance note.",
+      "extractionState": "manual"
+    },
+    "The input values are below the minimums specified in the AFM table.": {
+      "comment": "A performance note.",
+      "extractionState": "manual"
+    },
+    "Unpaved Surface": {
+      "comment": "A distance adjustment for a turf runway.",
+      "extractionState": "manual"
+    },
+    "Uphill — %@": {
+      "comment": "A distance adjustment. The argument is the runway slope, as a percentage.",
+      "extractionState": "manual"
+    },
+    "VREF — %@": {
+      "comment": "A distance adjustment. The argument is the speed added to VREF.",
+      "extractionState": "manual"
+    },
+    "Weight of %@ exceeds the %@ maximum.": {
+      "comment": "A performance note. The arguments are the weight and its limit.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weight of %1$@ exceeds the %2$@ maximum."
+          }
+        }
+      }
+    },
+    "Zero-fuel weight of %@ exceeds the %@ maximum.": {
+      "comment": "A performance note. The arguments are the zero-fuel weight and its limit.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zero-fuel weight of %1$@ exceeds the %2$@ maximum."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

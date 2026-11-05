@@ -1,0 +1,13 @@
+parent_config: https://gist.githubusercontent.com/RISCfuture/c57d132e5e0160a768df1625e20ae3b8/raw/.swiftlint.yml
+
+excluded:
+  - .build
+
+disabled_rules:
+  - missing_docs
+  - pattern_matching_keywords
+  # This package uses Swift Testing; Quick and Nimble are not used, so their
+  # opt-in rules do not apply.
+  - prefer_nimble
+  - quick_discouraged_focused_test
+  - quick_discouraged_pending_test
