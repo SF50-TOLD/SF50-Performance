@@ -20,7 +20,7 @@ let package = Package(
     .library(name: "SF50Performance", targets: ["SF50Performance"])
   ],
   dependencies: [
-    .package(url: "https://github.com/RISCfuture/MeasurementKit.git", from: "1.2.0"),
+    .package(url: "https://github.com/RISCfuture/MeasurementKit.git", from: "1.2.1"),
     .package(url: "https://github.com/apple/swift-numerics.git", from: "1.1.1")
   ],
   targets: [

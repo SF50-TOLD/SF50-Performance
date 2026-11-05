@@ -1,5 +1,5 @@
 {
-  "originHash" : "491eebbabfe136ba422c1c27c2204df67a874949a5c77a956eaeff77fa336bc2",
+  "originHash" : "e282794bf67057c4a5d2072a0e944978cd5f97c17bd90b6c5236715c5e90d045",
   "pins" : [
     {
       "identity" : "defaults",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RISCfuture/MeasurementKit.git",
       "state" : {
-        "revision" : "f147f2972093c0b877d0f4eac57c1da26a148f6a",
-        "version" : "1.2.0"
+        "revision" : "20c908d2ccefc152dfdc646f9b71b10e8f635822",
+        "version" : "1.2.1"
       }
     },
     {
