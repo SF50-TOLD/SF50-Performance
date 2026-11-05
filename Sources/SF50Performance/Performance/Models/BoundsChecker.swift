@@ -23,7 +23,7 @@ enum BoundsStatus: Sendable {
 /// ## Usage
 ///
 /// ```swift
-/// let checker = try BoundsChecker(aircraftType: .g1)
+/// let checker = try BoundsChecker(loader: DataTableLoader(aircraftType: .g1))
 ///
 /// let status = checker.takeoffBoundsStatus(
 ///     weight: 5800,
@@ -46,10 +46,6 @@ struct BoundsChecker: Sendable {
   private let takeoffClimbGradientData: DataTable
   private let obstacleClimbGradientData_normal: DataTable
   private let obstacleClimbGradientData_iceContaminated: DataTable
-
-  init(aircraftType: AircraftType) throws {
-    try self.init(loader: DataTableLoader(aircraftType: aircraftType))
-  }
 
   init(loader: DataTableLoader) throws {
     // Load takeoff data for bounds

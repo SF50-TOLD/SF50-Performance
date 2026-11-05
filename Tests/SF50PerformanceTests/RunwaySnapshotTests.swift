@@ -38,6 +38,13 @@ struct `Runway Snapshot Distances` {
   }
 
   @Test
+  func `landing uses one denominator`() {
+    let snapshot = RunwaySnapshot(Self.runwayWithClearway())
+
+    #expect(snapshot.availableRun(for: .landing) == snapshot.availableDistance(for: .landing))
+  }
+
+  @Test
   func `shortens what it reports as available by a NOTAM's shortening`() {
     let notam = NOTAMInput(
       contaminationType: nil,

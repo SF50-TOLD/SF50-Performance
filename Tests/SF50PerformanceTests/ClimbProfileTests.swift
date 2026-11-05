@@ -144,7 +144,7 @@ struct ClimbProfileTests {
     #expect(profile.gradient(at: 2500, profile: defaultProfile) == 350)
 
     // Reading towards it does not interpolate half way to a number that was never there, and the
-    // integrators — which used to trap on exactly this — report it instead.
+    // integrators report the gap instead of reading through it.
     #expect(profile.gradient(at: 7500, profile: defaultProfile) == nil)
     #expect(profile.altitude(after: 30, from: 0, profile: defaultProfile) == nil)
     #expect(profile.distance(from: 0, to: 9000, profile: defaultProfile) == nil)
