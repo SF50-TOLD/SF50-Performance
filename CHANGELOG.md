@@ -14,7 +14,10 @@
 - `PerformanceNotes`, one check of a takeoff or landing against the AFM's limitations and the
   runway: weight, wind, airport elevation, temperature, available distance and obstacle clearance
 - Maximum takeoff and landing weight and maximum temperature searches, each reporting the
-  constraint that binds
+  constraint that binds. They stop at the AFM's tailwind and temperature limits, and at its airport
+  elevation limits for the tabular model. They check the runway's NOTAM obstacle when no obstacle is
+  given, and `reliesOnOffscaleData` marks a limit that rests on offscale figures. The maximum
+  demonstrated crosswind, which the AFM does not consider limiting, appears only as a note
 - Builds and runs on Linux
 
 ### Changed

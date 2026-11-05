@@ -306,9 +306,10 @@ extension PerformanceNote {
         let crosswind = MeasurementText.text(crosswind, in: units.speed),
           limit = MeasurementText.text(limit, in: units.speed)
         return String(
-          localized: "Crosswind of \(crosswind) exceeds the \(limit) limit.",
+          localized: "Crosswind of \(crosswind) exceeds the \(limit) demonstrated crosswind.",
           bundle: .module,
-          comment: "A performance note. The arguments are the crosswind and its limit."
+          comment:
+            "A performance note. The arguments are the crosswind and the AFM's maximum demonstrated crosswind."
         )
       case let .tailwindExceedance(tailwind, limit):
         let tailwind = MeasurementText.text(tailwind, in: units.speed),

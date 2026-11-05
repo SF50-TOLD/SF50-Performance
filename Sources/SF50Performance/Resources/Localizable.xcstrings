@@ -33,14 +33,14 @@
       "comment": "A distance adjustment for a contaminated runway.",
       "extractionState": "manual"
     },
-    "Crosswind of %@ exceeds the %@ limit.": {
-      "comment": "A performance note. The arguments are the crosswind and its limit.",
+    "Crosswind of %@ exceeds the %@ demonstrated crosswind.": {
+      "comment": "A performance note. The arguments are the crosswind and the AFM's maximum demonstrated crosswind.",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Crosswind of %1$@ exceeds the %2$@ limit."
+            "value": "Crosswind of %1$@ exceeds the %2$@ demonstrated crosswind."
           }
         }
       }

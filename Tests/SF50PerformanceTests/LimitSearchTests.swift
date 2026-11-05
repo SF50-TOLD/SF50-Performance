@@ -144,6 +144,25 @@ struct `Limit Searches` {
   }
 
   @Test
+  func `searches past the AFM's demonstrated crosswind, which is not limiting`() throws {
+    let crosswind = Conditions(
+      windDirection: .init(value: 90, unit: .degrees),
+      windSpeed: .init(value: 25, unit: .knots),
+      temperature: .init(value: 20, unit: .celsius),
+      seaLevelPressure: .init(value: 29.92, unit: .inchesOfMercury)
+    )
+    let result = try Self.calculator.maxTakeoffWeight(
+      conditions: crosswind,
+      runway: Self.runway(length: 10_000),
+      obstacle: nil,
+      minimumWeight: Self.emptyWeight
+    )
+
+    #expect(result.limit != nil)
+    #expect(result.bindingConstraint != .windLimit)
+  }
+
+  @Test
   func `reads the obstacle from the runway's NOTAM when none is given`() throws {
     let obstacle = Obstacle(
       height: .init(value: 700, unit: .feet),

@@ -29,10 +29,12 @@ public protocol Limitations {
   /// Maximum tailwind component for takeoff and landing.
   static var maxTailwind: Measurement<UnitSpeed> { get }
 
-  /// Maximum crosswind component with flaps 50.
+  /// Maximum demonstrated crosswind component with flaps 50, which the AFM does not consider
+  /// limiting.
   static var maxCrosswind_flaps50: Measurement<UnitSpeed> { get }
 
-  /// Maximum crosswind component with flaps 100.
+  /// Maximum demonstrated crosswind component with flaps 100, which the AFM does not consider
+  /// limiting.
   static var maxCrosswind_flaps100: Measurement<UnitSpeed> { get }
 
   /// Maximum usable fuel capacity.
@@ -46,7 +48,7 @@ public protocol Limitations {
 }
 
 extension Limitations {
-  /// The maximum crosswind component for a flap setting.
+  /// The maximum demonstrated crosswind component for a flap setting.
   static func maxCrosswind(for flapSetting: FlapSetting) -> Measurement<UnitSpeed> {
     flapSetting == .flaps100 ? maxCrosswind_flaps100 : maxCrosswind_flaps50
   }

@@ -22,7 +22,7 @@ public enum BindingConstraint: String, Sendable, Hashable, CaseIterable, Codable
   /// The AFM's maximum operating temperature.
   case temperatureLimit = "temperature_limit"
 
-  /// The tailwind or crosswind component exceeds the AFM's limit.
+  /// The tailwind component exceeds the AFM's limit.
   case windLimit = "wind_limit"
 
   /// The airport elevation lies outside the range the AFM approves.
@@ -81,8 +81,7 @@ extension PerformanceCalculator {
       to: settings.limitations.maxTakeoffWeight,
       violating: operatingLimitViolation(
         conditions: conditions,
-        runway: runway,
-        flapSetting: Self.takeoffFlapSetting
+        runway: runway
       )
     ) { weight in
       takeoffVerdict(
@@ -126,8 +125,7 @@ extension PerformanceCalculator {
       to: settings.limitations.maxLandingWeight,
       violating: operatingLimitViolation(
         conditions: conditions,
-        runway: runway,
-        flapSetting: flapSetting
+        runway: runway
       )
     ) { weight in
       landingVerdict(
@@ -169,7 +167,6 @@ extension PerformanceCalculator {
       violating: operatingLimitViolation(
         conditions: conditions,
         runway: runway,
-        flapSetting: Self.takeoffFlapSetting,
         checkingTemperature: false
       )
     ) { temperature in
@@ -211,7 +208,6 @@ extension PerformanceCalculator {
       violating: operatingLimitViolation(
         conditions: conditions,
         runway: runway,
-        flapSetting: configuration.flapSetting,
         checkingTemperature: false
       )
     ) { temperature in
@@ -232,21 +228,18 @@ extension PerformanceCalculator {
   /// The AFM operating limit the conditions and runway already breach, whatever the weight or
   /// temperature searched, or `nil` where they breach none.
   ///
-  /// The temperature searches stay within the AFM's temperature range by construction, so they
-  /// skip that check. The elevation limits bound only the tables, so the regression model, which
-  /// may extrapolate past them, skips that check.
+  /// The AFM's crosswind figure is a demonstrated value, which the AFM does not consider limiting,
+  /// so it stays a note. The temperature searches stay within the AFM's temperature range by
+  /// construction, so they skip that check. The elevation limits bound only the tables, so the
+  /// regression model, which may extrapolate past them, skips that check.
   private func operatingLimitViolation(
     conditions: Conditions,
     runway: RunwayInput,
-    flapSetting: FlapSetting,
     checkingTemperature: Bool = true
   ) -> BindingConstraint? {
     let limitations = settings.limitations
-    let headwind = runway.headwind(conditions: conditions),
-      crosswind = runway.crosswind(conditions: conditions).magnitude
-    if crosswind > limitations.maxCrosswind(for: flapSetting)
-      || (headwind < .zero && headwind.magnitude > limitations.maxTailwind)
-    {
+    let headwind = runway.headwind(conditions: conditions)
+    if headwind < .zero && headwind.magnitude > limitations.maxTailwind {
       return .windLimit
     }
     if settings.modelKind == .tabular,
