@@ -34,6 +34,7 @@ let package = Package(
       name: "SF50PerformanceTests",
       dependencies: [
         "SF50Performance",
+        .product(name: "MeasurementKit", package: "MeasurementKit"),
         .product(name: "RealModule", package: "swift-numerics")
       ],
       swiftSettings: swiftSettings

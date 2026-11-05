@@ -14,6 +14,18 @@ public struct TakeoffResults: Sendable {
 
   /// Climb rate in feet per minute at Vx.
   public let takeoffClimbRate: Value<Measurement<UnitSpeed>>
+
+  /// Whether any figure fell below the range the AFM tables cover.
+  public var isOffscaleLow: Bool {
+    takeoffRun.isOffscaleLow || takeoffDistance.isOffscaleLow
+      || takeoffClimbGradient.isOffscaleLow || takeoffClimbRate.isOffscaleLow
+  }
+
+  /// Whether any figure rose above the range the AFM tables cover.
+  public var isOffscaleHigh: Bool {
+    takeoffRun.isOffscaleHigh || takeoffDistance.isOffscaleHigh
+      || takeoffClimbGradient.isOffscaleHigh || takeoffClimbRate.isOffscaleHigh
+  }
 }
 
 /// Results of a landing performance calculation.
@@ -29,6 +41,16 @@ public struct LandingResults: Sendable {
 
   /// Whether the aircraft can achieve the required go-around climb gradient.
   public let meetsGoAroundClimbGradient: Value<Bool>
+
+  /// Whether any figure fell below the range the AFM tables cover.
+  public var isOffscaleLow: Bool {
+    Vref.isOffscaleLow || landingRun.isOffscaleLow || landingDistance.isOffscaleLow
+  }
+
+  /// Whether any figure rose above the range the AFM tables cover.
+  public var isOffscaleHigh: Bool {
+    Vref.isOffscaleHigh || landingRun.isOffscaleHigh || landingDistance.isOffscaleHigh
+  }
 }
 
 /// A takeoff report including results and distance breakdowns.
@@ -39,6 +61,18 @@ public struct TakeoffReport: Sendable {
 
   /// The pressure altitude the tables were read at.
   public let pressureAltitude: Measurement<UnitLength>
+
+  /// Whether the model's inputs fell below the range the AFM tables cover.
+  public let inputsOffscaleLow: Bool
+
+  /// Whether the model's inputs rose above the range the AFM tables cover.
+  public let inputsOffscaleHigh: Bool
+
+  /// Whether a figure or an input fell below the range the AFM tables cover.
+  public var isOffscaleLow: Bool { results.isOffscaleLow || inputsOffscaleLow }
+
+  /// Whether a figure or an input rose above the range the AFM tables cover.
+  public var isOffscaleHigh: Bool { results.isOffscaleHigh || inputsOffscaleHigh }
 }
 
 /// A landing report including results and distance breakdowns.
@@ -49,4 +83,16 @@ public struct LandingReport: Sendable {
 
   /// The pressure altitude the tables were read at.
   public let pressureAltitude: Measurement<UnitLength>
+
+  /// Whether the model's inputs fell below the range the AFM tables cover.
+  public let inputsOffscaleLow: Bool
+
+  /// Whether the model's inputs rose above the range the AFM tables cover.
+  public let inputsOffscaleHigh: Bool
+
+  /// Whether a figure or an input fell below the range the AFM tables cover.
+  public var isOffscaleLow: Bool { results.isOffscaleLow || inputsOffscaleLow }
+
+  /// Whether a figure or an input rose above the range the AFM tables cover.
+  public var isOffscaleHigh: Bool { results.isOffscaleHigh || inputsOffscaleHigh }
 }

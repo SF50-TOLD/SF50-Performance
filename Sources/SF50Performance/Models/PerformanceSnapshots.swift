@@ -37,6 +37,12 @@ public struct NOTAMInput: Sendable, Equatable {
     )
   }
 
+  /// The obstacle this NOTAM reports off the departure end, or `nil` where it reports none.
+  public var obstacle: Obstacle? {
+    guard obstacleHeight > .zero else { return nil }
+    return .init(height: obstacleHeight, distanceFromDepartureEnd: obstacleDistance)
+  }
+
   /**
    * Creates a NOTAM snapshot.
    *

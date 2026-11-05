@@ -141,6 +141,8 @@ public enum PerformanceNoteSeverity: Int, Sendable, Comparable {
 }
 
 /// A warning or note about the performance calculation.
+///
+/// ``PerformanceNotes`` generates these from a calculation's inputs and results.
 public enum PerformanceNote: Sendable, Equatable {
   // Offscale
   case offscaleHigh
@@ -163,6 +165,11 @@ public enum PerformanceNote: Sendable, Equatable {
     elevation: Measurement<UnitLength>,
     limits: ClosedRange<Measurement<UnitLength>>
   )
+  /// The temperature lies outside the AFM's operating limits.
+  case temperatureOutsideLimits(
+    temperature: Measurement<UnitTemperature>,
+    limits: ClosedRange<Measurement<UnitTemperature>>
+  )
   case takeoffDistanceExceedsAvailable(
     required: Measurement<UnitLength>,
     available: Measurement<UnitLength>
@@ -175,10 +182,14 @@ public enum PerformanceNote: Sendable, Equatable {
     required: Measurement<UnitLength>,
     available: Measurement<UnitLength>
   )
+  /// The takeoff climb gradient falls short of the gradient an obstacle requires, or the model has
+  /// no gradient to compare.
   case insufficientClimbGradient(
     required: Measurement<UnitSlope>,
     actual: Value<Measurement<UnitSlope>>
   )
+  /// An obstacle taller than the screen height stands before the point the aircraft reaches it.
+  case obstacleWithinTakeoffDistance(obstacle: Obstacle)
   case doesNotMeetGoAroundGradient
 
   public var severity: PerformanceNoteSeverity {
@@ -194,10 +205,12 @@ public enum PerformanceNote: Sendable, Equatable {
       case .crosswindExceedance, .tailwindExceedance,
         .weightAboveMax, .zeroFuelWeightExceeded, .fuelExceedsCapacity,
         .airportElevationOutsideLimits,
+        .temperatureOutsideLimits,
         .takeoffDistanceExceedsAvailable,
         .takeoffRunExceedsAvailable,
         .landingDistanceExceedsAvailable,
         .insufficientClimbGradient,
+        .obstacleWithinTakeoffDistance,
         .doesNotMeetGoAroundGradient:
         .warning
     }
@@ -218,10 +231,11 @@ public enum PerformanceNote: Sendable, Equatable {
         .VREFAdditiveApproximate, .pressureAltitudeFromFieldElevation, .doesNotMeetGoAroundGradient:
         informationalDescription
       case .crosswindExceedance, .tailwindExceedance, .weightAboveMax, .zeroFuelWeightExceeded,
-        .fuelExceedsCapacity, .airportElevationOutsideLimits:
+        .fuelExceedsCapacity, .airportElevationOutsideLimits, .temperatureOutsideLimits:
         limitationDescription(units: units)
       case .takeoffDistanceExceedsAvailable, .takeoffRunExceedsAvailable,
-        .landingDistanceExceedsAvailable, .insufficientClimbGradient:
+        .landingDistanceExceedsAvailable, .insufficientClimbGradient,
+        .obstacleWithinTakeoffDistance:
         distanceDescription(units: units)
     }
   }
@@ -338,6 +352,16 @@ extension PerformanceNote {
           bundle: .module,
           comment: "A performance note. The arguments are the elevation and the approved range."
         )
+      case let .temperatureOutsideLimits(temperature, limits):
+        let temperature = MeasurementText.text(temperature, in: units.temperature, width: .narrow),
+          lower = MeasurementText.text(limits.lowerBound, in: units.temperature, width: .narrow),
+          upper = MeasurementText.text(limits.upperBound, in: units.temperature, width: .narrow)
+        return String(
+          localized:
+            "Temperature of \(temperature) is outside the AFM’s \(lower) to \(upper) limits.",
+          bundle: .module,
+          comment: "A performance note. The arguments are the temperature and the approved range."
+        )
       default:
         preconditionFailure("\(self) is not a limitation note")
     }
@@ -370,14 +394,39 @@ extension PerformanceNote {
           bundle: .module,
           comment: "A performance note. The arguments are the required and available distances."
         )
-      case .insufficientClimbGradient:
+      case let .insufficientClimbGradient(required, actual):
+        return climbGradientDescription(required: required, actual: actual)
+      case .obstacleWithinTakeoffDistance(let obstacle):
+        let height = MeasurementText.text(obstacle.height, in: units.height)
         return String(
-          localized: "Required climb gradient may exceed actual climb performance.",
+          localized:
+            "An obstacle \(height) tall stands within the takeoff distance, where the aircraft is still below the 50-foot screen height.",
           bundle: .module,
-          comment: "A performance note."
+          comment: "A performance note. The argument is the obstacle’s height above the runway."
         )
       default:
         preconditionFailure("\(self) is not a distance note")
     }
+  }
+
+  private func climbGradientDescription(
+    required: Measurement<UnitSlope>,
+    actual: Value<Measurement<UnitSlope>>
+  ) -> String {
+    guard let actual = actual.nominalOrClamped else {
+      return String(
+        localized: "Required climb gradient may exceed actual climb performance.",
+        bundle: .module,
+        comment: "A performance note."
+      )
+    }
+    let required = MeasurementText.text(required, in: .feetPerNauticalMile),
+      actualText = MeasurementText.text(actual, in: .feetPerNauticalMile)
+    return String(
+      localized:
+        "The takeoff climb gradient of \(actualText) is below the \(required) needed to clear the obstacle.",
+      bundle: .module,
+      comment: "A performance note. The arguments are the climb gradient and the gradient required."
+    )
   }
 }

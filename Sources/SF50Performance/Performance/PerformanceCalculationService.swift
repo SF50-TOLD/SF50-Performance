@@ -41,7 +41,7 @@ public protocol PerformanceCalculationService: Sendable {
 /// ``DefaultPerformanceCalculationService`` is a singleton service that creates
 /// performance models and calculates takeoff/landing results. It selects the
 /// appropriate performance model implementation based on aircraft generation
-/// and whether the regression model is asked for.
+/// and the model kind asked for.
 public final class DefaultPerformanceCalculationService: PerformanceCalculationService {
   /// Shared singleton instance.
   public static let shared = DefaultPerformanceCalculationService()
@@ -69,22 +69,55 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
     useRegressionModel: Bool,
     aircraftType: AircraftType
   ) throws -> any PerformanceModel {
-    if useRegressionModel {
-      return try RegressionPerformanceModel(
-        conditions: conditions,
-        configuration: configuration,
-        runway: runway,
-        notam: notam,
-        aircraftType: aircraftType
-      )
-    }
-    return try TabularPerformanceModel(
+    try createPerformanceModel(
       conditions: conditions,
       configuration: configuration,
       runway: runway,
       notam: notam,
+      kind: useRegressionModel ? .regression : .tabular,
       aircraftType: aircraftType
     )
+  }
+
+  /**
+   * Creates a performance model of the given kind.
+   *
+   * - Parameters:
+   *   - conditions: Atmospheric conditions (temperature, pressure, wind).
+   *   - configuration: Aircraft configuration (weight, flaps).
+   *   - runway: Runway data snapshot.
+   *   - notam: Active NOTAM data if present.
+   *   - kind: Whether to read the AFM tables or the regression equations fitted to them.
+   *   - aircraftType: The aircraft type.
+   * - Returns: A configured performance model ready for calculation.
+   * - Throws: ``PerformanceDataError`` if the bundled performance data could not be read.
+   */
+  public func createPerformanceModel(
+    conditions: Conditions,
+    configuration: Configuration,
+    runway: RunwayInput,
+    notam: NOTAMInput?,
+    kind: PerformanceModelKind,
+    aircraftType: AircraftType
+  ) throws -> any PerformanceModel {
+    switch kind {
+      case .regression:
+        try RegressionPerformanceModel(
+          conditions: conditions,
+          configuration: configuration,
+          runway: runway,
+          notam: notam,
+          aircraftType: aircraftType
+        )
+      case .tabular:
+        try TabularPerformanceModel(
+          conditions: conditions,
+          configuration: configuration,
+          runway: runway,
+          notam: notam,
+          aircraftType: aircraftType
+        )
+    }
   }
 
   public func calculateTakeoff(for model: any PerformanceModel, safetyFactor: Double) throws
@@ -115,7 +148,9 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
       results: results,
       groundRunBreakdown: runBreakdown.appending(runAdjustments),
       distanceBreakdown: distBreakdown.appending(distAdjustments),
-      pressureAltitude: model.pressureAltitude
+      pressureAltitude: model.pressureAltitude,
+      inputsOffscaleLow: model.takeoffInputsOffscaleLow,
+      inputsOffscaleHigh: model.takeoffInputsOffscaleHigh
     )
   }
 
@@ -168,7 +203,9 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
       results: results,
       groundRunBreakdown: runBreakdown.appending(runAdjustments),
       distanceBreakdown: distBreakdown.appending(distAdjustments),
-      pressureAltitude: model.pressureAltitude
+      pressureAltitude: model.pressureAltitude,
+      inputsOffscaleLow: model.landingInputsOffscaleLow,
+      inputsOffscaleHigh: model.landingInputsOffscaleHigh
     )
   }
 }

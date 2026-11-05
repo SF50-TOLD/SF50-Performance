@@ -17,6 +17,10 @@
         }
       }
     },
+    "An obstacle %@ tall stands within the takeoff distance, where the aircraft is still below the 50-foot screen height.": {
+      "comment": "A performance note. The argument is the obstacle’s height above the runway.",
+      "extractionState": "manual"
+    },
     "Apple Weather": {
       "comment": "The name of Apple’s weather service.",
       "extractionState": "manual"
@@ -181,6 +185,18 @@
         }
       }
     },
+    "Temperature of %@ is outside the AFM’s %@ to %@ limits.": {
+      "comment": "A performance note. The arguments are the temperature and the approved range.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperature of %1$@ is outside the AFM’s %2$@ to %3$@ limits."
+          }
+        }
+      }
+    },
     "The JSON schema is invalid: %@": {
       "comment": "Failure reason for a malformed regression equation file. The argument is the decoding error.",
       "extractionState": "manual"
@@ -216,6 +232,18 @@
     "The input values are below the minimums specified in the AFM table.": {
       "comment": "A performance note.",
       "extractionState": "manual"
+    },
+    "The takeoff climb gradient of %@ is below the %@ needed to clear the obstacle.": {
+      "comment": "A performance note. The arguments are the climb gradient and the gradient required.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The takeoff climb gradient of %1$@ is below the %2$@ needed to clear the obstacle."
+          }
+        }
+      }
     },
     "Unpaved Surface": {
       "comment": "A distance adjustment for a turf runway.",
