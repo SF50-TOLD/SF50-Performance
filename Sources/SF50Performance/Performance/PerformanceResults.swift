@@ -6,7 +6,7 @@ public struct TakeoffResults: Sendable {
   /// Ground run distance from brake release to liftoff.
   public let takeoffRun: Value<Measurement<UnitLength>>
 
-  /// Total distance from brake release to 35 feet AGL.
+  /// Total distance from brake release to 50 feet AGL.
   public let takeoffDistance: Value<Measurement<UnitLength>>
 
   /// Climb gradient in feet per nautical mile at Vx.

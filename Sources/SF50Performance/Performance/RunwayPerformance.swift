@@ -11,7 +11,7 @@ public struct RunwayPerformance: Sendable {
   /// Ground run: brake release to liftoff, or touchdown to full stop.
   public let groundRun: Value<Measurement<UnitLength>>
 
-  /// Total distance: over the 35 ft screen on takeoff, from the 50 ft screen on landing.
+  /// Total distance: over the 50 ft screen on takeoff, from the 50 ft screen on landing.
   public let distance: Value<Measurement<UnitLength>>
 
   /// Climb gradient at Vx. Takeoff only.
