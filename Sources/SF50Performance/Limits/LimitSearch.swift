@@ -1,4 +1,5 @@
 public import Foundation
+import MeasurementKit
 
 /// What stops a takeoff or landing limit from going any higher.
 public enum BindingConstraint: String, Sendable, Hashable, CaseIterable, Codable {
@@ -20,6 +21,12 @@ public enum BindingConstraint: String, Sendable, Hashable, CaseIterable, Codable
 
   /// The AFM's maximum operating temperature.
   case temperatureLimit = "temperature_limit"
+
+  /// The tailwind or crosswind component exceeds the AFM's limit.
+  case windLimit = "wind_limit"
+
+  /// The airport elevation lies outside the range the AFM approves.
+  case elevationLimit = "elevation_limit"
 }
 
 /// The highest value of a quantity a takeoff or landing allows, and what stops it going higher.
@@ -31,6 +38,10 @@ public struct LimitSearchResult<UnitType: Dimension & Sendable>: Sendable {
   /// The constraint the next value up violates, or the ceiling of the search where every value
   /// satisfies the rest.
   public let bindingConstraint: BindingConstraint
+
+  /// Whether the limit rests on a figure the AFM tables do not cover: the calculation at the limit
+  /// held an input at the edge of its data, so the limit is not fully supported by the AFM.
+  public let reliesOnOffscaleData: Bool
 }
 
 // MARK: - Searches
@@ -51,7 +62,8 @@ extension PerformanceCalculator {
    * - Parameters:
    *   - conditions: The atmospheric conditions.
    *   - runway: The runway, with any NOTAM restricting it.
-   *   - obstacle: An obstacle the takeoff climb must clear, or `nil` for none.
+   *   - obstacle: An obstacle the takeoff climb must clear, or `nil` for the one the runway's
+   *     NOTAM reports, if any.
    *   - minimumWeight: The lowest weight to search, such as the aircraft's empty weight.
    *   - safetyFactor: The multiplier for the distances, or `nil` for the settings' dry factor.
    * - Returns: The maximum weight and the constraint that sets it.
@@ -60,13 +72,18 @@ extension PerformanceCalculator {
   public func maxTakeoffWeight(
     conditions: Conditions,
     runway: RunwayInput,
-    obstacle: Obstacle?,
+    obstacle: Obstacle? = nil,
     minimumWeight: Measurement<UnitMass>,
     safetyFactor: Double? = nil
   ) throws -> LimitSearchResult<UnitMass> {
     try searchWeight(
       from: minimumWeight,
-      to: settings.limitations.maxTakeoffWeight
+      to: settings.limitations.maxTakeoffWeight,
+      violating: operatingLimitViolation(
+        conditions: conditions,
+        runway: runway,
+        flapSetting: Self.takeoffFlapSetting
+      )
     ) { weight in
       takeoffVerdict(
         try takeoff(
@@ -76,7 +93,7 @@ extension PerformanceCalculator {
           safetyFactor: safetyFactor
         ),
         runway: runway,
-        obstacle: obstacle
+        obstacle: obstacle ?? runway.notam?.obstacle
       )
     }
   }
@@ -106,7 +123,12 @@ extension PerformanceCalculator {
   ) throws -> LimitSearchResult<UnitMass> {
     try searchWeight(
       from: minimumWeight,
-      to: settings.limitations.maxLandingWeight
+      to: settings.limitations.maxLandingWeight,
+      violating: operatingLimitViolation(
+        conditions: conditions,
+        runway: runway,
+        flapSetting: flapSetting
+      )
     ) { weight in
       landingVerdict(
         try landing(
@@ -130,7 +152,8 @@ extension PerformanceCalculator {
    *   - conditions: The atmospheric conditions, whose temperature is varied.
    *   - weight: The takeoff weight.
    *   - runway: The runway, with any NOTAM restricting it.
-   *   - obstacle: An obstacle the takeoff climb must clear, or `nil` for none.
+   *   - obstacle: An obstacle the takeoff climb must clear, or `nil` for the one the runway's
+   *     NOTAM reports, if any.
    *   - safetyFactor: The multiplier for the distances, or `nil` for the settings' dry factor.
    * - Returns: The maximum temperature and the constraint that sets it.
    * - Throws: ``PerformanceDataError`` if the bundled performance data could not be read.
@@ -139,10 +162,17 @@ extension PerformanceCalculator {
     conditions: Conditions,
     weight: Measurement<UnitMass>,
     runway: RunwayInput,
-    obstacle: Obstacle?,
+    obstacle: Obstacle? = nil,
     safetyFactor: Double? = nil
   ) throws -> LimitSearchResult<UnitTemperature> {
-    try searchTemperature { temperature in
+    try searchTemperature(
+      violating: operatingLimitViolation(
+        conditions: conditions,
+        runway: runway,
+        flapSetting: Self.takeoffFlapSetting,
+        checkingTemperature: false
+      )
+    ) { temperature in
       takeoffVerdict(
         try takeoff(
           conditions: conditions.replacingTemperature(with: temperature),
@@ -151,7 +181,7 @@ extension PerformanceCalculator {
           safetyFactor: safetyFactor
         ),
         runway: runway,
-        obstacle: obstacle
+        obstacle: obstacle ?? runway.notam?.obstacle
       )
     }
   }
@@ -177,7 +207,14 @@ extension PerformanceCalculator {
     runway: RunwayInput,
     safetyFactor: Double? = nil
   ) throws -> LimitSearchResult<UnitTemperature> {
-    try searchTemperature { temperature in
+    try searchTemperature(
+      violating: operatingLimitViolation(
+        conditions: conditions,
+        runway: runway,
+        flapSetting: configuration.flapSetting,
+        checkingTemperature: false
+      )
+    ) { temperature in
       landingVerdict(
         try landing(
           conditions: conditions.replacingTemperature(with: temperature),
@@ -192,38 +229,72 @@ extension PerformanceCalculator {
 
   // MARK: - Verdicts
 
+  /// The AFM operating limit the conditions and runway already breach, whatever the weight or
+  /// temperature searched, or `nil` where they breach none.
+  ///
+  /// The temperature searches stay within the AFM's temperature range by construction, so they
+  /// skip that check.
+  private func operatingLimitViolation(
+    conditions: Conditions,
+    runway: RunwayInput,
+    flapSetting: FlapSetting,
+    checkingTemperature: Bool = true
+  ) -> BindingConstraint? {
+    let limitations = settings.limitations
+    let headwind = runway.headwind(conditions: conditions),
+      crosswind = runway.crosswind(conditions: conditions).magnitude
+    if crosswind > limitations.maxCrosswind(for: flapSetting)
+      || (headwind < .zero && headwind.magnitude > limitations.maxTailwind)
+    {
+      return .windLimit
+    }
+    if !(limitations.minAirportElevation...limitations.maxAirportElevation)
+      .contains(runway.elevation)
+    {
+      return .elevationLimit
+    }
+    if checkingTemperature, let temperature = conditions.temperature,
+      !(limitations.minTemperature...limitations.maxTemperature).contains(temperature)
+    {
+      return .temperatureLimit
+    }
+    return nil
+  }
+
   /// Whether a takeoff fits the runway, has AFM figures, and clears any obstacle.
   ///
-  /// A clamped distance still answers, since it is the AFM's own figure for milder conditions and
-  /// errs long; a refusal carrying no figure leaves the takeoff untestable. A distance with no
-  /// definite figure is no verdict on the runway, so only a definite one can exceed it.
+  /// A clamped distance is the AFM's figure for the nearest conditions it covers, and the
+  /// takeoff has to fit that figure: where the real distance may be shorter the AFM still cannot
+  /// show the takeoff fits, so a clamped distance that does not fit is a violation. A refusal
+  /// carrying no figure leaves the takeoff untestable.
   private func takeoffVerdict(
     _ report: TakeoffReport,
     runway: RunwayInput,
     obstacle: Obstacle?
   ) -> LimitVerdict {
     let results = report.results
-    guard let takeoffDistance = results.takeoffDistance.nominalOrClamped else {
-      return .violated(.AFMData)
-    }
+    guard let takeoffRun = results.takeoffRun.nominalOrClamped,
+      let takeoffDistance = results.takeoffDistance.nominalOrClamped
+    else { return .violated(.AFMData) }
     guard
-      fits(results.takeoffRun, within: runway.availableTakeoffRun)
-        && fits(results.takeoffDistance, within: runway.availableTakeoffDistance)
+      takeoffRun <= runway.availableTakeoffRun
+        && takeoffDistance <= runway.availableTakeoffDistance
     else { return .violated(.fieldLength) }
 
-    guard let obstacle else { return .satisfied }
+    let satisfied = LimitVerdict.satisfied(reliesOnOffscaleData: reliesOnOffscaleData(report))
+    guard let obstacle else { return satisfied }
     let requirement = obstacle.climbRequirement(
       takeoffDistance: takeoffDistance,
       availableTakeoffRun: runway.availableTakeoffRun
     )
     switch requirement {
-      case .none: return .satisfied
+      case .none: return satisfied
       case .unclearable: return .violated(.obstacleClearance)
       case .gradient:
         guard let climbGradient = results.takeoffClimbGradient.nominalOrClamped else {
           return .violated(.AFMData)
         }
-        return requirement.isMet(by: climbGradient) ? .satisfied : .violated(.obstacleClearance)
+        return requirement.isMet(by: climbGradient) ? satisfied : .violated(.obstacleClearance)
     }
   }
 
@@ -237,15 +308,17 @@ extension PerformanceCalculator {
     guard let meetsGoAround = results.meetsGoAroundClimbGradient.nominalOrClamped else {
       return .violated(.AFMData)
     }
-    return meetsGoAround ? .satisfied : .violated(.goAroundClimbGradient)
+    return meetsGoAround
+      ? .satisfied(reliesOnOffscaleData: reliesOnOffscaleData(report))
+      : .violated(.goAroundClimbGradient)
   }
 
-  private func fits(
-    _ distance: Value<Measurement<UnitLength>>,
-    within available: Measurement<UnitLength>
-  ) -> Bool {
-    guard let distance = distance.nominal else { return true }
-    return distance <= available
+  private func reliesOnOffscaleData(_ report: TakeoffReport) -> Bool {
+    report.isOffscaleLow || report.isOffscaleHigh
+  }
+
+  private func reliesOnOffscaleData(_ report: LandingReport) -> Bool {
+    report.isOffscaleLow || report.isOffscaleHigh
   }
 
   // MARK: - Bisection
@@ -253,8 +326,12 @@ extension PerformanceCalculator {
   private func searchWeight(
     from minimumWeight: Measurement<UnitMass>,
     to maximumWeight: Measurement<UnitMass>,
+    violating operatingLimit: BindingConstraint?,
     verdict: (Measurement<UnitMass>) throws -> LimitVerdict
   ) throws -> LimitSearchResult<UnitMass> {
+    if let operatingLimit {
+      return .init(limit: nil, bindingConstraint: operatingLimit, reliesOnOffscaleData: false)
+    }
     let search = try LimitBisection.highestSatisfying(
       from: minimumWeight.converted(to: .pounds).value,
       to: maximumWeight.converted(to: .pounds).value,
@@ -262,13 +339,18 @@ extension PerformanceCalculator {
     ) { try verdict(.init(value: $0, unit: .pounds)) }
     return .init(
       limit: search.highest.map { .init(value: $0, unit: .pounds) },
-      bindingConstraint: search.violation ?? .structuralLimit
+      bindingConstraint: search.violation ?? .structuralLimit,
+      reliesOnOffscaleData: search.reliesOnOffscaleData
     )
   }
 
   private func searchTemperature(
+    violating operatingLimit: BindingConstraint?,
     verdict: (Measurement<UnitTemperature>) throws -> LimitVerdict
   ) throws -> LimitSearchResult<UnitTemperature> {
+    if let operatingLimit {
+      return .init(limit: nil, bindingConstraint: operatingLimit, reliesOnOffscaleData: false)
+    }
     let limitations = settings.limitations,
       search = try LimitBisection.highestSatisfying(
         from: limitations.minTemperature.converted(to: .celsius).value,
@@ -277,14 +359,17 @@ extension PerformanceCalculator {
       ) { try verdict(.init(value: $0, unit: .celsius)) }
     return .init(
       limit: search.highest.map { .init(value: $0, unit: .celsius) },
-      bindingConstraint: search.violation ?? .temperatureLimit
+      bindingConstraint: search.violation ?? .temperatureLimit,
+      reliesOnOffscaleData: search.reliesOnOffscaleData
     )
   }
 }
 
 /// Whether a candidate limit satisfies every constraint, or which one it violates.
 enum LimitVerdict: Equatable {
-  case satisfied
+  /// Every constraint holds; `reliesOnOffscaleData` is whether the figures behind that include any
+  /// the AFM data does not cover.
+  case satisfied(reliesOnOffscaleData: Bool)
   case violated(BindingConstraint)
 }
 
@@ -301,25 +386,28 @@ enum LimitBisection {
    *   - highest: The top of the range, rounded down to a multiple of `increment`.
    *   - increment: The step between candidates.
    *   - verdict: Tests one candidate.
-   * - Returns: The highest satisfying candidate, or `nil` if none satisfies; and the constraint
-   *   the candidate one step above it violates, or `nil` if every candidate satisfies.
+   * - Returns: The highest satisfying candidate, or `nil` if none satisfies; whether that
+   *   candidate relies on off-scale data; and the constraint the candidate one step above it
+   *   violates, or `nil` if every candidate satisfies.
    */
   static func highestSatisfying(
     from lowest: Double,
     to highest: Double,
     increment: Double,
     verdict: (Double) throws -> LimitVerdict
-  ) rethrows -> (highest: Double?, violation: BindingConstraint?) {
+  ) rethrows -> (highest: Double?, reliesOnOffscaleData: Bool, violation: BindingConstraint?) {
     var low = (lowest / increment).rounded(.up) * increment,
       high = (highest / increment).rounded(.down) * increment,
       best: Double?,
+      bestReliesOnOffscaleData = false,
       violation: BindingConstraint?
 
     while low <= high {
       let candidate = ((low + high) / 2 / increment).rounded() * increment
       switch try verdict(candidate) {
-        case .satisfied:
+        case .satisfied(let reliesOnOffscaleData):
           best = candidate
+          bestReliesOnOffscaleData = reliesOnOffscaleData
           low = candidate + increment
         case .violated(let constraint):
           violation = constraint
@@ -327,6 +415,6 @@ enum LimitBisection {
       }
     }
 
-    return (best, violation)
+    return (best, bestReliesOnOffscaleData, violation)
   }
 }

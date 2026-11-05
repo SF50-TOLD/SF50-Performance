@@ -132,12 +132,14 @@ public enum PerformanceNotes {
     runway: RunwayInput
   ) -> [PerformanceNote] {
     var notes: [PerformanceNote] = []
-    if let run = results.takeoffRun.nominal, run > runway.availableTakeoffRun {
+    if let run = results.takeoffRun.nominalOrClamped, run > runway.availableTakeoffRun {
       notes.append(
         .takeoffRunExceedsAvailable(required: run, available: runway.availableTakeoffRun)
       )
     }
-    if let distance = results.takeoffDistance.nominal, distance > runway.availableTakeoffDistance {
+    if let distance = results.takeoffDistance.nominalOrClamped,
+      distance > runway.availableTakeoffDistance
+    {
       notes.append(
         .takeoffDistanceExceedsAvailable(
           required: distance,
@@ -186,7 +188,7 @@ public enum PerformanceNotes {
     for results: LandingResults,
     runway: RunwayInput
   ) -> [PerformanceNote] {
-    guard let distance = results.landingDistance.nominal,
+    guard let distance = results.landingDistance.nominalOrClamped,
       distance > runway.availableLandingDistance
     else { return [] }
     return [
@@ -213,10 +215,7 @@ public enum PerformanceNotes {
     limitations: any Limitations.Type
   ) -> [PerformanceNote] {
     var notes: [PerformanceNote] = []
-    let
-      crosswindLimit =
-        inputs.configuration.flapSetting == .flaps100
-        ? limitations.maxCrosswind_flaps100 : limitations.maxCrosswind_flaps50,
+    let crosswindLimit = limitations.maxCrosswind(for: inputs.configuration.flapSetting),
       crosswind = inputs.runway.crosswind(conditions: inputs.conditions).magnitude
     if crosswind > crosswindLimit {
       notes.append(.crosswindExceedance(crosswind: crosswind, limit: crosswindLimit))

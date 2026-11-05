@@ -45,6 +45,13 @@ public protocol Limitations {
   static var maxTemperature: Measurement<UnitTemperature> { get }
 }
 
+extension Limitations {
+  /// The maximum crosswind component for a flap setting.
+  static func maxCrosswind(for flapSetting: FlapSetting) -> Measurement<UnitSpeed> {
+    flapSetting == .flaps100 ? maxCrosswind_flaps100 : maxCrosswind_flaps50
+  }
+}
+
 /// Operational limitations for first-generation SF50 Vision Jet (G1).
 public struct LimitationsG1: Limitations {
   public static let maxTakeoffWeight = Measurement(value: 6000, unit: UnitMass.pounds)
