@@ -267,6 +267,33 @@ struct TabularPerformanceModelG1Tests {
     }
   }
 
+  /// Each inch of mercury below standard puts the field 1,000 ft higher in the tables, and each
+  /// inch above it 1,000 ft lower.
+  @Test(arguments: [
+    (elevation: 0.0, altimeterInHg: 28.92, expected: 2900.0),
+    (elevation: 3000.0, altimeterInHg: 30.92, expected: 3153.0)
+  ])
+  func `reads the tables at the pressure altitude the altimeter setting gives`(
+    elevation: Double,
+    altimeterInHg: Double,
+    expected: Double
+  ) throws {
+    let conditions = Conditions(
+      temperature: .init(value: 20, unit: .celsius),
+      seaLevelPressure: .init(value: altimeterInHg, unit: .inchesOfMercury)
+    )
+    let model = try TabularPerformanceModel(
+      conditions: conditions,
+      configuration: Helper.createTestConfiguration(weight: 5000),
+      runway: Helper.createTestRunway(elevation: elevation),
+      notam: nil,
+      aircraftType: .g1
+    )
+
+    let distance = try #require(model.takeoffDistanceFt.nominal)
+    #expect(distance.isApproximatelyEqual(to: expected, absoluteTolerance: 0.01))
+  }
+
   // MARK: - Takeoff Climb Tests
 
   @Test

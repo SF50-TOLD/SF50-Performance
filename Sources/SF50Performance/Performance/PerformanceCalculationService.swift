@@ -114,7 +114,8 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
     return TakeoffReport(
       results: results,
       groundRunBreakdown: runBreakdown.appending(runAdjustments),
-      distanceBreakdown: distBreakdown.appending(distAdjustments)
+      distanceBreakdown: distBreakdown.appending(distAdjustments),
+      pressureAltitude: model.pressureAltitude
     )
   }
 
@@ -166,7 +167,8 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
     return LandingReport(
       results: results,
       groundRunBreakdown: runBreakdown.appending(runAdjustments),
-      distanceBreakdown: distBreakdown.appending(distAdjustments)
+      distanceBreakdown: distBreakdown.appending(distAdjustments),
+      pressureAltitude: model.pressureAltitude
     )
   }
 }

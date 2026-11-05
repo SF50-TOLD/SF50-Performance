@@ -36,6 +36,9 @@ public struct TakeoffReport: Sendable {
   public let results: TakeoffResults
   public let groundRunBreakdown: DistanceBreakdown
   public let distanceBreakdown: DistanceBreakdown
+
+  /// The pressure altitude the tables were read at.
+  public let pressureAltitude: Measurement<UnitLength>
 }
 
 /// A landing report including results and distance breakdowns.
@@ -43,4 +46,7 @@ public struct LandingReport: Sendable {
   public let results: LandingResults
   public let groundRunBreakdown: DistanceBreakdown
   public let distanceBreakdown: DistanceBreakdown
+
+  /// The pressure altitude the tables were read at.
+  public let pressureAltitude: Measurement<UnitLength>
 }

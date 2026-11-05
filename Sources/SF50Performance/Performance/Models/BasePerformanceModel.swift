@@ -1,4 +1,4 @@
-import Foundation
+public import Foundation
 
 /// Base implementation of ``PerformanceModel`` with common functionality.
 ///
@@ -101,9 +101,17 @@ open class BasePerformanceModel: PerformanceModel {
     conditions.temperature?.converted(to: .celsius).value ?? isaTemperature(altitudeFt: altitude)
   }
 
-  /// Runway elevation in feet.
+  /// The pressure altitude the tables and equations are read at, in feet.
   var altitude: Double {
-    runway.elevation.converted(to: .feet).value
+    pressureAltitude.converted(to: .feet).value
+  }
+
+  /// The pressure altitude at the runway, from its elevation and the altimeter setting.
+  ///
+  /// Without an altimeter setting this is the runway elevation; ``Conditions/hasAltimeterSetting``
+  /// says which.
+  public var pressureAltitude: Measurement<UnitLength> {
+    conditions.pressureAltitude(elevation: runway.elevation)
   }
 
   /// Headwind component in knots (positive = headwind, negative = tailwind).

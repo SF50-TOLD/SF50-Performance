@@ -1,3 +1,5 @@
+public import Foundation
+
 /// Protocol defining aircraft performance calculation capabilities.
 ///
 /// ``PerformanceModel`` abstracts the performance calculations for different
@@ -8,6 +10,9 @@
 /// Performance models are configured with atmospheric conditions, aircraft
 /// configuration, and runway data, then queried for specific performance values.
 public protocol PerformanceModel {
+  /// The pressure altitude the takeoff and landing tables are read at.
+  var pressureAltitude: Measurement<UnitLength> { get }
+
   /// Takeoff climb gradient at Vx in feet per nautical mile.
   var takeoffClimbGradientFtNM: Value<Double> { get }
 

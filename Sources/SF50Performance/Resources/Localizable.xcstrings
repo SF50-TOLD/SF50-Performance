@@ -105,6 +105,10 @@
       "comment": "The National Weather Service.",
       "extractionState": "manual"
     },
+    "No altimeter setting was given, so the AFM tables were read at field elevation rather than pressure altitude.": {
+      "comment": "A performance note.",
+      "extractionState": "manual"
+    },
     "No residuals were found for the regression table “%@”.": {
       "comment": "Failure reason for bundled performance data. The argument is a table name.",
       "extractionState": "manual"

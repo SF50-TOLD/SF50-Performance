@@ -6,6 +6,12 @@ public import Foundation
 /// temperature, dewpoint, and pressure. Conditions can be downloaded from weather services,
 /// taken from the International Standard Atmosphere, or entered by hand.
 public struct Conditions: Sendable, Equatable {
+  /// The altimeter setting of the standard atmosphere, in inches of mercury.
+  private static let standardAltimeterInHg = 29.92
+
+  /// How far pressure altitude rises for each inch of mercury the altimeter setting falls.
+  private static let pressureAltitudeFtPerInHg = 1000.0
+
   /// Time interval during which these conditions are valid.
   public let validTime: DateInterval
 
@@ -31,6 +37,12 @@ public struct Conditions: Sendable, Equatable {
   public var windsCalm: Bool {
     windSpeed.map { $0 < Measurement(value: 1, unit: UnitSpeed.knots) } ?? true
   }
+
+  /// Whether these conditions carry an altimeter setting that corrects field elevation to
+  /// pressure altitude.
+  ///
+  /// ISA conditions carry the standard setting, which corrects nothing.
+  public var hasAltimeterSetting: Bool { seaLevelPressure != nil && source != .ISA }
 
   /// Whether the wind was reported as variable rather than not reported at all.
   ///
@@ -203,6 +215,24 @@ public struct Conditions: Sendable, Equatable {
       temperatureF: tempDegF
     )
     return .init(value: DA, unit: .feet)
+  }
+
+  /**
+   * The pressure altitude at a field, from its elevation and the altimeter setting.
+   *
+   * Each inch of mercury the altimeter setting falls below standard puts the field 1,000 ft
+   * higher in the standard atmosphere. Without an altimeter setting — and for ISA conditions,
+   * whose setting is standard by definition — the field elevation is used unchanged; check
+   * ``hasAltimeterSetting`` to say which.
+   *
+   * - Parameter elevation: The field elevation.
+   * - Returns: The pressure altitude the takeoff and landing tables are read at.
+   */
+  public func pressureAltitude(elevation: Measurement<UnitLength>) -> Measurement<UnitLength> {
+    guard hasAltimeterSetting, let seaLevelPressure else { return elevation }
+    let altimeterInHg = seaLevelPressure.converted(to: .inchesOfMercury).value,
+      correctionFt = (Self.standardAltimeterInHg - altimeterInHg) * Self.pressureAltitudeFtPerInHg
+    return elevation + .init(value: correctionFt, unit: .feet)
   }
 
   private func absolutePressure(elevation: Measurement<UnitLength>) -> Measurement<UnitPressure> {

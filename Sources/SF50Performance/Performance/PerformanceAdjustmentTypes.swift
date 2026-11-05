@@ -150,6 +150,8 @@ public enum PerformanceNote: Sendable, Equatable {
   case contaminationSupplemental
   case rwyCCSafetyFactorNotApplied
   case VREFAdditiveApproximate
+  /// No altimeter setting was given, so the tables were read at field elevation.
+  case pressureAltitudeFromFieldElevation
 
   // Exceedances (warnings)
   case crosswindExceedance(crosswind: Measurement<UnitSpeed>, limit: Measurement<UnitSpeed>)
@@ -186,7 +188,8 @@ public enum PerformanceNote: Sendable, Equatable {
       case .offscaleLow,
         .contaminationSupplemental,
         .rwyCCSafetyFactorNotApplied,
-        .VREFAdditiveApproximate:
+        .VREFAdditiveApproximate,
+        .pressureAltitudeFromFieldElevation:
         .info
       case .crosswindExceedance, .tailwindExceedance,
         .weightAboveMax, .zeroFuelWeightExceeded, .fuelExceedsCapacity,
@@ -212,7 +215,7 @@ public enum PerformanceNote: Sendable, Equatable {
   public func localizedDescription(units: DisplayUnits) -> String {
     switch self {
       case .offscaleHigh, .offscaleLow, .contaminationSupplemental, .rwyCCSafetyFactorNotApplied,
-        .VREFAdditiveApproximate, .doesNotMeetGoAroundGradient:
+        .VREFAdditiveApproximate, .pressureAltitudeFromFieldElevation, .doesNotMeetGoAroundGradient:
         informationalDescription
       case .crosswindExceedance, .tailwindExceedance, .weightAboveMax, .zeroFuelWeightExceeded,
         .fuelExceedsCapacity, .airportElevationOutsideLimits:
@@ -261,6 +264,13 @@ extension PerformanceNote {
         String(
           localized:
             "Landing distances include an AC 91-79B §5.2.2 adjustment for the VREF additive. This is an approximation.",
+          bundle: .module,
+          comment: "A performance note."
+        )
+      case .pressureAltitudeFromFieldElevation:
+        String(
+          localized:
+            "No altimeter setting was given, so the AFM tables were read at field elevation rather than pressure altitude.",
           bundle: .module,
           comment: "A performance note."
         )
