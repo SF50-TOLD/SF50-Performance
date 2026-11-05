@@ -49,17 +49,18 @@ public enum Value<T> {
   /**
    * Transforms the value using the provided closure.
    *
-   * An arbitrary transform has no way to carry an uncertainty into another type, so a
-   * ``valueWithUncertainty(_:uncertainty:)`` maps to a definite value here. Use the two-parameter
-   * version to carry the uncertainty across, or the floating-point overload, which propagates it.
-   *
    * - Parameter transform: A closure that transforms the wrapped value.
    * - Returns: A new ``Value`` with the transformed type.
+   * - Note: An arbitrary transform cannot carry an uncertainty into another type, so this method
+   *   cannot be called on ``valueWithUncertainty(_:uncertainty:)``. Use the two-parameter version,
+   *   or the floating-point overload, which propagates the uncertainty.
    */
   public func map<U>(_ transform: (T) throws -> U) rethrows -> Value<U> {
     switch self {
-      case .value(let v), .valueWithUncertainty(let v, _):
+      case .value(let v):
         try .value(transform(v))
+      case .valueWithUncertainty:
+        fatalError("Cannot call 1-arity .map on .valueWithUncertainty")
       case .invalid: .invalid
       case .notAvailable: .notAvailable
       case .notAuthorized: .notAuthorized
@@ -93,11 +94,9 @@ public enum Value<T> {
   /**
    * Transforms both the value and its uncertainty using the provided closure.
    *
-   * A transform that returns no uncertainty for a ``valueWithUncertainty(_:uncertainty:)`` turns
-   * it into a definite value.
-   *
    * - Parameter transform: A closure that transforms both the value and optional uncertainty.
    * - Returns: A new ``Value`` with the transformed type and uncertainty.
+   * - Note: The transform must return an uncertainty when the value has one.
    */
   public func map<U>(_ transform: (T, T?) throws -> (U, U?)) rethrows -> Value<U> {
     switch self {
@@ -105,7 +104,9 @@ public enum Value<T> {
         return try .value(transform(v, nil).0)
       case .valueWithUncertainty(let v, let uncertainty):
         let (tv, tu) = try transform(v, uncertainty)
-        guard let tu else { return .value(tv) }
+        guard let tu else {
+          fatalError("Must return uncertainty when calling .map with .valueWithUncertainty")
+        }
         return .valueWithUncertainty(tv, uncertainty: tu)
       case .invalid: return .invalid
       case .notAvailable: return .notAvailable

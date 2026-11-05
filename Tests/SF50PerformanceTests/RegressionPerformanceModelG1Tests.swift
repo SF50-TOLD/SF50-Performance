@@ -723,4 +723,33 @@ struct RegressionPerformanceModelG1Tests {
       "Should not meet gradient at maximum weight with challenging conditions"
     )
   }
+
+  // MARK: - VREF Additive
+
+  @Test
+  func `a VREF additive lengthens the regression landing distance`() throws {
+    func landingDistanceFt(additiveKts: Double) throws -> Double {
+      let calculator = PerformanceCalculator(
+        settings: .init(
+          aircraftType: .g1,
+          modelKind: .regression,
+          VREFAdditive: .init(value: additiveKts, unit: .knots)
+        )
+      )
+      let report = try calculator.landing(
+        conditions: Helper.createTestConditions(temperature: 15),
+        configuration: Helper.createTestConfiguration(weight: 5000, flapSetting: .flaps100),
+        runway: Helper.createTestRunway()
+      )
+      switch report.results.landingDistance {
+        case .value(let distance), .valueWithUncertainty(let distance, _):
+          return distance.converted(to: .feet).value
+        default:
+          Issue.record("Expected a landing distance, got \(report.results.landingDistance)")
+          return 0
+      }
+    }
+
+    #expect(try landingDistanceFt(additiveKts: 5) > landingDistanceFt(additiveKts: 0))
+  }
 }

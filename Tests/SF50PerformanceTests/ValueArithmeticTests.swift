@@ -213,4 +213,16 @@ struct ValueArithmeticTests {
     a -= Value.value(30)
     #expect(a == .value(70))
   }
+
+  // MARK: - Mapping
+
+  @Test
+  func `mapping a floating-point value propagates its uncertainty by central difference`() {
+    let linear = Value<Double>.valueWithUncertainty(100, uncertainty: 10).map { $0 * 2 }
+    #expect(linear == .valueWithUncertainty(200, uncertainty: 20))
+
+    // (11² − 9²) / 2 = 20
+    let squared = Value<Double>.valueWithUncertainty(10, uncertainty: 1).map { $0 * $0 }
+    #expect(squared == .valueWithUncertainty(100, uncertainty: 20))
+  }
 }
