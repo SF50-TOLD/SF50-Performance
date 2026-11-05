@@ -233,7 +233,8 @@ extension PerformanceCalculator {
   /// temperature searched, or `nil` where they breach none.
   ///
   /// The temperature searches stay within the AFM's temperature range by construction, so they
-  /// skip that check.
+  /// skip that check. The elevation limits bound only the tables, so the regression model, which
+  /// may extrapolate past them, skips that check.
   private func operatingLimitViolation(
     conditions: Conditions,
     runway: RunwayInput,
@@ -248,8 +249,9 @@ extension PerformanceCalculator {
     {
       return .windLimit
     }
-    if !(limitations.minAirportElevation...limitations.maxAirportElevation)
-      .contains(runway.elevation)
+    if settings.modelKind == .tabular,
+      !(limitations.minAirportElevation...limitations.maxAirportElevation)
+        .contains(runway.elevation)
     {
       return .elevationLimit
     }

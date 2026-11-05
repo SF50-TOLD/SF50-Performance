@@ -297,6 +297,27 @@ struct `Limit Searches` {
   }
 
   @Test
+  func `bounds the airport elevation for the tables but not the regression model`() throws {
+    let high = Self.runway(length: 12_000, elevation: 11_000)
+    let tabular = try Self.calculator.maxTakeoffWeight(
+      conditions: Self.conditions,
+      runway: high,
+      minimumWeight: Self.emptyWeight
+    )
+    #expect(tabular.limit == nil)
+    #expect(tabular.bindingConstraint == .elevationLimit)
+
+    let regression = try PerformanceCalculator(
+      settings: .init(aircraftType: .g1, modelKind: .regression)
+    ).maxTakeoffWeight(
+      conditions: Self.conditions,
+      runway: high,
+      minimumWeight: Self.emptyWeight
+    )
+    #expect(regression.bindingConstraint != .elevationLimit)
+  }
+
+  @Test
   func `limits the landing weight where the tables give no figure`() throws {
     let hot = Self.conditions.replacingTemperature(with: .init(value: 30, unit: .celsius))
     let result = try Self.calculator.maxLandingWeight(
