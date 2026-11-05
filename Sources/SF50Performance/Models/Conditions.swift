@@ -196,6 +196,19 @@ public struct Conditions: Sendable, Equatable {
     )
   }
 
+  /// Returns these conditions with the temperature replaced, keeping their source and period.
+  func replacingTemperature(with temperature: Measurement<UnitTemperature>) -> Self {
+    .init(
+      validTime: validTime,
+      source: source,
+      windDirection: windDirection,
+      windSpeed: windSpeed,
+      temperature: temperature,
+      dewpoint: dewpoint,
+      seaLevelPressure: seaLevelPressure
+    )
+  }
+
   /// Returns the temperature at the given elevation, using ISA lapse rate if not reported.
   public func temperature(at elevation: Measurement<UnitLength>) -> Measurement<UnitTemperature> {
     if source == .ISA {
