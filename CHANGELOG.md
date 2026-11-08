@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-11-08
+
+### Fixed
+
+- A temperature search for an aircraft whose manual sets no maximum temperature, such as the
+  SR22, reports the edge of the tables (`afmData`) as what stops it, not a temperature limit
+
 ## [2.0.0] - 2026-11-08
 
 ### Added

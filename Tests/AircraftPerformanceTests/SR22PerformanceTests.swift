@@ -211,6 +211,17 @@ struct SR22PerformanceTests {
   }
 
   @Test
+  func `a temperature search without a maximum temperature stops at the tables' edge`() throws {
+    let limit = try Self.calculator().maxTakeoffTemperature(
+      conditions: Helper.createTestConditions(temperature: 15),
+      weight: .init(value: 2900, unit: .pounds),
+      runway: Helper.createTestRunway()
+    )
+    #expect(limit.bindingConstraint == .AFMData)
+    #expect(limit.limit == .init(value: 40, unit: .celsius))
+  }
+
+  @Test
   func `the tabulated weights come from the ground run tables`() throws {
     let aircraft = Aircraft.sr22(Self.base)
     #expect(
