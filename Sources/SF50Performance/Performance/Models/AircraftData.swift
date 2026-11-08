@@ -10,6 +10,7 @@ import Foundation
 /// takes the rest from the G2's.
 struct AircraftData: Sendable {
   private static let dataDirectoryName = "Data",
+    packageName = "sf50",
     regressionsDirectoryName = "regressions",
     tableExtension = "csv",
     equationExtension = "json"
@@ -71,12 +72,13 @@ struct AircraftData: Sendable {
     }
   }
 
-  /// The bundled `Data` directory holding every data set and the residuals.
+  /// The bundled SF50 data package, holding every data set and the residuals.
   static func dataDirectory() throws -> URL {
     guard let resources = Bundle.module.resourceURL else {
       throw PerformanceDataError.missingResource(path: dataDirectoryName)
     }
     return resources.appending(component: dataDirectoryName, directoryHint: .isDirectory)
+      .appending(component: packageName, directoryHint: .isDirectory)
   }
 
   private static func loadTables(in directory: URL) throws -> [String: DataTable] {

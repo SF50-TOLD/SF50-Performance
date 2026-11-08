@@ -82,6 +82,22 @@ Manual and its supplements, which are copyright Cirrus Design Corporation. The r
 equations and residuals are fitted to those tables. They are included so that the models can be
 checked against the manual; they are not a substitute for it.
 
+Each aircraft's data is a data package published by
+[Data-Extraction](https://github.com/SF50-TOLD/Data-Extraction) (format described in its
+`docs/data-package.md`) and mirrored unchanged into `Data/<aircraft>/`. Its `manifest.json`
+records the generator version and each source document, and each document directory's
+`source.json` records the PDF it was extracted from.
+
+To refresh the data, check out Data-Extraction beside this repository (or set
+`DATA_EXTRACTION_DIR`), then run:
+
+```sh
+script/update-data          # mirror every package, deleting files a package no longer has
+script/update-data --check  # change nothing; exit non-zero if any package is out of date
+```
+
+Review the diff and commit it. Run `script/update-data --check` before tagging a release.
+
 ## License
 
 MIT; see [LICENSE](LICENSE). The license covers this package's code, not the AFM content

@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#
+# Mirrors Data-Extraction's data packages into the bundled Data directory.
+#
+# Usage: script/update-data [--check] [aircraft...]
+#
+#   --check   Report what would change and exit non-zero if anything would, changing nothing.
+#   aircraft  Package names to mirror (default: every package bundled here).
+#
+# DATA_EXTRACTION_DIR names the Data-Extraction checkout (default: ../Data-Extraction). Its
+# `afm` command runs from there, in the Python environment its .python-version selects.
+
+set -euo pipefail
+
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+data_dir="$repo_root/Sources/SF50Performance/Data"
+extraction_dir=${DATA_EXTRACTION_DIR:-"$repo_root/../Data-Extraction"}
+default_aircraft=(sf50)
+
+check=false
+aircraft=()
+for argument in "$@"; do
+  case "$argument" in
+    --check) check=true ;;
+    -h | --help)
+      sed -n '3,11p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+    -*)
+      echo "Unknown option: $argument" >&2
+      exit 64
+      ;;
+    *) aircraft+=("$argument") ;;
+  esac
+done
+[[ ${#aircraft[@]} -gt 0 ]] || aircraft=("${default_aircraft[@]}")
+
+if [[ ! -d "$extraction_dir/data" ]]; then
+  echo "No Data-Extraction checkout at $extraction_dir; set DATA_EXTRACTION_DIR." >&2
+  exit 66
+fi
+
+afm() {
+  (cd "$extraction_dir" && pyenv exec afm "$@")
+}
+
+stale=()
+for name in "${aircraft[@]}"; do
+  destination="$data_dir/$name"
+  echo "== $name"
+  if $check; then
+    report=$(afm export "$name" "$destination" --dry-run -q)
+    echo "$report"
+    grep -q '^0 files to copy, 0 not in the package$' <<<"$report" || stale+=("$name")
+  else
+    afm export "$name" "$destination" --delete -q
+  fi
+done
+
+if [[ ${#stale[@]} -gt 0 ]]; then
+  echo "Out of date with Data-Extraction: ${stale[*]}. Run script/update-data and commit." >&2
+  exit 1
+fi

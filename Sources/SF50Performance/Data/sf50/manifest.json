@@ -1,0 +1,584 @@
+{
+  "format": 1,
+  "generator": "afm-extraction 2.0.0",
+  "aircraft": {
+    "name": "sf50",
+    "title": "Cirrus SF50 Vision Jet"
+  },
+  "equation_format": "1.0",
+  "documents": {
+    "g1": {
+      "title": "G1 AFM (Perspective Touch, FL280 ceiling)",
+      "kind": "base",
+      "part_number": "31452-001",
+      "revision": "A1",
+      "applies_to": [],
+      "excludes": [],
+      "sha256": "8e1fd5bd45098e285edaae45def3accab8409c2c49e33d29b5e555ce57bae5f8",
+      "errata": []
+    },
+    "g2": {
+      "title": "G2/G3 AFM",
+      "kind": "base",
+      "part_number": "31452-002",
+      "revision": "Reissue A, Revision A1 (29 Oct 2025)",
+      "applies_to": [],
+      "excludes": [],
+      "sha256": "09cb5b894ad83c465ba8d97475b6c4567c0b90796e44f857067d88531c0d26c0",
+      "errata": []
+    },
+    "g2+": {
+      "title": "AFM Supplement: Updated Thrust Schedule (26000-004 on the data plate, or SB5X-72-01 complied with)",
+      "kind": "supplement",
+      "part_number": "31452-111",
+      "revision": "Revision 1 (10 Feb 2022)",
+      "applies_to": [
+        "g2"
+      ],
+      "excludes": [],
+      "sha256": "e579253b820c94d1ad60c086196a2a0c705d285ce5b11d211159b8d118cc11b4",
+      "errata": []
+    }
+  },
+  "configurations": {
+    "g1": {
+      "base": "g1",
+      "supplements": [],
+      "tables": {
+        "enroute climb/ice contaminated/gradient.csv": "g1",
+        "enroute climb/ice contaminated/rate.csv": "g1",
+        "enroute climb/ice contaminated/speed.csv": "g1",
+        "enroute climb/normal/gradient.csv": "g1",
+        "enroute climb/normal/rate.csv": "g1",
+        "enroute climb/normal/speed.csv": "g1",
+        "enroute obstacle climb/ice/gradient.csv": "g1",
+        "enroute obstacle climb/ice/rate.csv": "g1",
+        "enroute obstacle climb/normal/gradient.csv": "g1",
+        "enroute obstacle climb/normal/rate.csv": "g1",
+        "landing/100/ground run - downhill factor.csv": "g1",
+        "landing/100/ground run - headwind factor.csv": "g1",
+        "landing/100/ground run - tailwind factor.csv": "g1",
+        "landing/100/ground run - uphill factor.csv": "g1",
+        "landing/100/ground run.csv": "g1",
+        "landing/100/total distance - headwind factor.csv": "g1",
+        "landing/100/total distance - tailwind factor.csv": "g1",
+        "landing/100/total distance - unpaved factor.csv": "g1",
+        "landing/100/total distance.csv": "g1",
+        "landing/50 ice/ground run - downhill factor.csv": "g1",
+        "landing/50 ice/ground run - headwind factor.csv": "g1",
+        "landing/50 ice/ground run - tailwind factor.csv": "g1",
+        "landing/50 ice/ground run - uphill factor.csv": "g1",
+        "landing/50 ice/ground run.csv": "g1",
+        "landing/50 ice/total distance - headwind factor.csv": "g1",
+        "landing/50 ice/total distance - tailwind factor.csv": "g1",
+        "landing/50 ice/total distance - unpaved factor.csv": "g1",
+        "landing/50 ice/total distance.csv": "g1",
+        "landing/50/ground run - downhill factor.csv": "g1",
+        "landing/50/ground run - headwind factor.csv": "g1",
+        "landing/50/ground run - tailwind factor.csv": "g1",
+        "landing/50/ground run - uphill factor.csv": "g1",
+        "landing/50/ground run.csv": "g1",
+        "landing/50/total distance - headwind factor.csv": "g1",
+        "landing/50/total distance - tailwind factor.csv": "g1",
+        "landing/50/total distance - unpaved factor.csv": "g1",
+        "landing/50/total distance.csv": "g1",
+        "landing/contamination/compact snow.csv": "g1",
+        "landing/contamination/dry snow.csv": "g1",
+        "landing/contamination/slush, wet snow.csv": "g1",
+        "landing/contamination/water.csv": "g1",
+        "landing/rwycc_ldf_grooved.csv": "g1",
+        "landing/rwycc_ldf_smooth.csv": "g1",
+        "takeoff climb/gradient.csv": "g1",
+        "takeoff climb/rate.csv": "g1",
+        "takeoff/ground run - downhill factor.csv": "g1",
+        "takeoff/ground run - headwind factor.csv": "g1",
+        "takeoff/ground run - tailwind factor.csv": "g1",
+        "takeoff/ground run - uphill factor.csv": "g1",
+        "takeoff/ground run.csv": "g1",
+        "takeoff/total distance - headwind factor.csv": "g1",
+        "takeoff/total distance - tailwind factor.csv": "g1",
+        "takeoff/total distance - unpaved factor.csv": "g1",
+        "takeoff/total distance.csv": "g1",
+        "vref/100.csv": "g1",
+        "vref/50 ice.csv": "g1",
+        "vref/50.csv": "g1",
+        "vref/up ice.csv": "g1",
+        "vref/up.csv": "g1"
+      },
+      "notes": []
+    },
+    "g2": {
+      "base": "g2",
+      "supplements": [],
+      "tables": {
+        "enroute climb/ice contaminated/gradient.csv": "g2",
+        "enroute climb/ice contaminated/rate.csv": "g2",
+        "enroute climb/ice contaminated/speed.csv": "g2",
+        "enroute climb/normal/gradient.csv": "g2",
+        "enroute climb/normal/rate.csv": "g2",
+        "enroute climb/normal/speed.csv": "g2",
+        "enroute obstacle climb/ice/gradient.csv": "g2",
+        "enroute obstacle climb/ice/rate.csv": "g2",
+        "enroute obstacle climb/normal/gradient.csv": "g2",
+        "enroute obstacle climb/normal/rate.csv": "g2",
+        "landing/100/ground run - downhill factor.csv": "g2",
+        "landing/100/ground run - headwind factor.csv": "g2",
+        "landing/100/ground run - tailwind factor.csv": "g2",
+        "landing/100/ground run - uphill factor.csv": "g2",
+        "landing/100/ground run.csv": "g2",
+        "landing/100/total distance - headwind factor.csv": "g2",
+        "landing/100/total distance - tailwind factor.csv": "g2",
+        "landing/100/total distance - unpaved factor.csv": "g2",
+        "landing/100/total distance.csv": "g2",
+        "landing/50 ice/ground run - downhill factor.csv": "g2",
+        "landing/50 ice/ground run - headwind factor.csv": "g2",
+        "landing/50 ice/ground run - tailwind factor.csv": "g2",
+        "landing/50 ice/ground run - uphill factor.csv": "g2",
+        "landing/50 ice/ground run.csv": "g2",
+        "landing/50 ice/total distance - headwind factor.csv": "g2",
+        "landing/50 ice/total distance - tailwind factor.csv": "g2",
+        "landing/50 ice/total distance - unpaved factor.csv": "g2",
+        "landing/50 ice/total distance.csv": "g2",
+        "landing/50/ground run - downhill factor.csv": "g2",
+        "landing/50/ground run - headwind factor.csv": "g2",
+        "landing/50/ground run - tailwind factor.csv": "g2",
+        "landing/50/ground run - uphill factor.csv": "g2",
+        "landing/50/ground run.csv": "g2",
+        "landing/50/total distance - headwind factor.csv": "g2",
+        "landing/50/total distance - tailwind factor.csv": "g2",
+        "landing/50/total distance - unpaved factor.csv": "g2",
+        "landing/50/total distance.csv": "g2",
+        "landing/contamination/compact snow.csv": "g2",
+        "landing/contamination/dry snow.csv": "g2",
+        "landing/contamination/slush, wet snow.csv": "g2",
+        "landing/contamination/water.csv": "g2",
+        "takeoff climb/gradient.csv": "g2",
+        "takeoff climb/rate.csv": "g2",
+        "takeoff/ground run - downhill factor.csv": "g2",
+        "takeoff/ground run - headwind factor.csv": "g2",
+        "takeoff/ground run - tailwind factor.csv": "g2",
+        "takeoff/ground run - uphill factor.csv": "g2",
+        "takeoff/ground run.csv": "g2",
+        "takeoff/total distance - headwind factor.csv": "g2",
+        "takeoff/total distance - tailwind factor.csv": "g2",
+        "takeoff/total distance - unpaved factor.csv": "g2",
+        "takeoff/total distance.csv": "g2",
+        "vref/100.csv": "g2",
+        "vref/50 ice.csv": "g2",
+        "vref/50.csv": "g2",
+        "vref/up ice.csv": "g2",
+        "vref/up.csv": "g2"
+      },
+      "notes": []
+    },
+    "g2+": {
+      "base": "g2",
+      "supplements": [
+        "g2+"
+      ],
+      "tables": {
+        "enroute climb/ice contaminated/gradient.csv": "g2",
+        "enroute climb/ice contaminated/rate.csv": "g2",
+        "enroute climb/ice contaminated/speed.csv": "g2",
+        "enroute climb/normal/gradient.csv": "g2",
+        "enroute climb/normal/rate.csv": "g2",
+        "enroute climb/normal/speed.csv": "g2",
+        "enroute obstacle climb/ice/gradient.csv": "g2",
+        "enroute obstacle climb/ice/rate.csv": "g2",
+        "enroute obstacle climb/normal/gradient.csv": "g2",
+        "enroute obstacle climb/normal/rate.csv": "g2",
+        "landing/100/ground run - downhill factor.csv": "g2+",
+        "landing/100/ground run - headwind factor.csv": "g2+",
+        "landing/100/ground run - tailwind factor.csv": "g2+",
+        "landing/100/ground run - uphill factor.csv": "g2+",
+        "landing/100/ground run.csv": "g2+",
+        "landing/100/total distance - headwind factor.csv": "g2+",
+        "landing/100/total distance - tailwind factor.csv": "g2+",
+        "landing/100/total distance - unpaved factor.csv": "g2+",
+        "landing/100/total distance.csv": "g2+",
+        "landing/50 ice/ground run - downhill factor.csv": "g2",
+        "landing/50 ice/ground run - headwind factor.csv": "g2",
+        "landing/50 ice/ground run - tailwind factor.csv": "g2",
+        "landing/50 ice/ground run - uphill factor.csv": "g2",
+        "landing/50 ice/ground run.csv": "g2",
+        "landing/50 ice/total distance - headwind factor.csv": "g2",
+        "landing/50 ice/total distance - tailwind factor.csv": "g2",
+        "landing/50 ice/total distance - unpaved factor.csv": "g2",
+        "landing/50 ice/total distance.csv": "g2",
+        "landing/50/ground run - downhill factor.csv": "g2+",
+        "landing/50/ground run - headwind factor.csv": "g2+",
+        "landing/50/ground run - tailwind factor.csv": "g2+",
+        "landing/50/ground run - uphill factor.csv": "g2+",
+        "landing/50/ground run.csv": "g2+",
+        "landing/50/total distance - headwind factor.csv": "g2+",
+        "landing/50/total distance - tailwind factor.csv": "g2+",
+        "landing/50/total distance - unpaved factor.csv": "g2+",
+        "landing/50/total distance.csv": "g2+",
+        "landing/contamination/compact snow.csv": "g2",
+        "landing/contamination/dry snow.csv": "g2",
+        "landing/contamination/slush, wet snow.csv": "g2",
+        "landing/contamination/water.csv": "g2",
+        "takeoff climb/gradient.csv": "g2+",
+        "takeoff climb/rate.csv": "g2+",
+        "takeoff/ground run - downhill factor.csv": "g2+",
+        "takeoff/ground run - headwind factor.csv": "g2+",
+        "takeoff/ground run - tailwind factor.csv": "g2+",
+        "takeoff/ground run - uphill factor.csv": "g2+",
+        "takeoff/ground run.csv": "g2+",
+        "takeoff/total distance - headwind factor.csv": "g2+",
+        "takeoff/total distance - tailwind factor.csv": "g2+",
+        "takeoff/total distance - unpaved factor.csv": "g2+",
+        "takeoff/total distance.csv": "g2+",
+        "vref/100.csv": "g2",
+        "vref/50 ice.csv": "g2",
+        "vref/50.csv": "g2",
+        "vref/up ice.csv": "g2",
+        "vref/up.csv": "g2"
+      },
+      "notes": []
+    }
+  },
+  "precedence": [],
+  "equations": {
+    "takeoff-ground-run": {
+      "table": "takeoff/ground run.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "takeoff-total-distance": {
+      "table": "takeoff/total distance.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "takeoff-climb-gradient": {
+      "table": "takeoff climb/gradient.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "takeoff-climb-rate": {
+      "table": "takeoff climb/rate.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "landing-run-flaps100": {
+      "table": "landing/100/ground run.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "landing-distance-flaps100": {
+      "table": "landing/100/total distance.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "landing-run-flaps50": {
+      "table": "landing/50/ground run.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "landing-distance-flaps50": {
+      "table": "landing/50/total distance.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "landing-run-flaps50ice": {
+      "table": "landing/50 ice/ground run.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "landing-distance-flaps50ice": {
+      "table": "landing/50 ice/total distance.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-climb-gradient-normal": {
+      "table": "enroute climb/normal/gradient.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-climb-rate-normal": {
+      "table": "enroute climb/normal/rate.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-climb-speed-normal": {
+      "table": "enroute climb/normal/speed.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-climb-gradient-ice": {
+      "table": "enroute climb/ice contaminated/gradient.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-climb-rate-ice": {
+      "table": "enroute climb/ice contaminated/rate.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-climb-speed-ice": {
+      "table": "enroute climb/ice contaminated/speed.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-obstacle-climb-rate-normal": {
+      "table": "enroute obstacle climb/normal/rate.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-obstacle-climb-gradient-normal": {
+      "table": "enroute obstacle climb/normal/gradient.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-obstacle-climb-rate-ice": {
+      "table": "enroute obstacle climb/ice/rate.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-obstacle-climb-gradient-ice": {
+      "table": "enroute obstacle climb/ice/gradient.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    }
+  }
+}
