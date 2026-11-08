@@ -53,6 +53,12 @@ extension PerformanceCalculator {
   /// The temperature step the temperature searches move in, in degrees Celsius.
   private static let temperatureSearchIncrementC = 1.0
 
+  /// What stops a temperature search that reaches the top of its range: the manual's maximum
+  /// operating temperature, or where it sets none, the edge of its tables.
+  private var temperatureCeilingConstraint: BindingConstraint {
+    settings.limitations.maxTemperature == nil ? .AFMData : .temperatureLimit
+  }
+
   /**
    * The highest takeoff weight the runway, the AFM and an obstacle allow.
    *
@@ -373,7 +379,7 @@ extension PerformanceCalculator {
       ) { try verdict(.init(value: $0, unit: .celsius)) }
     return .init(
       limit: search.highest.map { .init(value: $0, unit: .celsius) },
-      bindingConstraint: search.violation ?? .temperatureLimit,
+      bindingConstraint: search.violation ?? temperatureCeilingConstraint,
       reliesOnOffscaleData: search.reliesOnOffscaleData
     )
   }
