@@ -179,6 +179,16 @@ struct SR22PerformanceTests {
     )
   }
 
+  @Test
+  func `the tabulated weights come from the ground run tables`() throws {
+    let aircraft = Aircraft.sr22(Self.base)
+    #expect(
+      try aircraft.tabulatedWeights(for: .takeoff)
+        == Measurement(value: 2900, unit: .pounds)...Measurement(value: 3400, unit: .pounds)
+    )
+    #expect(try aircraft.tabulatedWeights(for: .landing, flapSetting: .flaps50) == nil)
+  }
+
   // MARK: - Climb
 
   @Test

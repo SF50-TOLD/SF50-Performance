@@ -31,6 +31,38 @@ public enum Aircraft: Sendable, Hashable, Codable {
     }
   }
 
+  /// The weights the manual's takeoff or landing ground run table covers.
+  ///
+  /// A limit search can start from the lowest; below it the tables hold the lowest weight's
+  /// figures.
+  ///
+  /// - Parameters:
+  ///   - operation: Takeoff or landing.
+  ///   - flapSetting: The landing flap setting; ignored for takeoff.
+  /// - Returns: The range, or `nil` if the manual has no table for the operation and flaps.
+  /// - Throws: ``PerformanceDataError`` if the bundled data could not be read.
+  public func tabulatedWeights(
+    for operation: Operation,
+    flapSetting: FlapSetting = .flaps100
+  ) throws -> ClosedRange<Measurement<UnitMass>>? {
+    let definition = self.definition,
+      loader = DataTableLoader(data: try definition.data())
+    let table: DataTable
+    switch operation {
+      case .takeoff: table = try loader.loadTakeoffRunData()
+      case .landing:
+        guard definition.landingFlapSettings.contains(flapSetting) else { return nil }
+        table = try loader.loadLandingRunData(
+          landingPrefix: loader.tablePrefix(
+            for: definition.landingTables(for: flapSetting).flapSetting
+          )
+        )
+    }
+    return table.domain(of: .weight).map {
+      .init(value: $0.lowerBound, unit: .pounds)...(.init(value: $0.upperBound, unit: .pounds))
+    }
+  }
+
   /// The manuals the aircraft's figures come from, and the guidance that goes with them.
   ///
   /// - Throws: ``PerformanceDataError`` if the bundled data could not be read.

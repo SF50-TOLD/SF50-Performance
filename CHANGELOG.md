@@ -12,6 +12,8 @@
   `balkedLandingClimbRateFtMin`), and `PerformanceCalculator.timeFuelDistanceToClimb(from:to:leanOfPeak:)`
 - Wet unpaved runway and air conditioner corrections (`AdjustmentKind.wetUnpavedSurface`,
   `.airConditioner`, `Configuration.airConditionerOn`, and `airConditionerOn:` on `takeoff`)
+- `Aircraft.tabulatedWeights(for:flapSetting:)`, the weights a manual's takeoff or landing
+  ground run table covers, for starting a weight search
 - One-sided limit notes (`airportElevationAboveLimit`, `temperatureBelowLimit` and so on) for
   manuals that set only one bound
 
