@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import SF50Performance
+@testable import AircraftPerformance
 
 /// Comprehensive tests for runway contamination effects on landing performance.
 ///

@@ -1,4 +1,4 @@
-# SF50Performance
+# AircraftPerformance
 
 [![CI](https://github.com/SF50-TOLD/SF50-Performance/actions/workflows/ci.yml/badge.svg)](https://github.com/SF50-TOLD/SF50-Performance/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -41,12 +41,12 @@ dependencies: [
 ]
 ```
 
-Then add `SF50Performance` to your target's dependencies.
+Then add `AircraftPerformance` to your target's dependencies.
 
 ## Usage
 
 ```swift
-import SF50Performance
+import AircraftPerformance
 
 let calculator = PerformanceCalculator(settings: .init(aircraftType: .g2Plus))
 let conditions = Conditions(
@@ -77,7 +77,7 @@ figure.
 
 ## AFM data
 
-The tables in `Sources/SF50Performance/Data` are digitized from the Cirrus SF50 Airplane Flight
+The tables in `Sources/AircraftPerformance/Data` are digitized from the Cirrus SF50 Airplane Flight
 Manual and its supplements, which are copyright Cirrus Design Corporation. The regression
 equations and residuals are fitted to those tables. They are included so that the models can be
 checked against the manual; they are not a substitute for it.

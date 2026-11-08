@@ -223,7 +223,7 @@ public struct Conditions: Sendable, Equatable {
       .converted(to: .inchesOfMercury).value
     let tempDegF = temperature(at: elevation).converted(to: .fahrenheit).value
 
-    let DA = SF50Performance.densityAltitude(
+    let DA = AircraftPerformance.densityAltitude(
       stationPressureInHg: stationPressureInHg,
       temperatureF: tempDegF
     )

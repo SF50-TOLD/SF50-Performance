@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import SF50Performance
+@testable import AircraftPerformance
 
 /// Validates that a regression model's predictions fall within acceptable error bounds
 /// for the training data. Allows up to 20% of points to fall outside 95% CI, as

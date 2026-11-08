@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import SF50Performance
+@testable import AircraftPerformance
 
 /// A snapshot has to carry the same distances a calculation compares against — NOTAM shortening
 /// included, and the run kept distinct from the distance.
