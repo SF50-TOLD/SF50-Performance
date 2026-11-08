@@ -26,45 +26,28 @@ final class RegressionPerformanceModel: BasePerformanceModel {
   private let takeoffClimbGradientEquation: RegressionEquation
   private let takeoffClimbRateEquation: RegressionEquation
 
-  // En Route Climb
-  private let enrouteClimbGradientNormalEquation: RegressionEquation
-  private let enrouteClimbRateNormalEquation: RegressionEquation
-  private let enrouteClimbSpeedNormalEquation: RegressionEquation
-  private let enrouteClimbGradientIceEquation: RegressionEquation
-  private let enrouteClimbRateIceEquation: RegressionEquation
-  private let enrouteClimbSpeedIceEquation: RegressionEquation
+  // En Route Climb, on the schedule the configuration flies
+  private let enrouteClimbGradientEquation: RegressionEquation?
+  private let enrouteClimbRateEquation: RegressionEquation?
+  private let enrouteClimbSpeedEquation: RegressionEquation?
 
-  // Landing
-  private let landingRunFlaps100Equation: RegressionEquation
-  private let landingRunFlaps50Equation: RegressionEquation
-  private let landingRunFlaps50IceEquation: RegressionEquation
-  private let landingDistanceFlaps100Equation: RegressionEquation
-  private let landingDistanceFlaps50Equation: RegressionEquation
-  private let landingDistanceFlaps50IceEquation: RegressionEquation
+  // Landing, for the flap setting's tables
+  private let landingRunEquation: RegressionEquation?
+  private let landingDistanceEquation: RegressionEquation?
+
+  // Balked Landing
+  private let balkedLandingClimbGradientEquation: RegressionEquation?
+  private let balkedLandingClimbRateEquation: RegressionEquation?
 
   // Go-Around
+  private let hasGoAroundClassifier: Bool
   private let goAroundEquation: RegressionEquation?
 
   // VREF
-  private let vrefEquation: RegressionEquation
+  private let vrefEquation: RegressionEquation?
 
-  // Takeoff Adjustment Factors
-  private let takeoffRunHeadwindFactorEquation: RegressionEquation,
-    takeoffRunTailwindFactorEquation: RegressionEquation,
-    takeoffRunUphillFactorEquation: RegressionEquation,
-    takeoffRunDownhillFactorEquation: RegressionEquation,
-    takeoffDistanceHeadwindFactorEquation: RegressionEquation,
-    takeoffDistanceTailwindFactorEquation: RegressionEquation,
-    takeoffDistanceUnpavedFactorEquation: RegressionEquation
-
-  // Landing Adjustment Factors
-  private let landingRunHeadwindFactorEquation: RegressionEquation,
-    landingRunTailwindFactorEquation: RegressionEquation,
-    landingRunUphillFactorEquation: RegressionEquation,
-    landingRunDownhillFactorEquation: RegressionEquation,
-    landingDistanceHeadwindFactorEquation: RegressionEquation,
-    landingDistanceTailwindFactorEquation: RegressionEquation,
-    landingDistanceUnpavedFactorEquation: RegressionEquation
+  /// Each correction's equation, by the distance it corrects.
+  private let correctionFactorEquations: [DistanceTarget: [CorrectionFactor: RegressionEquation]]
 
   // MARK: - Bounds Checking
 
@@ -105,7 +88,7 @@ final class RegressionPerformanceModel: BasePerformanceModel {
   // MARK: - VREF
 
   override var VrefKts: Value<Double> {
-    evaluate(vrefEquation)
+    vrefEquation.map(evaluate) ?? .notAvailable
   }
 
   // MARK: - Takeoff Climb
@@ -121,27 +104,25 @@ final class RegressionPerformanceModel: BasePerformanceModel {
   // MARK: - En Route Climb
 
   override var enrouteClimbGradientFtNM: Value<Double> {
-    evaluateEnrouteClimb(
-      configuration.iceProtection
-        ? enrouteClimbGradientIceEquation : enrouteClimbGradientNormalEquation,
-      for: .gradient
-    )
+    evaluateEnrouteClimb(enrouteClimbGradientEquation, for: .gradient)
   }
 
   override var enrouteClimbRateFtMin: Value<Double> {
-    evaluateEnrouteClimb(
-      configuration.iceProtection
-        ? enrouteClimbRateIceEquation : enrouteClimbRateNormalEquation,
-      for: .rate
-    )
+    evaluateEnrouteClimb(enrouteClimbRateEquation, for: .rate)
   }
 
   override var enrouteClimbSpeedKIAS: Value<Double> {
-    evaluateEnrouteClimb(
-      configuration.iceProtection
-        ? enrouteClimbSpeedIceEquation : enrouteClimbSpeedNormalEquation,
-      for: .speed
-    )
+    evaluateEnrouteClimb(enrouteClimbSpeedEquation, for: .speed)
+  }
+
+  // MARK: - Balked Landing Climb
+
+  override var balkedLandingClimbGradientFtNM: Value<Double> {
+    balkedLandingClimbGradientEquation.map(evaluate) ?? .notAvailable
+  }
+
+  override var balkedLandingClimbRateFtMin: Value<Double> {
+    balkedLandingClimbRateEquation.map(evaluate) ?? .notAvailable
   }
 
   // MARK: - Go-Around Climb Gradient
@@ -153,6 +134,7 @@ final class RegressionPerformanceModel: BasePerformanceModel {
   /// wherever that table reaches. Past its hot or high edge the AFM says nothing, and the model
   /// answers as the tabular one does, that the gradient is not met.
   override var meetsGoAroundClimbGradient: Value<Bool> {
+    guard hasGoAroundClassifier else { return .notAvailable }
     guard let goAroundEquation else { return .value(!landingInputsOffscaleHigh) }
     return evaluateBool(goAroundEquation)
   }
@@ -160,24 +142,13 @@ final class RegressionPerformanceModel: BasePerformanceModel {
   // MARK: - Landing Base Values
 
   private var landingRunBaseFt: Value<Double> {
-    switch configuration.flapSetting {
-      case .flaps100: evaluate(landingRunFlaps100Equation)
-      case .flaps50: evaluate(landingRunFlaps50Equation)
-      case .flaps50Ice: evaluate(landingRunFlaps50IceEquation)
-      case .flapsUp, .flapsUpIce: .notAvailable
-    }
+    guard landingTables.hasGroundRun, let landingRunEquation else { return .notAvailable }
+    return evaluate(landingRunEquation)
   }
 
   private var landingDistanceBaseFt: Value<Double> {
-    switch configuration.flapSetting {
-      case .flaps100: evaluate(landingDistanceFlaps100Equation)
-      case .flaps50, .flapsUp: evaluate(landingDistanceFlaps50Equation) * flapsUpFactor
-      case .flaps50Ice, .flapsUpIce: evaluate(landingDistanceFlaps50IceEquation) * flapsUpFactor
-    }
-  }
-
-  private var flapsUpFactor: Double {
-    landingTables.totalDistanceFactor ?? 1
+    guard let landingDistanceEquation else { return .notAvailable }
+    return evaluate(landingDistanceEquation) * (landingTables.totalDistanceFactor ?? 1)
   }
 
   // MARK: - Initializer
@@ -190,9 +161,12 @@ final class RegressionPerformanceModel: BasePerformanceModel {
     aircraft: Aircraft
   ) throws {
     let definition = aircraft.definition,
+      capabilities = definition.capabilities,
       data = try definition.data()
-    landingTables = definition.landingTables(for: configuration.flapSetting)
-    self.boundsChecker = try BoundsChecker(loader: DataTableLoader(data: data))
+    let landingTables = definition.landingTables(for: configuration.flapSetting)
+    self.landingTables = landingTables
+    let hasLandingFigures = definition.landingFlapSettings.contains(configuration.flapSetting)
+    self.boundsChecker = try BoundsChecker(data: data, definition: definition)
 
     let loader = RegressionEquationLoader(data: data)
 
@@ -201,62 +175,54 @@ final class RegressionPerformanceModel: BasePerformanceModel {
     takeoffClimbGradientEquation = try loader.loadTakeoffClimbGradientEquation()
     takeoffClimbRateEquation = try loader.loadTakeoffClimbRateEquation()
 
-    enrouteClimbGradientNormalEquation = try loader.loadEnrouteClimbGradientEquation(
-      iceContaminated: false
-    )
-    enrouteClimbRateNormalEquation = try loader.loadEnrouteClimbRateEquation(iceContaminated: false)
-    enrouteClimbSpeedNormalEquation = try loader.loadEnrouteClimbSpeedEquation(
-      iceContaminated: false
-    )
-    enrouteClimbGradientIceEquation = try loader.loadEnrouteClimbGradientEquation(
-      iceContaminated: true
-    )
-    enrouteClimbRateIceEquation = try loader.loadEnrouteClimbRateEquation(iceContaminated: true)
-    enrouteClimbSpeedIceEquation = try loader.loadEnrouteClimbSpeedEquation(iceContaminated: true)
+    let enrouteNames = definition.enrouteClimbNames(iceContaminated: configuration.iceProtection)
+    enrouteClimbGradientEquation = try enrouteNames.map {
+      try loader.loadEnrouteClimbGradientEquation(names: $0)
+    }
+    enrouteClimbRateEquation = try enrouteNames.map {
+      try loader.loadEnrouteClimbRateEquation(names: $0)
+    }
+    enrouteClimbSpeedEquation = try enrouteNames.map {
+      try loader.loadEnrouteClimbSpeedEquation(names: $0)
+    }
 
-    landingRunFlaps100Equation = try loader.loadLandingRunEquation(flapSetting: .flaps100)
-    landingRunFlaps50Equation = try loader.loadLandingRunEquation(flapSetting: .flaps50)
-    landingRunFlaps50IceEquation = try loader.loadLandingRunEquation(flapSetting: .flaps50Ice)
-    landingDistanceFlaps100Equation = try loader.loadLandingDistanceEquation(flapSetting: .flaps100)
-    landingDistanceFlaps50Equation = try loader.loadLandingDistanceEquation(flapSetting: .flaps50)
-    landingDistanceFlaps50IceEquation = try loader.loadLandingDistanceEquation(
-      flapSetting: .flaps50Ice
-    )
+    landingRunEquation =
+      hasLandingFigures && landingTables.hasGroundRun
+      ? try loader.loadLandingRunEquation(flapSetting: landingTables.flapSetting) : nil
+    landingDistanceEquation =
+      hasLandingFigures
+      ? try loader.loadLandingDistanceEquation(flapSetting: landingTables.flapSetting) : nil
 
-    goAroundEquation = try loader.loadGoAroundClimbGradientEquation(
-      flapSetting: configuration.flapSetting
-    )
-    vrefEquation = try loader.loadVrefEquation(flapSetting: configuration.flapSetting)
+    let balkedLanding = capabilities.contains(.balkedLandingClimb)
+    balkedLandingClimbGradientEquation =
+      balkedLanding ? try loader.loadBalkedLandingClimbGradientEquation() : nil
+    balkedLandingClimbRateEquation =
+      balkedLanding ? try loader.loadBalkedLandingClimbRateEquation() : nil
 
-    takeoffRunHeadwindFactorEquation = try loader.loadTakeoffRunHeadwindFactorEquation()
-    takeoffRunTailwindFactorEquation = try loader.loadTakeoffRunTailwindFactorEquation()
-    takeoffRunUphillFactorEquation = try loader.loadTakeoffRunUphillFactorEquation()
-    takeoffRunDownhillFactorEquation = try loader.loadTakeoffRunDownhillFactorEquation()
-    takeoffDistanceHeadwindFactorEquation = try loader.loadTakeoffDistanceHeadwindFactorEquation()
-    takeoffDistanceTailwindFactorEquation = try loader.loadTakeoffDistanceTailwindFactorEquation()
-    takeoffDistanceUnpavedFactorEquation = try loader.loadTakeoffDistanceUnpavedFactorEquation()
+    hasGoAroundClassifier = capabilities.contains(.goAroundClimbGradient)
+    goAroundEquation =
+      hasGoAroundClassifier && hasLandingFigures
+      ? try loader.loadGoAroundClimbGradientEquation(flapSetting: configuration.flapSetting) : nil
+    vrefEquation =
+      capabilities.contains(.vref) && hasLandingFigures
+      ? try loader.loadVrefEquation(flapSetting: configuration.flapSetting) : nil
 
-    let landingFlapSetting = landingTables.flapSetting
-    landingRunHeadwindFactorEquation = try loader.loadLandingRunHeadwindFactorEquation(
-      flapSetting: landingFlapSetting
-    )
-    landingRunTailwindFactorEquation = try loader.loadLandingRunTailwindFactorEquation(
-      flapSetting: landingFlapSetting
-    )
-    landingRunUphillFactorEquation = try loader.loadLandingRunUphillFactorEquation(
-      flapSetting: landingFlapSetting
-    )
-    landingRunDownhillFactorEquation = try loader.loadLandingRunDownhillFactorEquation()
-    landingDistanceHeadwindFactorEquation = try loader.loadLandingDistanceHeadwindFactorEquation(
-      flapSetting: landingFlapSetting
-    )
-    landingDistanceTailwindFactorEquation = try loader.loadLandingDistanceTailwindFactorEquation(
-      flapSetting: landingFlapSetting
-    )
-    landingDistanceUnpavedFactorEquation = try loader.loadLandingDistanceUnpavedFactorEquation()
+    correctionFactorEquations = DistanceTarget.allCases.reduce(into: [:]) { equations, target in
+      equations[target] = CorrectionFactor.allCases.reduce(into: [:]) { factors, factor in
+        factors[factor] = loader.correctionFactorEquation(
+          factor,
+          for: target,
+          landingFlapSetting: landingTables.flapSetting
+        )
+      }
+    }
 
     super.init(conditions: conditions, configuration: configuration, runway: runway, notam: notam)
-    contaminationCalculator = try ContaminationCalculator(data: data, usesTables: false)
+    correctionScheme = definition.correctionScheme
+    correctsContamination = capabilities.contains(.contamination)
+    if correctsContamination {
+      contaminationCalculator = try ContaminationCalculator(data: data, usesTables: false)
+    }
   }
 
   // MARK: - Base Values
@@ -270,134 +236,18 @@ final class RegressionPerformanceModel: BasePerformanceModel {
     }
   }
 
-  // MARK: - Adjustment Multiplier
+  // MARK: - Correction Factors
 
-  override func adjustmentMultiplier(
-    for kind: AdjustmentKind,
-    target: DistanceTarget
-  ) -> Value<Double> {
-    switch (kind, target) {
-      // Takeoff Run
-      case (.headwind, .takeoffRun):
-        .value(
-          PerformanceAdjustments.windAdjustment(
-            factor: evaluateFactor(takeoffRunHeadwindFactorEquation),
-            wind: -headwind
-          )
-        )
-      case (.tailwind, .takeoffRun):
-        .value(
-          PerformanceAdjustments.windAdjustment(
-            factor: evaluateFactor(takeoffRunTailwindFactorEquation),
-            wind: tailwind
-          )
-        )
-      case (.uphillGradient, .takeoffRun):
-        .value(
-          PerformanceAdjustments.gradientAdjustment(
-            factor: evaluateFactor(takeoffRunUphillFactorEquation),
-            gradient: uphill
-          )
-        )
-      case (.downhillGradient, .takeoffRun):
-        .value(
-          PerformanceAdjustments.gradientAdjustment(
-            factor: evaluateFactor(takeoffRunDownhillFactorEquation),
-            gradient: -downhill
-          )
-        )
-
-      // Takeoff Distance
-      case (.headwind, .takeoffDistance):
-        .value(
-          PerformanceAdjustments.windAdjustment(
-            factor: evaluateFactor(takeoffDistanceHeadwindFactorEquation),
-            wind: -headwind
-          )
-        )
-      case (.tailwind, .takeoffDistance):
-        .value(
-          PerformanceAdjustments.windAdjustment(
-            factor: evaluateFactor(takeoffDistanceTailwindFactorEquation),
-            wind: tailwind
-          )
-        )
-      case (.unpavedSurface, .takeoffDistance):
-        .value(
-          PerformanceAdjustments.surfaceAdjustment(
-            factor: evaluateFactor(takeoffDistanceUnpavedFactorEquation)
-          )
-        )
-
-      // Landing Run
-      case (.headwind, .landingRun):
-        .value(
-          PerformanceAdjustments.windAdjustment(
-            factor: evaluateFactor(landingRunHeadwindFactorEquation),
-            wind: -headwind
-          )
-        )
-      case (.tailwind, .landingRun):
-        .value(
-          PerformanceAdjustments.windAdjustment(
-            factor: evaluateFactor(landingRunTailwindFactorEquation),
-            wind: tailwind
-          )
-        )
-      case (.uphillGradient, .landingRun):
-        .value(
-          PerformanceAdjustments.gradientAdjustment(
-            factor: evaluateFactor(landingRunUphillFactorEquation),
-            gradient: -uphill
-          )
-        )
-      case (.downhillGradient, .landingRun):
-        .value(
-          PerformanceAdjustments.gradientAdjustment(
-            factor: evaluateFactor(landingRunDownhillFactorEquation),
-            gradient: downhill
-          )
-        )
-
-      // Landing Distance
-      case (.headwind, .landingDistance):
-        .value(
-          PerformanceAdjustments.windAdjustment(
-            factor: evaluateFactor(landingDistanceHeadwindFactorEquation),
-            wind: -headwind
-          )
-        )
-      case (.tailwind, .landingDistance):
-        .value(
-          PerformanceAdjustments.windAdjustment(
-            factor: evaluateFactor(landingDistanceTailwindFactorEquation),
-            wind: tailwind
-          )
-        )
-      case (.unpavedSurface, .landingDistance):
-        .value(
-          PerformanceAdjustments.surfaceAdjustment(
-            factor: evaluateFactor(landingDistanceUnpavedFactorEquation)
-          )
-        )
-
-      default:
-        fatalError("Unexpected adjustment \(kind) for target \(target)")
-    }
+  override func correctionFactor(_ factor: CorrectionFactor, for target: DistanceTarget)
+    -> Value<Double>?
+  {
+    correctionFactorEquations[target]?[factor].map(evaluate)
   }
 }
 
 // MARK: - Equation Evaluation
 
 extension RegressionPerformanceModel {
-
-  /// Evaluates a factor equation and returns its raw numeric value.
-  private func evaluateFactor(_ equation: RegressionEquation) -> Double {
-    guard let value = evaluate(equation).nominal else {
-      preconditionFailure("Factor equation returned invalid result")
-    }
-    return value
-  }
 
   /// Evaluates a regression equation with the current input conditions.
   func evaluate(_ equation: RegressionEquation) -> Value<Double> {
@@ -418,9 +268,10 @@ extension RegressionPerformanceModel {
    * non-positive climb is nonsense wherever it comes from.
    */
   private func evaluateEnrouteClimb(
-    _ equation: RegressionEquation,
+    _ equation: RegressionEquation?,
     for quantity: BoundsChecker.EnrouteClimbQuantity
   ) -> Value<Double> {
+    guard let equation else { return .notAvailable }
     let status = boundsChecker.enrouteClimbBoundsStatus(
       for: quantity,
       weight: weight,

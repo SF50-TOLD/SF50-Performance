@@ -76,84 +76,53 @@ struct DataTableLoader {
 
   // MARK: - Enroute Climb Data Tables
 
-  func loadEnrouteClimbGradientData(iceContaminated: Bool) throws -> DataTable {
-    let subdir = iceContaminated ? "ice contaminated" : "normal"
-    return try loadDataTable(path: "enroute climb/\(subdir)/gradient.csv")
+  func loadEnrouteClimbGradientData(names: EnrouteClimbNames) throws -> DataTable {
+    try loadDataTable(path: "\(names.tableDirectory)/gradient.csv")
   }
 
-  func loadEnrouteClimbRateData(iceContaminated: Bool) throws -> DataTable {
-    let subdir = iceContaminated ? "ice contaminated" : "normal"
-    return try loadDataTable(path: "enroute climb/\(subdir)/rate.csv")
+  func loadEnrouteClimbRateData(names: EnrouteClimbNames) throws -> DataTable {
+    try loadDataTable(path: "\(names.tableDirectory)/rate.csv")
   }
 
-  func loadEnrouteClimbSpeedData(iceContaminated: Bool) throws -> DataTable {
-    let subdir = iceContaminated ? "ice contaminated" : "normal"
-    return try loadDataTable(path: "enroute climb/\(subdir)/speed.csv")
+  func loadEnrouteClimbSpeedData(names: EnrouteClimbNames) throws -> DataTable {
+    try loadDataTable(path: "\(names.tableDirectory)/speed.csv")
   }
 
-  // MARK: - Enroute Obstacle Climb Data Tables
-
-  func loadEnrouteObstacleClimbGradientData(iceContaminated: Bool) throws -> DataTable {
-    let subdir = iceContaminated ? "ice" : "normal"
-    return try loadDataTable(path: "enroute obstacle climb/\(subdir)/gradient.csv")
+  /// The en route obstacle climb gradient table, or `nil` for a schedule without one.
+  func loadEnrouteObstacleClimbGradientData(names: EnrouteClimbNames) throws -> DataTable? {
+    try names.obstacleTableDirectory.map { try loadDataTable(path: "\($0)/gradient.csv") }
   }
 
-  // MARK: - Adjustment Factor Data Tables
+  // MARK: - Climb Data Tables
 
-  func loadTakeoffRunHeadwindData() throws -> DataTable {
-    try loadDataTable(path: "takeoff/ground run - headwind factor.csv")
+  func loadTakeoffClimbSpeedData() throws -> DataTable {
+    try loadDataTable(path: "takeoff climb/speed.csv")
   }
 
-  func loadTakeoffRunTailwindData() throws -> DataTable {
-    try loadDataTable(path: "takeoff/ground run - tailwind factor.csv")
+  func loadBalkedLandingClimbGradientData() throws -> DataTable {
+    try loadDataTable(path: "balked landing/gradient.csv")
   }
 
-  func loadTakeoffRunDownhillData() throws -> DataTable {
-    try loadDataTable(path: "takeoff/ground run - downhill factor.csv")
+  func loadBalkedLandingClimbRateData() throws -> DataTable {
+    try loadDataTable(path: "balked landing/rate.csv")
   }
 
-  func loadTakeoffRunUphillData() throws -> DataTable {
-    try loadDataTable(path: "takeoff/ground run - uphill factor.csv")
-  }
+  // MARK: - Correction Factor Data Tables
 
-  func loadTakeoffDistanceHeadwindData() throws -> DataTable {
-    try loadDataTable(path: "takeoff/total distance - headwind factor.csv")
-  }
-
-  func loadTakeoffDistanceTailwindData() throws -> DataTable {
-    try loadDataTable(path: "takeoff/total distance - tailwind factor.csv")
-  }
-
-  func loadTakeoffDistanceUnpavedData() throws -> DataTable {
-    try loadDataTable(path: "takeoff/total distance - unpaved factor.csv")
-  }
-
-  func loadLandingRunHeadwindData(landingPrefix: String) throws -> DataTable {
-    try loadDataTable(path: "landing/\(landingPrefix)/ground run - headwind factor.csv")
-  }
-
-  func loadLandingRunTailwindData(landingPrefix: String) throws -> DataTable {
-    try loadDataTable(path: "landing/\(landingPrefix)/ground run - tailwind factor.csv")
-  }
-
-  func loadLandingRunDownhillData(landingPrefix: String) throws -> DataTable {
-    try loadDataTable(path: "landing/\(landingPrefix)/ground run - downhill factor.csv")
-  }
-
-  func loadLandingRunUphillData(landingPrefix: String) throws -> DataTable {
-    try loadDataTable(path: "landing/\(landingPrefix)/ground run - uphill factor.csv")
-  }
-
-  func loadLandingDistanceHeadwindData(landingPrefix: String) throws -> DataTable {
-    try loadDataTable(path: "landing/\(landingPrefix)/total distance - headwind factor.csv")
-  }
-
-  func loadLandingDistanceTailwindData(landingPrefix: String) throws -> DataTable {
-    try loadDataTable(path: "landing/\(landingPrefix)/total distance - tailwind factor.csv")
-  }
-
-  func loadLandingDistanceUnpavedData(landingPrefix: String) throws -> DataTable {
-    try loadDataTable(path: "landing/\(landingPrefix)/total distance - unpaved factor.csv")
+  /// The table of a correction's factor on a distance, or `nil` if the data has none.
+  ///
+  /// - Parameters:
+  ///   - factor: The correction.
+  ///   - target: The distance it corrects.
+  ///   - landingFlapSetting: The flap setting whose landing tables are read.
+  func correctionFactorTable(
+    _ factor: CorrectionFactor,
+    for target: DistanceTarget,
+    landingFlapSetting: FlapSetting
+  ) -> DataTable? {
+    data.tableIfPresent(
+      factor.tablePath(for: target, landingTablePrefix: tablePrefix(for: landingFlapSetting))
+    )
   }
 
   // MARK: - Prefix Helpers

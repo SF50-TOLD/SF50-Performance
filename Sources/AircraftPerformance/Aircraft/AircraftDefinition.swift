@@ -21,8 +21,25 @@ protocol AircraftDefinition: Sendable {
   /// The flap settings the manual gives landing figures for.
   var landingFlapSettings: [FlapSetting] { get }
 
+  /// How the manual's corrections combine into a corrected distance.
+  var correctionScheme: CorrectionScheme { get }
+
+  /// The takeoff climb speed, in KIAS, where the manual gives one speed for every condition, or
+  /// `nil` where it tabulates the speed.
+  var takeoffClimbSpeedKIAS: Double? { get }
+
+  /// The en route obstacle climb speed, in KIAS, for an aircraft with
+  /// ``PerformanceCapability/enrouteObstacleClimb``.
+  var obstacleClimbSpeedKIAS: Double? { get }
+
   /// The bundled data package for the aircraft type.
   func package() throws -> DataPackage
+
+  /// Where the en route climb tables and equations are, with ice protection on or off.
+  ///
+  /// - Parameter iceContaminated: Whether the ice-contaminated schedule is wanted.
+  /// - Returns: The names, or `nil` if the manual has no such schedule.
+  func enrouteClimbNames(iceContaminated: Bool) -> EnrouteClimbNames?
 
   /// The landing tables a flap setting is read from.
   ///
@@ -96,6 +113,18 @@ struct ConfigurationSelection: Sendable, Hashable {
 
   /// The installed supplements' names.
   let supplements: Set<String>
+}
+
+/// Where a schedule of en route climb tables and equations is in a data package.
+struct EnrouteClimbNames: Sendable, Hashable {
+  /// The tables' directory, such as `enroute climb/normal`.
+  let tableDirectory: String
+
+  /// The suffix after the equations' names, such as `-normal`.
+  let equationSuffix: String
+
+  /// The obstacle climb tables' directory, for an aircraft whose manual has them.
+  let obstacleTableDirectory: String?
 }
 
 /// The landing tables a flap setting reads, and how its figures follow from them.

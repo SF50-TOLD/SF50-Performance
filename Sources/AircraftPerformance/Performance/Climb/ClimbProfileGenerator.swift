@@ -4,12 +4,6 @@ import Foundation
 /// and performance equations/tables.
 public enum ClimbProfileGenerator {
 
-  /// Takeoff climb speed (Vx) in KIAS. Constant across all conditions.
-  public static let takeoffClimbSpeedKIAS: Double = 91
-
-  /// Enroute obstacle climb speed in KIAS. Constant across all conditions.
-  public static let obstacleClimbSpeedKIAS: Double = 120
-
   /// The spacing of the levels the charts are read at between winds-aloft levels.
   private static let chartReadingStepFt: Double = 500
 
@@ -36,12 +30,15 @@ public enum ClimbProfileGenerator {
     seaLevelPressureInHg: Double,
     useRegressionModel: Bool
   ) throws -> ClimbProfile {
-    let data = try aircraft.definition.data(),
+    let definition = aircraft.definition,
+      data = try definition.data(),
       source: any EquationSource =
-        useRegressionModel ? try RegressionSource(data: data) : try TabularSource(data: data)
+        useRegressionModel
+        ? try RegressionSource(data: data, definition: definition)
+        : try TabularSource(data: data, definition: definition)
 
     let dataPoints = chartReadingLevels(windsAloft).map { obs in
-      makeDataPoint(obs: obs, weightLb: weightLb, source: source)
+      makeDataPoint(obs: obs, weightLb: weightLb, source: source, definition: definition)
     }
 
     return ClimbProfile(dataPoints: dataPoints, seaLevelPressureInHg: seaLevelPressureInHg)
@@ -95,7 +92,8 @@ public enum ClimbProfileGenerator {
   private static func makeDataPoint(
     obs: WindsAloftObservation,
     weightLb: Double,
-    source: any EquationSource
+    source: any EquationSource,
+    definition: any AircraftDefinition
   ) -> ClimbProfile.DataPoint {
     let altitude = obs.altitudeFt,
       temperature = obs.temperatureC
@@ -149,6 +147,9 @@ public enum ClimbProfileGenerator {
       iceContaminated: true
     )
 
+    let obstacleSpeed: Value<Double> =
+      definition.obstacleClimbSpeedKIAS.map { .value($0) } ?? .notAvailable
+
     return ClimbProfile.DataPoint(
       altitudeFt: altitude,
       outsideAirTemperatureC: temperature,
@@ -156,15 +157,16 @@ public enum ClimbProfileGenerator {
       windSpeedKts: obs.windSpeedKts,
       takeoff: .init(
         gradientFtPerNM: takeoffGradient,
-        indicatedAirspeedKts: .value(takeoffClimbSpeedKIAS)
+        indicatedAirspeedKts: definition.takeoffClimbSpeedKIAS.map { .value($0) }
+          ?? source.takeoffClimbSpeed(weight: weightLb, altitude: altitude)
       ),
       enrouteObstacle: .init(
         gradientFtPerNM: obstacleGradient,
-        indicatedAirspeedKts: .value(obstacleClimbSpeedKIAS)
+        indicatedAirspeedKts: obstacleSpeed
       ),
       enrouteObstacleAntiIce: .init(
         gradientFtPerNM: obstacleGradientIce,
-        indicatedAirspeedKts: .value(obstacleClimbSpeedKIAS)
+        indicatedAirspeedKts: obstacleSpeed
       ),
       enroute: .init(
         gradientFtPerNM: enrouteGradient,
@@ -246,6 +248,7 @@ public enum ClimbProfileGenerator {
   private protocol EquationSource {
     func takeoffClimbGradient(weight: Double, altitude: Double, temperature: Double)
       -> Value<Double>
+    func takeoffClimbSpeed(weight: Double, altitude: Double) -> Value<Double>
     func enrouteObstacleClimbGradient(
       weight: Double,
       altitude: Double,
@@ -274,29 +277,33 @@ public enum ClimbProfileGenerator {
   private struct RegressionSource: EquationSource {
     private let boundsChecker: BoundsChecker
     private let takeoffGradientEq: RegressionEquation
-    private let obstacleGradientNormalEq: RegressionEquation
-    private let obstacleGradientIceEq: RegressionEquation
-    private let enrouteGradientNormalEq: RegressionEquation
-    private let enrouteGradientIceEq: RegressionEquation
-    private let enrouteSpeedNormalEq: RegressionEquation
-    private let enrouteSpeedIceEq: RegressionEquation
+    private let takeoffSpeedEq: RegressionEquation?
 
-    init(data: AircraftData) throws {
-      boundsChecker = try BoundsChecker(loader: DataTableLoader(data: data))
-      let loader = RegressionEquationLoader(data: data)
+    /// Each schedule's equations, keyed by whether it is the ice-contaminated one.
+    private let obstacleGradientEqs: [Bool: RegressionEquation]
+    private let enrouteGradientEqs: [Bool: RegressionEquation]
+    private let enrouteSpeedEqs: [Bool: RegressionEquation]
+
+    init(data: AircraftData, definition: any AircraftDefinition) throws {
+      boundsChecker = try BoundsChecker(data: data, definition: definition)
+      let loader = RegressionEquationLoader(data: data),
+        schedules = schedules(of: definition)
       takeoffGradientEq = try loader.loadTakeoffClimbGradientEquation()
-      obstacleGradientNormalEq = try loader.loadEnrouteObstacleClimbGradientEquation(
-        iceContaminated: false
-      )
-      obstacleGradientIceEq = try loader.loadEnrouteObstacleClimbGradientEquation(
-        iceContaminated: true
-      )
-      enrouteGradientNormalEq = try loader.loadEnrouteClimbGradientEquation(
-        iceContaminated: false
-      )
-      enrouteGradientIceEq = try loader.loadEnrouteClimbGradientEquation(iceContaminated: true)
-      enrouteSpeedNormalEq = try loader.loadEnrouteClimbSpeedEquation(iceContaminated: false)
-      enrouteSpeedIceEq = try loader.loadEnrouteClimbSpeedEquation(iceContaminated: true)
+      takeoffSpeedEq =
+        definition.takeoffClimbSpeedKIAS == nil ? try loader.loadTakeoffClimbSpeedEquation() : nil
+      obstacleGradientEqs = try schedules.reduce(into: [:]) { equations, schedule in
+        guard schedule.names.obstacleTableDirectory != nil else { return }
+        equations[schedule.iceContaminated] =
+          try loader.loadEnrouteObstacleClimbGradientEquation(names: schedule.names)
+      }
+      enrouteGradientEqs = try schedules.reduce(into: [:]) { equations, schedule in
+        equations[schedule.iceContaminated] =
+          try loader.loadEnrouteClimbGradientEquation(names: schedule.names)
+      }
+      enrouteSpeedEqs = try schedules.reduce(into: [:]) { equations, schedule in
+        equations[schedule.iceContaminated] =
+          try loader.loadEnrouteClimbSpeedEquation(names: schedule.names)
+      }
     }
 
     /// Passes on a gradient only where it is a climb.
@@ -320,12 +327,20 @@ public enum ClimbProfileGenerator {
       )
     }
 
+    func takeoffClimbSpeed(weight: Double, altitude: Double) -> Value<Double> {
+      guard let takeoffSpeedEq else { return .notAvailable }
+      return takeoffSpeedEq.evaluate(inputs: ["weight": weight, "altitude": altitude])
+    }
+
     func enrouteObstacleClimbGradient(
       weight: Double,
       altitude: Double,
       temperature: Double,
       iceContaminated: Bool
     ) -> Value<Double> {
+      guard let obstacleGradientNormalEq = obstacleGradientEqs[false],
+        let obstacleGradientEq = obstacleGradientEqs[iceContaminated]
+      else { return .notAvailable }
       guard
         boundsChecker.obstacleClimbBoundsStatus(
           weight: weight,
@@ -338,7 +353,7 @@ public enum ClimbProfileGenerator {
         iceContaminated
         ? evaluateDelta(
           base: obstacleGradientNormalEq,
-          delta: obstacleGradientIceEq,
+          delta: obstacleGradientEq,
           weight: weight,
           altitude: altitude,
           temperature: temperature
@@ -367,7 +382,7 @@ public enum ClimbProfileGenerator {
           iceContaminated: iceContaminated
         )
       else { return .notAvailable }
-      let equation = iceContaminated ? enrouteGradientIceEq : enrouteGradientNormalEq
+      guard let equation = enrouteGradientEqs[iceContaminated] else { return .notAvailable }
       return Self.climbOnly(
         evaluate(equation, weight: weight, altitude: altitude, temperature: temperature)
       )
@@ -388,7 +403,7 @@ public enum ClimbProfileGenerator {
           iceContaminated: iceContaminated
         )
       else { return .notAvailable }
-      let equation = iceContaminated ? enrouteSpeedIceEq : enrouteSpeedNormalEq
+      guard let equation = enrouteSpeedEqs[iceContaminated] else { return .notAvailable }
       return evaluate(equation, weight: weight, altitude: altitude, temperature: temperature)
     }
 
@@ -413,31 +428,33 @@ public enum ClimbProfileGenerator {
 
   private struct TabularSource: EquationSource {
     private let takeoffGradientTable: DataTable
-    private let enrouteGradientNormalTable: DataTable
-    private let enrouteGradientIceTable: DataTable
-    private let enrouteSpeedNormalTable: DataTable
-    private let enrouteSpeedIceTable: DataTable
-    private let obstacleGradientNormalTable: DataTable
-    private let obstacleGradientIceTable: DataTable
+    private let takeoffSpeedTable: DataTable?
 
-    init(data: AircraftData) throws {
-      let tableLoader = DataTableLoader(data: data)
+    /// Each schedule's tables, keyed by whether it is the ice-contaminated one.
+    private let obstacleGradientTables: [Bool: DataTable]
+    private let enrouteGradientTables: [Bool: DataTable]
+    private let enrouteSpeedTables: [Bool: DataTable]
+
+    init(data: AircraftData, definition: any AircraftDefinition) throws {
+      let tableLoader = DataTableLoader(data: data),
+        schedules = schedules(of: definition)
 
       takeoffGradientTable = try tableLoader.loadTakeoffClimbGradientData()
-      enrouteGradientNormalTable = try tableLoader.loadEnrouteClimbGradientData(
-        iceContaminated: false
-      )
-      enrouteGradientIceTable = try tableLoader.loadEnrouteClimbGradientData(
-        iceContaminated: true
-      )
-      enrouteSpeedNormalTable = try tableLoader.loadEnrouteClimbSpeedData(iceContaminated: false)
-      enrouteSpeedIceTable = try tableLoader.loadEnrouteClimbSpeedData(iceContaminated: true)
-      obstacleGradientNormalTable = try tableLoader.loadEnrouteObstacleClimbGradientData(
-        iceContaminated: false
-      )
-      obstacleGradientIceTable = try tableLoader.loadEnrouteObstacleClimbGradientData(
-        iceContaminated: true
-      )
+      takeoffSpeedTable =
+        definition.takeoffClimbSpeedKIAS == nil
+        ? try tableLoader.loadTakeoffClimbSpeedData() : nil
+      obstacleGradientTables = try schedules.reduce(into: [:]) { tables, schedule in
+        tables[schedule.iceContaminated] =
+          try tableLoader.loadEnrouteObstacleClimbGradientData(names: schedule.names)
+      }
+      enrouteGradientTables = try schedules.reduce(into: [:]) { tables, schedule in
+        tables[schedule.iceContaminated] =
+          try tableLoader.loadEnrouteClimbGradientData(names: schedule.names)
+      }
+      enrouteSpeedTables = try schedules.reduce(into: [:]) { tables, schedule in
+        tables[schedule.iceContaminated] =
+          try tableLoader.loadEnrouteClimbSpeedData(names: schedule.names)
+      }
     }
 
     /// Reads a table, and asks for no clamping.
@@ -461,13 +478,18 @@ public enum ClimbProfileGenerator {
       )
     }
 
+    func takeoffClimbSpeed(weight: Double, altitude: Double) -> Value<Double> {
+      guard let takeoffSpeedTable else { return .notAvailable }
+      return tableValue(takeoffSpeedTable, inputs: [.weight: weight, .altitude: altitude])
+    }
+
     func enrouteObstacleClimbGradient(
       weight: Double,
       altitude: Double,
       temperature: Double,
       iceContaminated: Bool
     ) -> Value<Double> {
-      let table = iceContaminated ? obstacleGradientIceTable : obstacleGradientNormalTable
+      guard let table = obstacleGradientTables[iceContaminated] else { return .notAvailable }
       return tableValue(
         table,
         inputs: [.weight: weight, .altitude: altitude, .temperature: temperature]
@@ -480,7 +502,7 @@ public enum ClimbProfileGenerator {
       temperature: Double,
       iceContaminated: Bool
     ) -> Value<Double> {
-      let table = iceContaminated ? enrouteGradientIceTable : enrouteGradientNormalTable
+      guard let table = enrouteGradientTables[iceContaminated] else { return .notAvailable }
       return tableValue(
         table,
         inputs: [.weight: weight, .altitude: altitude, .temperature: temperature]
@@ -493,11 +515,22 @@ public enum ClimbProfileGenerator {
       temperature: Double,
       iceContaminated: Bool
     ) -> Value<Double> {
-      let table = iceContaminated ? enrouteSpeedIceTable : enrouteSpeedNormalTable
+      guard let table = enrouteSpeedTables[iceContaminated] else { return .notAvailable }
       return tableValue(
         table,
         inputs: [.weight: weight, .altitude: altitude, .temperature: temperature]
       )
+    }
+  }
+}
+
+extension ClimbProfileGenerator {
+  /// The en route climb schedules an aircraft's manual has, normal first.
+  fileprivate static func schedules(of definition: any AircraftDefinition)
+    -> [(iceContaminated: Bool, names: EnrouteClimbNames)]
+  {
+    [false, true].compactMap { iceContaminated in
+      definition.enrouteClimbNames(iceContaminated: iceContaminated).map { (iceContaminated, $0) }
     }
   }
 }

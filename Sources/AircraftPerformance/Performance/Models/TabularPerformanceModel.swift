@@ -17,45 +17,31 @@ final class TabularPerformanceModel: BasePerformanceModel {
   private let takeoffDistanceData: DataTable
   private let takeoffClimbGradientData: DataTable
   private let takeoffClimbRateData: DataTable
-  private let vrefData: DataTable
-  private let landingRunData: DataTable
-  private let landingDistanceData: DataTable
+  private let vrefData: DataTable?
+  private let landingRunData: DataTable?
+  private let landingDistanceData: DataTable?
+  private let balkedLandingClimbGradientData: DataTable?
+  private let balkedLandingClimbRateData: DataTable?
 
-  private let takeoffRun_headwindData: DataTable
-  private let takeoffRun_tailwindData: DataTable
-  private let takeoffRun_downhillData: DataTable
-  private let takeoffRun_uphillData: DataTable
-  private let takeoffDistance_headwindData: DataTable
-  private let takeoffDistance_tailwindData: DataTable
-  private let takeoffDistance_unpavedData: DataTable
+  /// Each correction's table, by the distance it corrects.
+  private let correctionFactorData: [DistanceTarget: [CorrectionFactor: DataTable]]
 
-  private let landingRun_headwindData: DataTable
-  private let landingRun_tailwindData: DataTable
-  private let landingRun_downhillData: DataTable
-  private let landingRun_uphillData: DataTable
-  private let landingDistance_headwindData: DataTable
-  private let landingDistance_tailwindData: DataTable
-  private let landingDistance_unpavedData: DataTable
-
-  private let enrouteClimb_gradientNormalData: DataTable
-  private let enrouteClimb_rateNormalData: DataTable
-  private let enrouteClimb_speedNormalData: DataTable
-  private let enrouteClimb_gradientIceContaminatedData: DataTable
-  private let enrouteClimb_rateIceContaminatedData: DataTable
-  private let enrouteClimb_speedIceContaminatedData: DataTable
+  private let enrouteClimbGradientData: DataTable?
+  private let enrouteClimbRateData: DataTable?
+  private let enrouteClimbSpeedData: DataTable?
 
   // MARK: - Non-Distance Outputs
 
   override var takeoffClimbGradientFtNM: Value<Double> {
-    atApprovedAirport { takeoffClimbGradientData.value(for: chartInputs) }
+    atApprovedAirport(for: .takeoff) { takeoffClimbGradientData.value(for: chartInputs) }
   }
 
   override var takeoffClimbRateFtMin: Value<Double> {
-    atApprovedAirport { takeoffClimbRateData.value(for: chartInputs) }
+    atApprovedAirport(for: .takeoff) { takeoffClimbRateData.value(for: chartInputs) }
   }
 
   override var VrefKts: Value<Double> {
-    vrefData.value(for: [.weight: weight])
+    vrefData?.value(for: [.weight: weight]) ?? .notAvailable
   }
 
   /// Whether the AFM's go-around climb gradient is met.
@@ -65,37 +51,39 @@ final class TabularPerformanceModel: BasePerformanceModel {
   /// no distance at all it has no answer either, and says so rather than assuming the gradient
   /// holds.
   override var meetsGoAroundClimbGradient: Value<Bool> {
+    guard hasGoAroundClassifier else { return .notAvailable }
     switch landingDistanceFt {
-      case .value, .valueWithUncertainty: .value(true)
-      case .offscaleHigh: .value(false)
-      case .offscaleLow(let clamped): clamped == nil ? .notAvailable : .value(true)
-      case .invalid: .invalid
-      case .notAvailable: .notAvailable
-      case .notAuthorized: .notAuthorized
+      case .value, .valueWithUncertainty: return .value(true)
+      case .offscaleHigh: return .value(false)
+      case .offscaleLow(let clamped): return clamped == nil ? .notAvailable : .value(true)
+      case .invalid: return .invalid
+      case .notAvailable: return .notAvailable
+      case .notAuthorized: return .notAuthorized
     }
   }
+
+  override var balkedLandingClimbGradientFtNM: Value<Double> {
+    balkedLandingClimbGradientData?.value(for: chartInputs) ?? .notAvailable
+  }
+
+  override var balkedLandingClimbRateFtMin: Value<Double> {
+    balkedLandingClimbRateData?.value(for: chartInputs) ?? .notAvailable
+  }
+
+  private let hasGoAroundClassifier: Bool
 
   // MARK: - En Route Climb
 
   override var enrouteClimbGradientFtNM: Value<Double> {
-    let data =
-      configuration.iceProtection
-      ? enrouteClimb_gradientIceContaminatedData : enrouteClimb_gradientNormalData
-    return data.value(for: enrouteInputs)
+    enrouteClimbGradientData?.value(for: enrouteInputs) ?? .notAvailable
   }
 
   override var enrouteClimbRateFtMin: Value<Double> {
-    let data =
-      configuration.iceProtection
-      ? enrouteClimb_rateIceContaminatedData : enrouteClimb_rateNormalData
-    return data.value(for: enrouteInputs)
+    enrouteClimbRateData?.value(for: enrouteInputs) ?? .notAvailable
   }
 
   override var enrouteClimbSpeedKIAS: Value<Double> {
-    let data =
-      configuration.iceProtection
-      ? enrouteClimb_speedIceContaminatedData : enrouteClimb_speedNormalData
-    return data.value(for: enrouteInputs)
+    enrouteClimbSpeedData?.value(for: enrouteInputs) ?? .notAvailable
   }
 
   // MARK: - Initializer
@@ -108,10 +96,13 @@ final class TabularPerformanceModel: BasePerformanceModel {
     aircraft: Aircraft
   ) throws {
     let definition = aircraft.definition,
+      capabilities = definition.capabilities,
       data = try definition.data(),
       loader = DataTableLoader(data: data)
-    landingTables = definition.landingTables(for: configuration.flapSetting)
-    let landingPrefix = loader.tablePrefix(for: landingTables.flapSetting)
+    let landingTables = definition.landingTables(for: configuration.flapSetting)
+    self.landingTables = landingTables
+    let landingPrefix = loader.tablePrefix(for: landingTables.flapSetting),
+      hasLandingFigures = definition.landingFlapSettings.contains(configuration.flapSetting)
 
     limitations = definition.limitations
 
@@ -120,52 +111,45 @@ final class TabularPerformanceModel: BasePerformanceModel {
     takeoffClimbGradientData = try loader.loadTakeoffClimbGradientData()
     takeoffClimbRateData = try loader.loadTakeoffClimbRateData()
 
-    vrefData = try loader.loadVrefData(
-      vrefPrefix: loader.tablePrefix(for: configuration.flapSetting)
-    )
+    vrefData =
+      capabilities.contains(.vref) && hasLandingFigures
+      ? try loader.loadVrefData(vrefPrefix: loader.tablePrefix(for: configuration.flapSetting))
+      : nil
+    hasGoAroundClassifier = capabilities.contains(.goAroundClimbGradient)
 
-    landingRunData = try loader.loadLandingRunData(landingPrefix: landingPrefix)
-    landingDistanceData = try loader.loadLandingDistanceData(landingPrefix: landingPrefix)
+    landingRunData =
+      hasLandingFigures ? try loader.loadLandingRunData(landingPrefix: landingPrefix) : nil
+    landingDistanceData =
+      hasLandingFigures ? try loader.loadLandingDistanceData(landingPrefix: landingPrefix) : nil
 
-    takeoffRun_headwindData = try loader.loadTakeoffRunHeadwindData()
-    takeoffRun_tailwindData = try loader.loadTakeoffRunTailwindData()
-    takeoffRun_downhillData = try loader.loadTakeoffRunDownhillData()
-    takeoffRun_uphillData = try loader.loadTakeoffRunUphillData()
-    takeoffDistance_headwindData = try loader.loadTakeoffDistanceHeadwindData()
-    takeoffDistance_tailwindData = try loader.loadTakeoffDistanceTailwindData()
-    takeoffDistance_unpavedData = try loader.loadTakeoffDistanceUnpavedData()
+    let balkedLanding = capabilities.contains(.balkedLandingClimb)
+    balkedLandingClimbGradientData =
+      balkedLanding ? try loader.loadBalkedLandingClimbGradientData() : nil
+    balkedLandingClimbRateData = balkedLanding ? try loader.loadBalkedLandingClimbRateData() : nil
 
-    landingRun_headwindData = try loader.loadLandingRunHeadwindData(landingPrefix: landingPrefix)
-    landingRun_tailwindData = try loader.loadLandingRunTailwindData(landingPrefix: landingPrefix)
-    landingRun_downhillData = try loader.loadLandingRunDownhillData(landingPrefix: landingPrefix)
-    landingRun_uphillData = try loader.loadLandingRunUphillData(landingPrefix: landingPrefix)
-    landingDistance_headwindData = try loader.loadLandingDistanceHeadwindData(
-      landingPrefix: landingPrefix
-    )
-    landingDistance_tailwindData = try loader.loadLandingDistanceTailwindData(
-      landingPrefix: landingPrefix
-    )
-    landingDistance_unpavedData = try loader.loadLandingDistanceUnpavedData(
-      landingPrefix: landingPrefix
-    )
+    correctionFactorData = DistanceTarget.allCases.reduce(into: [:]) { tables, target in
+      tables[target] = CorrectionFactor.allCases.reduce(into: [:]) { factors, factor in
+        factors[factor] = loader.correctionFactorTable(
+          factor,
+          for: target,
+          landingFlapSetting: landingTables.flapSetting
+        )
+      }
+    }
 
-    enrouteClimb_gradientNormalData = try loader.loadEnrouteClimbGradientData(
-      iceContaminated: false
-    )
-    enrouteClimb_rateNormalData = try loader.loadEnrouteClimbRateData(iceContaminated: false)
-    enrouteClimb_speedNormalData = try loader.loadEnrouteClimbSpeedData(iceContaminated: false)
-    enrouteClimb_gradientIceContaminatedData = try loader.loadEnrouteClimbGradientData(
-      iceContaminated: true
-    )
-    enrouteClimb_rateIceContaminatedData = try loader.loadEnrouteClimbRateData(
-      iceContaminated: true
-    )
-    enrouteClimb_speedIceContaminatedData = try loader.loadEnrouteClimbSpeedData(
-      iceContaminated: true
-    )
+    let enrouteNames = definition.enrouteClimbNames(iceContaminated: configuration.iceProtection)
+    enrouteClimbGradientData = try enrouteNames.map {
+      try loader.loadEnrouteClimbGradientData(names: $0)
+    }
+    enrouteClimbRateData = try enrouteNames.map { try loader.loadEnrouteClimbRateData(names: $0) }
+    enrouteClimbSpeedData = try enrouteNames.map { try loader.loadEnrouteClimbSpeedData(names: $0) }
 
     super.init(conditions: conditions, configuration: configuration, runway: runway, notam: notam)
-    contaminationCalculator = try ContaminationCalculator(data: data, usesTables: true)
+    correctionScheme = definition.correctionScheme
+    correctsContamination = capabilities.contains(.contamination)
+    if correctsContamination {
+      contaminationCalculator = try ContaminationCalculator(data: data, usesTables: true)
+    }
   }
 
   // MARK: - Base Values
@@ -178,121 +162,24 @@ final class TabularPerformanceModel: BasePerformanceModel {
   /// so that the readout can say the AFM never covered the conditions asked for. Above the range,
   /// where holding the input would understate the distance, no figure is offered at all.
   override func baseValue(for target: DistanceTarget) -> Value<Double> {
-    atApprovedAirport {
+    atApprovedAirport(for: target.isLanding ? .landing : .takeoff) {
       switch target {
         case .takeoffRun:
-          takeoffRunData.value(
-            for: chartInputs,
-            clamping: .clampLow
-          )
+          takeoffRunData.value(for: chartInputs, clamping: .clampLow)
         case .takeoffDistance:
-          takeoffDistanceData.value(
-            for: chartInputs,
-            clamping: .clampLow
-          )
+          takeoffDistanceData.value(for: chartInputs, clamping: .clampLow)
         case .landingRun:
           landingTables.hasGroundRun
-            ? landingRunData.value(
-              for: chartInputs,
-              clamping: .clampLow
-            )
+            ? landingRunData?.value(for: chartInputs, clamping: .clampLow) ?? .notAvailable
             : .notAvailable
         case .landingDistance:
-          landingDistanceData.value(
-            for: chartInputs,
-            clamping: .clampLow
-          ) * (landingTables.totalDistanceFactor ?? 1)
+          (landingDistanceData?.value(for: chartInputs, clamping: .clampLow) ?? .notAvailable)
+            * (landingTables.totalDistanceFactor ?? 1)
       }
     }
   }
 
-  // MARK: - Adjustment Multiplier
-
-  override func adjustmentMultiplier(
-    for kind: AdjustmentKind,
-    target: DistanceTarget
-  ) -> Value<Double> {
-    switch (kind, target) {
-      // Takeoff Run
-      case (.headwind, .takeoffRun):
-        PerformanceAdjustments.windAdjustment(
-          factor: lookupFactor(takeoffRun_headwindData),
-          wind: -headwind
-        )
-      case (.tailwind, .takeoffRun):
-        PerformanceAdjustments.windAdjustment(
-          factor: lookupFactor(takeoffRun_tailwindData),
-          wind: tailwind
-        )
-      case (.uphillGradient, .takeoffRun):
-        PerformanceAdjustments.gradientAdjustment(
-          factor: lookupFactor(takeoffRun_uphillData),
-          gradient: uphill
-        )
-      case (.downhillGradient, .takeoffRun):
-        PerformanceAdjustments.gradientAdjustment(
-          factor: lookupFactor(takeoffRun_downhillData),
-          gradient: -downhill
-        )
-
-      // Takeoff Distance
-      case (.headwind, .takeoffDistance):
-        PerformanceAdjustments.windAdjustment(
-          factor: lookupFactor(takeoffDistance_headwindData),
-          wind: -headwind
-        )
-      case (.tailwind, .takeoffDistance):
-        PerformanceAdjustments.windAdjustment(
-          factor: lookupFactor(takeoffDistance_tailwindData),
-          wind: tailwind
-        )
-      case (.unpavedSurface, .takeoffDistance):
-        PerformanceAdjustments.surfaceAdjustment(
-          factor: lookupFactor(takeoffDistance_unpavedData)
-        )
-
-      // Landing Run
-      case (.headwind, .landingRun):
-        PerformanceAdjustments.windAdjustment(
-          factor: lookupFactor(landingRun_headwindData),
-          wind: -headwind
-        )
-      case (.tailwind, .landingRun):
-        PerformanceAdjustments.windAdjustment(
-          factor: lookupFactor(landingRun_tailwindData),
-          wind: tailwind
-        )
-      case (.uphillGradient, .landingRun):
-        PerformanceAdjustments.gradientAdjustment(
-          factor: lookupFactor(landingRun_uphillData),
-          gradient: -uphill
-        )
-      case (.downhillGradient, .landingRun):
-        PerformanceAdjustments.gradientAdjustment(
-          factor: lookupFactor(landingRun_downhillData),
-          gradient: downhill
-        )
-
-      // Landing Distance
-      case (.headwind, .landingDistance):
-        PerformanceAdjustments.windAdjustment(
-          factor: lookupFactor(landingDistance_headwindData),
-          wind: -headwind
-        )
-      case (.tailwind, .landingDistance):
-        PerformanceAdjustments.windAdjustment(
-          factor: lookupFactor(landingDistance_tailwindData),
-          wind: tailwind
-        )
-      case (.unpavedSurface, .landingDistance):
-        PerformanceAdjustments.surfaceAdjustment(
-          factor: lookupFactor(landingDistance_unpavedData)
-        )
-
-      default:
-        fatalError("Unexpected adjustment \(kind) for target \(target)")
-    }
-  }
+  // MARK: - Correction Factors
 
   /// Looks up an adjustment factor, which varies with weight or pressure altitude, from a data
   /// table.
@@ -301,21 +188,16 @@ final class TabularPerformanceModel: BasePerformanceModel {
   /// weight (or a low airport at the lowest altitude) overstates the penalty and the answer stays
   /// on the safe side. An input above the highest tabulated one would have its penalty
   /// understated, so it comes back offscale instead.
-  private func lookupFactor(_ data: DataTable) -> Value<Double> {
-    data.value(for: chartInputs, clamping: .clampLow)
+  override func correctionFactor(_ factor: CorrectionFactor, for target: DistanceTarget)
+    -> Value<Double>?
+  {
+    correctionFactorData[target]?[factor]?.value(for: chartInputs, clamping: .clampLow)
   }
 }
 
 // MARK: - Airport Elevation
 
 extension TabularPerformanceModel {
-  /// Whether the airport lies within the elevations the AFM approves for takeoff and landing.
-  ///
-  /// The tables answer only there; the regression model is free to extrapolate past them.
-  private var isAirportElevationApproved: Bool {
-    (limitations.minAirportElevation...limitations.maxAirportElevation).contains(runway.elevation)
-  }
-
   /// The inputs the takeoff and landing tables, and their factors, are read at.
   private var chartInputs: [TableInput: Double] {
     [.weight: weight, .altitude: chartElevation, .temperature: temperature]
@@ -334,9 +216,13 @@ extension TabularPerformanceModel {
     Swift.max(altitude, Self.seaLevelFt)
   }
 
-  /// Reads a takeoff or landing figure, which the AFM does not authorize at an airport outside its
-  /// approved elevations.
-  private func atApprovedAirport(_ figure: () -> Value<Double>) -> Value<Double> {
-    isAirportElevationApproved ? figure() : .notAuthorized
+  /// Reads a takeoff or landing figure, which the manual does not authorize at an airport outside
+  /// the elevations it approves for the operation.
+  ///
+  /// The tables answer only there; the regression model is free to extrapolate past them.
+  private func atApprovedAirport(for operation: Operation, _ figure: () -> Value<Double>)
+    -> Value<Double>
+  {
+    limitations.isApproved(elevation: runway.elevation, for: operation) ? figure() : .notAuthorized
   }
 }

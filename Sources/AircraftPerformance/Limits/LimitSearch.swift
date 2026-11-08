@@ -80,6 +80,7 @@ extension PerformanceCalculator {
       from: minimumWeight,
       to: settings.limitations.maxTakeoffWeight,
       violating: operatingLimitViolation(
+        for: .takeoff,
         conditions: conditions,
         runway: runway
       )
@@ -124,6 +125,7 @@ extension PerformanceCalculator {
       from: minimumWeight,
       to: settings.limitations.maxLandingWeight,
       violating: operatingLimitViolation(
+        for: .landing,
         conditions: conditions,
         runway: runway
       )
@@ -165,6 +167,7 @@ extension PerformanceCalculator {
   ) throws -> LimitSearchResult<UnitTemperature> {
     try searchTemperature(
       violating: operatingLimitViolation(
+        for: .takeoff,
         conditions: conditions,
         runway: runway,
         checkingTemperature: false
@@ -206,6 +209,7 @@ extension PerformanceCalculator {
   ) throws -> LimitSearchResult<UnitTemperature> {
     try searchTemperature(
       violating: operatingLimitViolation(
+        for: .landing,
         conditions: conditions,
         runway: runway,
         checkingTemperature: false
@@ -233,6 +237,7 @@ extension PerformanceCalculator {
   /// construction, so they skip that check. The elevation limits bound only the tables, so the
   /// regression model, which may extrapolate past them, skips that check.
   private func operatingLimitViolation(
+    for operation: Operation,
     conditions: Conditions,
     runway: RunwayInput,
     checkingTemperature: Bool = true
@@ -243,13 +248,12 @@ extension PerformanceCalculator {
       return .windLimit
     }
     if settings.modelKind == .tabular,
-      !(limitations.minAirportElevation...limitations.maxAirportElevation)
-        .contains(runway.elevation)
+      !limitations.isApproved(elevation: runway.elevation, for: operation)
     {
       return .elevationLimit
     }
     if checkingTemperature, let temperature = conditions.temperature,
-      !(limitations.minTemperature...limitations.maxTemperature).contains(temperature)
+      !limitations.isApproved(temperature: temperature)
     {
       return .temperatureLimit
     }
@@ -339,6 +343,21 @@ extension PerformanceCalculator {
     )
   }
 
+  /// The temperatures, in degrees Celsius, the temperature searches cover: the operating limits,
+  /// and where the manual sets none, the range its takeoff tables cover.
+  private func temperatureSearchRange() throws -> ClosedRange<Double> {
+    let limitations = settings.limitations
+    if let minimum = limitations.minTemperature, let maximum = limitations.maxTemperature {
+      return minimum.converted(to: .celsius).value...maximum.converted(to: .celsius).value
+    }
+    let tabulated =
+      try DataTableLoader(data: settings.aircraft.definition.data()).loadTakeoffRunData()
+      .domain(of: .temperature) ?? 0...0
+    let lowest = limitations.minTemperature?.converted(to: .celsius).value ?? tabulated.lowerBound,
+      highest = limitations.maxTemperature?.converted(to: .celsius).value ?? tabulated.upperBound
+    return lowest...highest
+  }
+
   private func searchTemperature(
     violating operatingLimit: BindingConstraint?,
     verdict: (Measurement<UnitTemperature>) throws -> LimitVerdict
@@ -346,10 +365,10 @@ extension PerformanceCalculator {
     if let operatingLimit {
       return .init(limit: nil, bindingConstraint: operatingLimit, reliesOnOffscaleData: false)
     }
-    let limitations = settings.limitations,
+    let range = try temperatureSearchRange(),
       search = try LimitBisection.highestSatisfying(
-        from: limitations.minTemperature.converted(to: .celsius).value,
-        to: limitations.maxTemperature.converted(to: .celsius).value,
+        from: range.lowerBound,
+        to: range.upperBound,
         increment: Self.temperatureSearchIncrementC
       ) { try verdict(.init(value: $0, unit: .celsius)) }
     return .init(

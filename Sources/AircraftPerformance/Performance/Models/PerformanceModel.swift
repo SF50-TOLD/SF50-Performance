@@ -25,6 +25,12 @@ public protocol PerformanceModel {
   /// Whether the aircraft meets go-around climb gradient requirements.
   var meetsGoAroundClimbGradient: Value<Bool> { get }
 
+  /// Balked landing climb gradient in feet per nautical mile.
+  var balkedLandingClimbGradientFtNM: Value<Double> { get }
+
+  /// Balked landing climb rate in feet per minute.
+  var balkedLandingClimbRateFtMin: Value<Double> { get }
+
   /// En route climb gradient in feet per nautical mile.
   var enrouteClimbGradientFtNM: Value<Double> { get }
 

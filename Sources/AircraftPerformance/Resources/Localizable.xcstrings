@@ -5,6 +5,42 @@
       "comment": "A performance note.",
       "extractionState": "manual"
     },
+    "Air Conditioner On": {
+      "comment": "A distance adjustment for running the air conditioner during takeoff.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Air Conditioner On"
+          }
+        }
+      }
+    },
+    "Airport elevation of %@ is above the manual’s %@ limit.": {
+      "comment": "A performance note. The arguments are the elevation and the highest approved.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Airport elevation of %1$@ is above the manual’s %2$@ limit."
+          }
+        }
+      }
+    },
+    "Airport elevation of %@ is below the manual’s %@ limit.": {
+      "comment": "A performance note. The arguments are the elevation and the lowest approved.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Airport elevation of %1$@ is below the manual’s %2$@ limit."
+          }
+        }
+      }
+    },
     "Airport elevation of %@ is outside the AFM’s %@ to %@ limits.": {
       "comment": "A performance note. The arguments are the elevation and the approved range.",
       "extractionState": "manual",
@@ -185,6 +221,30 @@
         }
       }
     },
+    "Temperature of %@ is above the manual’s %@ limit.": {
+      "comment": "A performance note. The arguments are the temperature and the maximum.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperature of %1$@ is above the manual’s %2$@ limit."
+          }
+        }
+      }
+    },
+    "Temperature of %@ is below the manual’s %@ limit.": {
+      "comment": "A performance note. The arguments are the temperature and the minimum.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperature of %1$@ is below the manual’s %2$@ limit."
+          }
+        }
+      }
+    },
     "Temperature of %@ is outside the AFM’s %@ to %@ limits.": {
       "comment": "A performance note. The arguments are the temperature and the approved range.",
       "extractionState": "manual",
@@ -289,6 +349,18 @@
           "stringUnit": {
             "state": "translated",
             "value": "Weight of %1$@ exceeds the %2$@ maximum."
+          }
+        }
+      }
+    },
+    "Wet Unpaved Surface": {
+      "comment": "A distance adjustment for a wet turf runway.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wet Unpaved Surface"
           }
         }
       }
