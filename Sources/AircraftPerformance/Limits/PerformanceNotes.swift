@@ -116,7 +116,7 @@ public enum PerformanceNotes {
   ) -> [PerformanceNote] {
     let limitations = inputs.settings.limitations
     return windNotes(inputs: inputs, limitations: limitations)
-      + environmentNotes(inputs: inputs, limitations: limitations)
+      + environmentNotes(for: operation, inputs: inputs, limitations: limitations)
       + weightNotes(for: operation, inputs: inputs, limitations: limitations)
       + qualifyingNotes(for: operation, inputs: inputs)
   }
@@ -235,25 +235,68 @@ public enum PerformanceNotes {
   ///
   /// The elevation limits bound only the tables; the regression model may extrapolate past them.
   private static func environmentNotes(
+    for operation: Operation,
     inputs: PerformanceNoteInputs,
     limitations: AircraftLimitations
   ) -> [PerformanceNote] {
     var notes: [PerformanceNote] = []
-    let elevation = inputs.runway.elevation,
-      approvedElevations = limitations.minAirportElevation...limitations.maxAirportElevation
-    if inputs.settings.modelKind == .tabular, !approvedElevations.contains(elevation) {
-      notes.append(.airportElevationOutsideLimits(elevation: elevation, limits: approvedElevations))
-    }
-
-    let approvedTemperatures = limitations.minTemperature...limitations.maxTemperature
-    if let temperature = inputs.conditions.temperature,
-      !approvedTemperatures.contains(temperature)
+    let elevation = inputs.runway.elevation
+    if inputs.settings.modelKind == .tabular,
+      !limitations.isApproved(elevation: elevation, for: operation)
     {
       notes.append(
-        .temperatureOutsideLimits(temperature: temperature, limits: approvedTemperatures)
+        elevationNote(
+          elevation,
+          lowest: limitations.minAirportElevation,
+          highest: limitations.maxElevation(for: operation)
+        )
+      )
+    }
+
+    if let temperature = inputs.conditions.temperature,
+      !limitations.isApproved(temperature: temperature)
+    {
+      notes.append(
+        temperatureNote(
+          temperature,
+          lowest: limitations.minTemperature,
+          highest: limitations.maxTemperature
+        )
       )
     }
     return notes
+  }
+
+  /// The note for an elevation outside the approved ones, stating whichever bounds there are.
+  private static func elevationNote(
+    _ elevation: Measurement<UnitLength>,
+    lowest: Measurement<UnitLength>?,
+    highest: Measurement<UnitLength>?
+  ) -> PerformanceNote {
+    if let lowest, let highest {
+      return .airportElevationOutsideLimits(elevation: elevation, limits: lowest...highest)
+    }
+    if let highest, elevation > highest {
+      return .airportElevationAboveLimit(elevation: elevation, limit: highest)
+    }
+    guard let lowest else { preconditionFailure("An unapproved elevation breaches a limit") }
+    return .airportElevationBelowLimit(elevation: elevation, limit: lowest)
+  }
+
+  /// The note for a temperature outside the limits, stating whichever bounds there are.
+  private static func temperatureNote(
+    _ temperature: Measurement<UnitTemperature>,
+    lowest: Measurement<UnitTemperature>?,
+    highest: Measurement<UnitTemperature>?
+  ) -> PerformanceNote {
+    if let lowest, let highest {
+      return .temperatureOutsideLimits(temperature: temperature, limits: lowest...highest)
+    }
+    if let highest, temperature > highest {
+      return .temperatureAboveLimit(temperature: temperature, limit: highest)
+    }
+    guard let lowest else { preconditionFailure("An unapproved temperature breaches a limit") }
+    return .temperatureBelowLimit(temperature: temperature, limit: lowest)
   }
 
   private static func weightNotes(

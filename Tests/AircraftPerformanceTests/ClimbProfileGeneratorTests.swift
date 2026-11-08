@@ -164,7 +164,7 @@ struct ClimbProfileGeneratorTests {
       let climbData = dp.climbData(for: .takeoff)
       #expect(
         climbData.indicatedAirspeedKts.nominal?.isApproximatelyEqual(
-          to: ClimbProfileGenerator.takeoffClimbSpeedKIAS,
+          to: 91,
           absoluteTolerance: 0.001
         ) == true
       )
@@ -187,13 +187,13 @@ struct ClimbProfileGeneratorTests {
       let ice = dp.climbData(for: .enrouteObstacle(antiIce: true))
       #expect(
         normal.indicatedAirspeedKts.nominal?.isApproximatelyEqual(
-          to: ClimbProfileGenerator.obstacleClimbSpeedKIAS,
+          to: 120,
           absoluteTolerance: 0.001
         ) == true
       )
       #expect(
         ice.indicatedAirspeedKts.nominal?.isApproximatelyEqual(
-          to: ClimbProfileGenerator.obstacleClimbSpeedKIAS,
+          to: 120,
           absoluteTolerance: 0.001
         ) == true
       )

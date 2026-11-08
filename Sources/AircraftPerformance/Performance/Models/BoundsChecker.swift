@@ -23,7 +23,8 @@ enum BoundsStatus: Sendable {
 /// ## Usage
 ///
 /// ```swift
-/// let checker = try BoundsChecker(loader: DataTableLoader(aircraft: .sf50(.g1)))
+/// let aircraft = Aircraft.sf50(.g1)
+/// let checker = try BoundsChecker(data: aircraft.definition.data(), definition: aircraft.definition)
 ///
 /// let status = checker.takeoffBoundsStatus(
 ///     weight: 5800,
@@ -38,44 +39,46 @@ enum BoundsStatus: Sendable {
 struct BoundsChecker: Sendable {
 
   private let takeoffRunData: DataTable
-  private let landingRunData_flaps100: DataTable
-  private let landingRunData_flaps50: DataTable
-  private let landingRunData_flaps50Ice: DataTable
-  private let enrouteClimbData_normal: [EnrouteClimbQuantity: DataTable]
-  private let enrouteClimbData_iceContaminated: [EnrouteClimbQuantity: DataTable]
   private let takeoffClimbGradientData: DataTable
-  private let obstacleClimbGradientData_normal: DataTable
-  private let obstacleClimbGradientData_iceContaminated: DataTable
 
-  init(loader: DataTableLoader) throws {
-    // Load takeoff data for bounds
+  /// The landing ground run table each landing flap setting is read from.
+  private let landingRunData: [FlapSetting: DataTable]
+
+  /// The en route climb tables of each schedule the manual has, keyed by whether it is the
+  /// ice-contaminated one.
+  private let enrouteClimbData: [Bool: [EnrouteClimbQuantity: DataTable]]
+
+  /// The en route obstacle climb gradient tables, keyed as ``enrouteClimbData`` is.
+  private let obstacleClimbGradientData: [Bool: DataTable]
+
+  init(data: AircraftData, definition: any AircraftDefinition) throws {
+    let loader = DataTableLoader(data: data)
     takeoffRunData = try loader.loadTakeoffRunData()
     takeoffClimbGradientData = try loader.loadTakeoffClimbGradientData()
 
-    // Load landing data for each flap configuration
-    landingRunData_flaps100 = try loader.loadLandingRunData(landingPrefix: "100")
-    landingRunData_flaps50 = try loader.loadLandingRunData(landingPrefix: "50")
-    landingRunData_flaps50Ice = try loader.loadLandingRunData(landingPrefix: "50 ice")
+    landingRunData = try definition.landingFlapSettings.reduce(into: [:]) { tables, flapSetting in
+      let tableFlapSetting = definition.landingTables(for: flapSetting).flapSetting
+      tables[flapSetting] = try loader.loadLandingRunData(
+        landingPrefix: loader.tablePrefix(for: tableFlapSetting)
+      )
+    }
 
-    // Load en route climb data. Each quantity is bounded by its own table: under the
+    // Each en route climb quantity is bounded by its own table: under the SF50's
     // ice-contaminated schedule the rate is tabulated 2,000 ft higher and 2 °C colder than the
     // gradient, and bounding one by the other would refuse a figure the AFM does give.
-    func enrouteClimbData(iceContaminated: Bool) throws -> [EnrouteClimbQuantity: DataTable] {
-      [
-        .gradient: try loader.loadEnrouteClimbGradientData(iceContaminated: iceContaminated),
-        .rate: try loader.loadEnrouteClimbRateData(iceContaminated: iceContaminated),
-        .speed: try loader.loadEnrouteClimbSpeedData(iceContaminated: iceContaminated)
+    let schedules = [false, true].compactMap { iceContaminated in
+      definition.enrouteClimbNames(iceContaminated: iceContaminated).map { (iceContaminated, $0) }
+    }
+    enrouteClimbData = try schedules.reduce(into: [:]) { tables, schedule in
+      tables[schedule.0] = [
+        .gradient: try loader.loadEnrouteClimbGradientData(names: schedule.1),
+        .rate: try loader.loadEnrouteClimbRateData(names: schedule.1),
+        .speed: try loader.loadEnrouteClimbSpeedData(names: schedule.1)
       ]
     }
-    enrouteClimbData_normal = try enrouteClimbData(iceContaminated: false)
-    enrouteClimbData_iceContaminated = try enrouteClimbData(iceContaminated: true)
-
-    obstacleClimbGradientData_normal = try loader.loadEnrouteObstacleClimbGradientData(
-      iceContaminated: false
-    )
-    obstacleClimbGradientData_iceContaminated = try loader.loadEnrouteObstacleClimbGradientData(
-      iceContaminated: true
-    )
+    obstacleClimbGradientData = try schedules.reduce(into: [:]) { tables, schedule in
+      tables[schedule.0] = try loader.loadEnrouteObstacleClimbGradientData(names: schedule.1)
+    }
   }
 
   /// Returns the bounds status for takeoff parameters.
@@ -110,13 +113,7 @@ struct BoundsChecker: Sendable {
     temperature: Double,
     flapSetting: FlapSetting
   ) -> BoundsStatus {
-    let dataTable: DataTable =
-      switch flapSetting {
-        case .flaps100: landingRunData_flaps100
-        case .flaps50, .flapsUp: landingRunData_flaps50
-        case .flaps50Ice, .flapsUpIce: landingRunData_flaps50Ice
-      }
-
+    guard let dataTable = landingRunData[flapSetting] else { return .withinBounds }
     return checkBoundsStatus(
       weight: weight,
       altitude: altitude,
@@ -145,9 +142,8 @@ struct BoundsChecker: Sendable {
     temperature: Double,
     iceContaminated: Bool
   ) -> BoundsStatus {
-    let tables = iceContaminated ? enrouteClimbData_iceContaminated : enrouteClimbData_normal
-    guard let dataTable = tables[quantity] else {
-      preconditionFailure("No en route climb table for \(quantity)")
+    guard let dataTable = enrouteClimbData[iceContaminated]?[quantity] else {
+      return .withinBounds
     }
 
     return checkBoundsStatus(
@@ -186,12 +182,12 @@ struct BoundsChecker: Sendable {
     temperature: Double,
     iceContaminated: Bool
   ) -> BoundsStatus {
-    checkBoundsStatus(
+    guard let dataTable = obstacleClimbGradientData[iceContaminated] else { return .withinBounds }
+    return checkBoundsStatus(
       weight: weight,
       altitude: altitude,
       temperature: temperature,
-      dataTable: iceContaminated
-        ? obstacleClimbGradientData_iceContaminated : obstacleClimbGradientData_normal
+      dataTable: dataTable
     )
   }
 

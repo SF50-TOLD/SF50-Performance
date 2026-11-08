@@ -23,6 +23,13 @@ struct SF50Definition: AircraftDefinition {
 
   let takeoffFlapSettings: [FlapSetting] = [.flaps50]
 
+  let correctionScheme = CorrectionScheme.multiplicative
+
+  /// Vx, which the AFM gives as one speed.
+  let takeoffClimbSpeedKIAS: Double? = 91
+
+  let obstacleClimbSpeedKIAS: Double? = 120
+
   let landingFlapSettings = FlapSetting.allCases
 
   var configurationSelection: ConfigurationSelection {
@@ -69,6 +76,20 @@ struct SF50Definition: AircraftDefinition {
   }
 
   func package() throws -> DataPackage { try DataPackage.sf50.get() }
+
+  func enrouteClimbNames(iceContaminated: Bool) -> EnrouteClimbNames? {
+    iceContaminated
+      ? .init(
+        tableDirectory: "enroute climb/ice contaminated",
+        equationSuffix: "-ice",
+        obstacleTableDirectory: "enroute obstacle climb/ice"
+      )
+      : .init(
+        tableDirectory: "enroute climb/normal",
+        equationSuffix: "-normal",
+        obstacleTableDirectory: "enroute obstacle climb/normal"
+      )
+  }
 
   /// The AFM gives a Flaps UP landing only as a factor on the Flaps 50% total distance (or the
   /// Flaps 50% ice one), and publishes no Flaps UP ground run.

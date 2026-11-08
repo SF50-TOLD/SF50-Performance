@@ -28,6 +28,13 @@ open class BasePerformanceModel: PerformanceModel {
 
   // MARK: - Adjustment Generator
 
+  /// How the aircraft's manual combines its corrections. Set by subclass initializers.
+  var correctionScheme = CorrectionScheme.multiplicative
+
+  /// Whether the aircraft's manual corrects for runway contamination. Set by subclass
+  /// initializers.
+  var correctsContamination = true
+
   var adjustmentGenerator: PerformanceAdjustmentGenerator {
     PerformanceAdjustmentGenerator(
       headwind: headwind,
@@ -35,7 +42,10 @@ open class BasePerformanceModel: PerformanceModel {
       uphill: uphill,
       downhill: downhill,
       isTurf: runway.isTurf,
-      contamination: notam?.contamination
+      contamination: notam?.contamination,
+      scheme: correctionScheme,
+      correctsContamination: correctsContamination,
+      airConditionerOn: configuration.airConditionerOn
     )
   }
 
@@ -74,6 +84,9 @@ open class BasePerformanceModel: PerformanceModel {
   open var meetsGoAroundClimbGradient: Value<Bool> {
     .notAvailable
   }
+
+  open var balkedLandingClimbGradientFtNM: Value<Double> { .notAvailable }
+  open var balkedLandingClimbRateFtMin: Value<Double> { .notAvailable }
 
   open var enrouteClimbGradientFtNM: Value<Double> { .notAvailable }
   open var enrouteClimbRateFtMin: Value<Double> { .notAvailable }
@@ -177,17 +190,52 @@ open class BasePerformanceModel: PerformanceModel {
   open func computeDistance(for target: DistanceTarget)
     -> (value: Value<Double>, breakdown: DistanceBreakdown)
   {
-    var value = baseValue(for: target)
-    let baseFt = value
-    var adjustments: [PerformanceAdjustment] = []
+    let generator = adjustmentGenerator,
+      baseFt = baseValue(for: target)
+    var value = baseFt,
+      adjustments: [PerformanceAdjustment] = []
 
-    for kind in adjustmentGenerator.adjustmentKinds(for: target) {
+    func apply(_ kind: AdjustmentKind) {
       let (newValue, multiplier) = applyAdjustment(kind, to: value, target: target)
       value = newValue
       adjustments.append(.init(kind: kind, multiplier: multiplier, resultFt: value))
     }
 
+    let kinds = generator.adjustmentKinds(for: target)
+    kinds.filter { $0 != .airConditioner }.forEach(apply)
+    if target.isTotalDistance, correctionScheme == .groundRollReferenced {
+      for (kind, addition) in groundRunAdditions(for: target, generator: generator) {
+        let previous = value
+        value += addition
+        adjustments.append(
+          .init(
+            kind: kind,
+            multiplier: effectiveMultiplier(from: previous, to: value),
+            resultFt: value
+          )
+        )
+      }
+    }
+    kinds.filter { $0 == .airConditioner }.forEach(apply)
+
     return (value, .init(baseFt: baseFt, adjustments: adjustments))
+  }
+
+  /// The feet each ground run correction that carries to the total distance adds to the ground
+  /// run, applying the ground run's corrections in turn.
+  private func groundRunAdditions(
+    for target: DistanceTarget,
+    generator: PerformanceAdjustmentGenerator
+  ) -> [(kind: AdjustmentKind, addition: Value<Double>)] {
+    let groundRun = target.groundRun
+    var run = baseValue(for: groundRun),
+      additions: [(kind: AdjustmentKind, addition: Value<Double>)] = []
+    for kind in generator.adjustmentKinds(for: groundRun) where kind != .airConditioner {
+      let corrected = applyAdjustment(kind, to: run, target: groundRun).result
+      if generator.isCarriedToTotalDistance(kind) { additions.append((kind, corrected - run)) }
+      run = corrected
+    }
+    return additions
   }
 
   /// Returns the base (unadjusted) distance for the given target.
@@ -210,6 +258,9 @@ open class BasePerformanceModel: PerformanceModel {
     switch kind {
       case .contamination(let contamination):
         return applyContamination(contamination, to: value, target: target)
+      case .airConditioner:
+        let result = value + (correctionFactor(.airConditioner, for: target) ?? .notAvailable)
+        return (result, effectiveMultiplier(from: value, to: result))
       default:
         let multiplier = adjustmentMultiplier(for: kind, target: target)
         var result = value
@@ -220,18 +271,43 @@ open class BasePerformanceModel: PerformanceModel {
 
   /// Returns the multiplicative adjustment factor for a given adjustment kind and target.
   ///
-  /// Subclasses must override this to provide model-specific factors. Regression models
-  /// return scalar factors wrapped in `.value()`, while tabular models return factors
-  /// interpolated from data tables.
+  /// The factor comes from ``correctionFactor(_:for:)``: a regression model evaluates it from an
+  /// equation, a tabular model interpolates it from a table. Slope corrections lengthen a takeoff
+  /// run uphill and a landing run downhill.
   open func adjustmentMultiplier(
     for kind: AdjustmentKind,
     target: DistanceTarget
   ) -> Value<Double> {
-    assertionFailure(
-      "\(Self.self) must override adjustmentMultiplier(for: \(kind), target: \(target))"
-    )
-    return .value(1.0)
+    guard let correction = CorrectionFactor(kind),
+      let factor = correctionFactor(correction, for: target)
+    else {
+      assertionFailure("\(Self.self) has no factor for \(kind) on \(target)")
+      return .notAvailable
+    }
+    switch kind {
+      case .headwind:
+        return PerformanceAdjustments.windAdjustment(factor: factor, wind: -headwind)
+      case .tailwind:
+        return PerformanceAdjustments.windAdjustment(factor: factor, wind: tailwind)
+      case .uphillGradient:
+        return PerformanceAdjustments.gradientAdjustment(
+          factor: factor,
+          gradient: target.isLanding ? -uphill : uphill
+        )
+      case .downhillGradient:
+        return PerformanceAdjustments.gradientAdjustment(
+          factor: factor,
+          gradient: target.isLanding ? downhill : -downhill
+        )
+      default:
+        return PerformanceAdjustments.surfaceAdjustment(factor: factor)
+    }
   }
+
+  /// A correction's factor for a distance, or `nil` if the aircraft's data has none.
+  ///
+  /// Subclasses override this to read the factor from their own data.
+  func correctionFactor(_: CorrectionFactor, for _: DistanceTarget) -> Value<Double>? { nil }
 
   /// Applies a contamination adjustment to a distance value.
   ///

@@ -122,6 +122,12 @@ struct AircraftData: Sendable {
     return table
   }
 
+  /// The table at a path, or `nil` if the configuration has none there.
+  func tableIfPresent(_ path: String) -> DataTable? { tables[path] }
+
+  /// The regression equation in a file, or `nil` if the configuration has none.
+  func equationIfPresent(_ filename: String) -> RegressionEquation? { equations[filename] }
+
   /// The residuals of a table, keyed by the document the configuration reads it from.
   ///
   /// - Parameter path: The table's path, such as `landing/contamination/water.csv`.

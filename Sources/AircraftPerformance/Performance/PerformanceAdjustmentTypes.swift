@@ -2,7 +2,7 @@ public import Foundation
 public import MeasurementKit
 
 /// Which distance is being computed.
-public enum DistanceTarget: Sendable {
+public enum DistanceTarget: Sendable, CaseIterable {
   case takeoffRun
   case takeoffDistance
   case landingRun
@@ -20,6 +20,8 @@ public enum AdjustmentKind: Sendable, Equatable {
   case uphillGradient(Float)
   case downhillGradient(Float)
   case unpavedSurface
+  case wetUnpavedSurface
+  case airConditioner
   case contamination(Contamination)
   case safetyMargin(Double)
   case VREFAdditive(Measurement<UnitSpeed>)
@@ -68,6 +70,18 @@ public enum AdjustmentKind: Sendable, Equatable {
           localized: "Unpaved Surface",
           bundle: .module,
           comment: "A distance adjustment for a turf runway."
+        )
+      case .wetUnpavedSurface:
+        return String(
+          localized: "Wet Unpaved Surface",
+          bundle: .module,
+          comment: "A distance adjustment for a wet turf runway."
+        )
+      case .airConditioner:
+        return String(
+          localized: "Air Conditioner On",
+          bundle: .module,
+          comment: "A distance adjustment for running the air conditioner during takeoff."
         )
       case .contamination:
         return String(
@@ -165,10 +179,30 @@ public enum PerformanceNote: Sendable, Equatable {
     elevation: Measurement<UnitLength>,
     limits: ClosedRange<Measurement<UnitLength>>
   )
+  /// The airport lies above the highest elevation the manual approves, where it sets no lowest.
+  case airportElevationAboveLimit(
+    elevation: Measurement<UnitLength>,
+    limit: Measurement<UnitLength>
+  )
+  /// The airport lies below the lowest elevation the manual approves, where it sets no highest.
+  case airportElevationBelowLimit(
+    elevation: Measurement<UnitLength>,
+    limit: Measurement<UnitLength>
+  )
   /// The temperature lies outside the AFM's operating limits.
   case temperatureOutsideLimits(
     temperature: Measurement<UnitTemperature>,
     limits: ClosedRange<Measurement<UnitTemperature>>
+  )
+  /// The temperature is above the manual's maximum, where it sets no minimum.
+  case temperatureAboveLimit(
+    temperature: Measurement<UnitTemperature>,
+    limit: Measurement<UnitTemperature>
+  )
+  /// The temperature is below the manual's minimum, where it sets no maximum.
+  case temperatureBelowLimit(
+    temperature: Measurement<UnitTemperature>,
+    limit: Measurement<UnitTemperature>
   )
   case takeoffDistanceExceedsAvailable(
     required: Measurement<UnitLength>,
@@ -204,8 +238,8 @@ public enum PerformanceNote: Sendable, Equatable {
         .info
       case .crosswindExceedance, .tailwindExceedance,
         .weightAboveMax, .zeroFuelWeightExceeded, .fuelExceedsCapacity,
-        .airportElevationOutsideLimits,
-        .temperatureOutsideLimits,
+        .airportElevationOutsideLimits, .airportElevationAboveLimit, .airportElevationBelowLimit,
+        .temperatureOutsideLimits, .temperatureAboveLimit, .temperatureBelowLimit,
         .takeoffDistanceExceedsAvailable,
         .takeoffRunExceedsAvailable,
         .landingDistanceExceedsAvailable,
@@ -231,7 +265,9 @@ public enum PerformanceNote: Sendable, Equatable {
         .VREFAdditiveApproximate, .pressureAltitudeFromFieldElevation, .doesNotMeetGoAroundGradient:
         informationalDescription
       case .crosswindExceedance, .tailwindExceedance, .weightAboveMax, .zeroFuelWeightExceeded,
-        .fuelExceedsCapacity, .airportElevationOutsideLimits, .temperatureOutsideLimits:
+        .fuelExceedsCapacity, .airportElevationOutsideLimits, .airportElevationAboveLimit,
+        .airportElevationBelowLimit, .temperatureOutsideLimits, .temperatureAboveLimit,
+        .temperatureBelowLimit:
         limitationDescription(units: units)
       case .takeoffDistanceExceedsAvailable, .takeoffRunExceedsAvailable,
         .landingDistanceExceedsAvailable, .insufficientClimbGradient,
@@ -352,6 +388,38 @@ extension PerformanceNote {
             "Airport elevation of \(elevation) is outside the AFM’s \(lower) to \(upper) limits.",
           bundle: .module,
           comment: "A performance note. The arguments are the elevation and the approved range."
+        )
+      case let .airportElevationAboveLimit(elevation, limit):
+        let elevation = MeasurementText.text(elevation, in: units.height),
+          limit = MeasurementText.text(limit, in: units.height)
+        return String(
+          localized: "Airport elevation of \(elevation) is above the manual’s \(limit) limit.",
+          bundle: .module,
+          comment: "A performance note. The arguments are the elevation and the highest approved."
+        )
+      case let .airportElevationBelowLimit(elevation, limit):
+        let elevation = MeasurementText.text(elevation, in: units.height),
+          limit = MeasurementText.text(limit, in: units.height)
+        return String(
+          localized: "Airport elevation of \(elevation) is below the manual’s \(limit) limit.",
+          bundle: .module,
+          comment: "A performance note. The arguments are the elevation and the lowest approved."
+        )
+      case let .temperatureAboveLimit(temperature, limit):
+        let temperature = MeasurementText.text(temperature, in: units.temperature, width: .narrow),
+          limit = MeasurementText.text(limit, in: units.temperature, width: .narrow)
+        return String(
+          localized: "Temperature of \(temperature) is above the manual’s \(limit) limit.",
+          bundle: .module,
+          comment: "A performance note. The arguments are the temperature and the maximum."
+        )
+      case let .temperatureBelowLimit(temperature, limit):
+        let temperature = MeasurementText.text(temperature, in: units.temperature, width: .narrow),
+          limit = MeasurementText.text(limit, in: units.temperature, width: .narrow)
+        return String(
+          localized: "Temperature of \(temperature) is below the manual’s \(limit) limit.",
+          bundle: .module,
+          comment: "A performance note. The arguments are the temperature and the minimum."
         )
       case let .temperatureOutsideLimits(temperature, limits):
         let temperature = MeasurementText.text(temperature, in: units.temperature, width: .narrow),

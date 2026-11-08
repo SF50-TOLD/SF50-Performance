@@ -32,16 +32,25 @@ public struct Configuration: Sendable, Hashable {
   /// Ice protection system (IPS) enabled for takeoff/enroute climb
   public let iceProtection: Bool
 
+  /// Air conditioner on during takeoff, on aircraft whose manuals correct for it
+  public let airConditionerOn: Bool
+
   /// Creates a new aircraft configuration.
   /// - Parameters:
   ///   - weight: Aircraft gross weight
   ///   - flapSetting: Flap deflection setting
   ///   - iceProtection: Ice protection system enabled (default: false)
-  public init(weight: Measurement<UnitMass>, flapSetting: FlapSetting, iceProtection: Bool = false)
-  {
+  ///   - airConditionerOn: Air conditioner on during takeoff (default: false)
+  public init(
+    weight: Measurement<UnitMass>,
+    flapSetting: FlapSetting,
+    iceProtection: Bool = false,
+    airConditionerOn: Bool = false
+  ) {
     self.weight = weight
     self.flapSetting = flapSetting
     self.iceProtection = iceProtection
+    self.airConditionerOn = airConditionerOn
   }
 }
 

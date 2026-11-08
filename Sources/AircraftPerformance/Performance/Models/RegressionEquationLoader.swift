@@ -61,36 +61,6 @@ struct RegressionEquationLoader {
     try loadEquation(filename: "takeoff-climb-rate.json")
   }
 
-  // MARK: - Takeoff Adjustment Factor Equations
-
-  func loadTakeoffRunHeadwindFactorEquation() throws -> RegressionEquation {
-    try loadEquation(filename: "takeoff-run-headwind-factor.json")
-  }
-
-  func loadTakeoffRunTailwindFactorEquation() throws -> RegressionEquation {
-    try loadEquation(filename: "takeoff-run-tailwind-factor.json")
-  }
-
-  func loadTakeoffRunUphillFactorEquation() throws -> RegressionEquation {
-    try loadEquation(filename: "takeoff-run-uphill-factor.json")
-  }
-
-  func loadTakeoffRunDownhillFactorEquation() throws -> RegressionEquation {
-    try loadEquation(filename: "takeoff-run-downhill-factor.json")
-  }
-
-  func loadTakeoffDistanceHeadwindFactorEquation() throws -> RegressionEquation {
-    try loadEquation(filename: "takeoff-distance-headwind-factor.json")
-  }
-
-  func loadTakeoffDistanceTailwindFactorEquation() throws -> RegressionEquation {
-    try loadEquation(filename: "takeoff-distance-tailwind-factor.json")
-  }
-
-  func loadTakeoffDistanceUnpavedFactorEquation() throws -> RegressionEquation {
-    try loadEquation(filename: "takeoff-distance-unpaved-factor.json")
-  }
-
   // MARK: - Landing Equations
 
   func loadLandingRunEquation(flapSetting: FlapSetting) throws -> RegressionEquation {
@@ -116,45 +86,6 @@ struct RegressionEquationLoader {
     }
   }
 
-  // MARK: - Landing Adjustment Factor Equations
-
-  func loadLandingRunHeadwindFactorEquation(flapSetting: FlapSetting) throws -> RegressionEquation {
-    let filename = "landing-run-headwind-factor-\(flapSetting.regressionFileSuffix).json"
-    return try loadEquation(filename: filename)
-  }
-
-  func loadLandingRunTailwindFactorEquation(flapSetting: FlapSetting) throws -> RegressionEquation {
-    let filename = "landing-run-tailwind-factor-\(flapSetting.regressionFileSuffix).json"
-    return try loadEquation(filename: filename)
-  }
-
-  func loadLandingRunUphillFactorEquation(flapSetting: FlapSetting) throws -> RegressionEquation {
-    let filename = "landing-run-uphill-factor-\(flapSetting.regressionFileSuffix).json"
-    return try loadEquation(filename: filename)
-  }
-
-  func loadLandingRunDownhillFactorEquation() throws -> RegressionEquation {
-    try loadEquation(filename: "landing-run-downhill-factor.json")
-  }
-
-  func loadLandingDistanceHeadwindFactorEquation(
-    flapSetting: FlapSetting
-  ) throws -> RegressionEquation {
-    let filename = "landing-distance-headwind-factor-\(flapSetting.regressionFileSuffix).json"
-    return try loadEquation(filename: filename)
-  }
-
-  func loadLandingDistanceTailwindFactorEquation(
-    flapSetting: FlapSetting
-  ) throws -> RegressionEquation {
-    let filename = "landing-distance-tailwind-factor-\(flapSetting.regressionFileSuffix).json"
-    return try loadEquation(filename: filename)
-  }
-
-  func loadLandingDistanceUnpavedFactorEquation() throws -> RegressionEquation {
-    try loadEquation(filename: "landing-distance-unpaved-factor.json")
-  }
-
   // MARK: - Vref Equations
 
   func loadVrefEquation(flapSetting: FlapSetting) throws -> RegressionEquation {
@@ -164,27 +95,53 @@ struct RegressionEquationLoader {
 
   // MARK: - En Route Climb Equations
 
-  func loadEnrouteClimbGradientEquation(iceContaminated: Bool) throws -> RegressionEquation {
-    let suffix = iceContaminated ? "ice" : "normal"
-    return try loadEquation(filename: "enroute-climb-gradient-\(suffix).json")
+  func loadEnrouteClimbGradientEquation(names: EnrouteClimbNames) throws -> RegressionEquation {
+    try loadEquation(filename: "enroute-climb-gradient\(names.equationSuffix).json")
   }
 
-  func loadEnrouteClimbRateEquation(iceContaminated: Bool) throws -> RegressionEquation {
-    let suffix = iceContaminated ? "ice" : "normal"
-    return try loadEquation(filename: "enroute-climb-rate-\(suffix).json")
+  func loadEnrouteClimbRateEquation(names: EnrouteClimbNames) throws -> RegressionEquation {
+    try loadEquation(filename: "enroute-climb-rate\(names.equationSuffix).json")
   }
 
-  func loadEnrouteClimbSpeedEquation(iceContaminated: Bool) throws -> RegressionEquation {
-    let suffix = iceContaminated ? "ice" : "normal"
-    return try loadEquation(filename: "enroute-climb-speed-\(suffix).json")
+  func loadEnrouteClimbSpeedEquation(names: EnrouteClimbNames) throws -> RegressionEquation {
+    try loadEquation(filename: "enroute-climb-speed\(names.equationSuffix).json")
   }
 
-  // MARK: - En Route Obstacle Climb Equations
-
-  func loadEnrouteObstacleClimbGradientEquation(iceContaminated: Bool) throws -> RegressionEquation
+  func loadEnrouteObstacleClimbGradientEquation(names: EnrouteClimbNames) throws
+    -> RegressionEquation
   {
-    let suffix = iceContaminated ? "ice" : "normal"
-    return try loadEquation(filename: "enroute-obstacle-climb-gradient-\(suffix).json")
+    try loadEquation(filename: "enroute-obstacle-climb-gradient\(names.equationSuffix).json")
+  }
+
+  // MARK: - Climb Equations
+
+  func loadTakeoffClimbSpeedEquation() throws -> RegressionEquation {
+    try loadEquation(filename: "takeoff-climb-speed.json")
+  }
+
+  func loadBalkedLandingClimbGradientEquation() throws -> RegressionEquation {
+    try loadEquation(filename: "balked-landing-climb-gradient.json")
+  }
+
+  func loadBalkedLandingClimbRateEquation() throws -> RegressionEquation {
+    try loadEquation(filename: "balked-landing-climb-rate.json")
+  }
+
+  // MARK: - Correction Factor Equations
+
+  /// The equation for a correction's factor on a distance, or `nil` if the data has none.
+  ///
+  /// - Parameters:
+  ///   - factor: The correction.
+  ///   - target: The distance it corrects.
+  ///   - landingFlapSetting: The flap setting whose landing equations are read.
+  func correctionFactorEquation(
+    _ factor: CorrectionFactor,
+    for target: DistanceTarget,
+    landingFlapSetting: FlapSetting
+  ) -> RegressionEquation? {
+    factor.equationFilenames(for: target, flapSuffix: landingFlapSetting.regressionFileSuffix)
+      .lazy.compactMap { data.equationIfPresent($0) }.first
   }
 
   // MARK: - Private Helpers
