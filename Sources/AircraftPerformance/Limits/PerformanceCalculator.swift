@@ -63,6 +63,8 @@ public struct PerformanceCalculator: Sendable {
    *   - conditions: The atmospheric conditions.
    *   - weight: The takeoff weight.
    *   - runway: The runway, with any NOTAM restricting it.
+   *   - airConditionerOn: Whether the air conditioner runs during the takeoff, for an aircraft
+   *     with ``PerformanceCapability/airConditionerCorrection``.
    *   - safetyFactor: The multiplier for the distances, or `nil` for the settings' dry factor.
    * - Returns: The takeoff report.
    * - Throws: ``PerformanceDataError`` if the bundled performance data could not be read.
@@ -71,11 +73,16 @@ public struct PerformanceCalculator: Sendable {
     conditions: Conditions,
     weight: Measurement<UnitMass>,
     runway: RunwayInput,
+    airConditionerOn: Bool = false,
     safetyFactor: Double? = nil
   ) throws -> TakeoffReport {
     let model = try model(
       conditions: conditions,
-      configuration: .init(weight: weight, flapSetting: Self.takeoffFlapSetting),
+      configuration: .init(
+        weight: weight,
+        flapSetting: Self.takeoffFlapSetting,
+        airConditionerOn: airConditionerOn
+      ),
       runway: runway
     )
     return try service.calculateTakeoff(

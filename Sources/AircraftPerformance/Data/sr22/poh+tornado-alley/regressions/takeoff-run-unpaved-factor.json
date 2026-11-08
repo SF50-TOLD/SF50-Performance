@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "name": "takeoff-run-unpaved-factor",
+  "description": "Dry grass adjustment for takeoff ground roll",
+  "type": "constant",
+  "variables": [],
+  "uncertainty_key": null,
+  "equation": {
+    "value": 0.2
+  }
+}

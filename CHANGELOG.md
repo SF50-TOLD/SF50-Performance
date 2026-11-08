@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Added
+
+- The Cirrus SR22 without the G3 wing, from POH 13772-001 Rev A10, as `Aircraft.sr22(_:)` with
+  `SR22Options` for the Hartzell composite propeller (13772-129) and Tornado Alley
+  turbonormalizing (Report 215-6) supplements, in any combination. Its corrections are stated
+  against the ground roll, and the feet they add carry into the total distance
+- Balked landing climb gradient and rate (`PerformanceModel.balkedLandingClimbGradientFtNM` and
+  `balkedLandingClimbRateFtMin`), and `PerformanceCalculator.timeFuelDistanceToClimb(from:to:leanOfPeak:)`
+- Wet unpaved runway and air conditioner corrections (`AdjustmentKind.wetUnpavedSurface`,
+  `.airConditioner`, `Configuration.airConditionerOn`, and `airConditionerOn:` on `takeoff`)
+- One-sided limit notes (`airportElevationAboveLimit`, `temperatureBelowLimit` and so on) for
+  manuals that set only one bound
+
 ### Changed
 
 - The package, product and module are renamed `AircraftPerformance`, since the package is no
@@ -13,7 +26,12 @@
   (`capabilities`), which flap settings they have takeoff and landing figures for, and which
   manuals the figures come from (`configurationInfo()`)
 - Limitations are an `AircraftLimitations` value instead of a type conforming to `Limitations`.
-  The demonstrated crosswind is looked up by flap setting, and the zero fuel weight is optional
+  The demonstrated crosswind is looked up by flap setting. The zero fuel weight, the airport
+  elevation and temperature bounds are optional, and `maxTakeoffElevation` holds a takeoff-only
+  ceiling
+- `PerformanceAdjustmentGenerator` and `ClimbProfileGenerator`'s SF50 climb speed constants are
+  no longer public
+- A regression figure's uncertainty no longer varies in its last digit from run to run
 
 | 1.x | 2.0 |
 |---|---|
@@ -24,7 +42,7 @@
 | `aircraftType:` arguments and `PerformanceSettings.aircraftType` | `aircraft:` and `.aircraft` |
 | `any Limitations.Type`, `LimitationsG1`, `LimitationsG2` | `AircraftLimitations`, from `Aircraft.limitations` |
 | `maxCrosswind_flaps50`, `maxCrosswind_flaps100` | `maxCrosswind(for:)`, optional |
-| `maxZeroFuelWeight` | `maxZeroFuelWeight`, optional |
+| `maxZeroFuelWeight`, `min`/`maxAirportElevation`, `min`/`maxTemperature` | optional |
 
 ## [1.0.0] - 2026-11-04
 

@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "name": "climb-time-lean-of-peak",
+  "description": "Time to climb from sea level, lean of peak technique",
+  "type": "polynomial",
+  "variables": [
+    "altitude"
+  ],
+  "uncertainty_key": "tornado-alley/climb/time fuel distance - lean of peak/time",
+  "equation": {
+    "intercept": 0.2316890799521083,
+    "terms": [
+      {
+        "coefficient": 0.001166390681035303,
+        "powers": [
+          1
+        ]
+      },
+      {
+        "coefficient": 4.618282041406695e-08,
+        "powers": [
+          2
+        ]
+      },
+      {
+        "coefficient": -1.0401038599095692e-12,
+        "powers": [
+          3
+        ]
+      }
+    ]
+  }
+}

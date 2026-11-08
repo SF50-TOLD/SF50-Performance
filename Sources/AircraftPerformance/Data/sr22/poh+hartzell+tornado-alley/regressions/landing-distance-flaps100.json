@@ -1,0 +1,79 @@
+{
+  "version": "1.0",
+  "name": "landing-distance-flaps100",
+  "description": "Landing distance over 50ft obstacle at 3400 lb - flaps 100%",
+  "type": "polynomial",
+  "variables": [
+    "altitude",
+    "temperature"
+  ],
+  "uncertainty_key": "poh/landing/100/total distance",
+  "equation": {
+    "intercept": 2284.9497918189095,
+    "terms": [
+      {
+        "coefficient": 0.049165131846192346,
+        "powers": [
+          1,
+          0
+        ]
+      },
+      {
+        "coefficient": 0.08839856188692728,
+        "powers": [
+          0,
+          1
+        ]
+      },
+      {
+        "coefficient": 1.6769531078310482e-06,
+        "powers": [
+          2,
+          0
+        ]
+      },
+      {
+        "coefficient": 0.0007455292449629817,
+        "powers": [
+          1,
+          1
+        ]
+      },
+      {
+        "coefficient": 0.2451097004602993,
+        "powers": [
+          0,
+          2
+        ]
+      },
+      {
+        "coefficient": 4.0118996993425693e-11,
+        "powers": [
+          3,
+          0
+        ]
+      },
+      {
+        "coefficient": -2.8897396059338755e-09,
+        "powers": [
+          2,
+          1
+        ]
+      },
+      {
+        "coefficient": -8.239615935471677e-06,
+        "powers": [
+          1,
+          2
+        ]
+      },
+      {
+        "coefficient": -0.0030582383147489656,
+        "powers": [
+          0,
+          3
+        ]
+      }
+    ]
+  }
+}

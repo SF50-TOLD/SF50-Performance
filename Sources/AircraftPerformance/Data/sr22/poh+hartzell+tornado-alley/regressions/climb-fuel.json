@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "name": "climb-fuel",
+  "description": "Fuel to climb from sea level",
+  "type": "polynomial",
+  "variables": [
+    "altitude"
+  ],
+  "uncertainty_key": "tornado-alley/climb/time fuel distance/fuel",
+  "equation": {
+    "intercept": 0.058060239528506585,
+    "terms": [
+      {
+        "coefficient": 0.00046771918104527546,
+        "powers": [
+          1
+        ]
+      },
+      {
+        "coefficient": 1.0337264054453864e-08,
+        "powers": [
+          2
+        ]
+      },
+      {
+        "coefficient": 4.2303583731945057e-14,
+        "powers": [
+          3
+        ]
+      }
+    ]
+  }
+}

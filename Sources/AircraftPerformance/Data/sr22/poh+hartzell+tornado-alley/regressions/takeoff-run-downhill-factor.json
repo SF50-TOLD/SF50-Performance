@@ -1,0 +1,50 @@
+{
+  "version": "1.0",
+  "name": "takeoff-run-downhill-factor",
+  "description": "Downslope adjustment for takeoff ground roll",
+  "type": "piecewise",
+  "variables": [
+    "altitude"
+  ],
+  "uncertainty_key": null,
+  "equation": {
+    "breakpoints": [
+      {
+        "condition": {
+          "variable": "altitude",
+          "operator": "<=",
+          "value": 5000.0
+        },
+        "result": {
+          "type": "linear",
+          "slope": 6e-06,
+          "intercept": 0.07
+        }
+      },
+      {
+        "condition": {
+          "variable": "altitude",
+          "operator": "<=",
+          "value": 10000.0
+        },
+        "result": {
+          "type": "linear",
+          "slope": 8.000000000000001e-06,
+          "intercept": 0.06
+        }
+      },
+      {
+        "condition": {
+          "variable": "altitude",
+          "operator": ">",
+          "value": 10000.0
+        },
+        "result": {
+          "type": "linear",
+          "slope": 8.000000000000001e-06,
+          "intercept": 0.06
+        }
+      }
+    ]
+  }
+}

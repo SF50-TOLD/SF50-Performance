@@ -18,6 +18,19 @@ struct DataPackageTests {
     #expect(try Aircraft.sf50(type).definition.data().directoryName == configuration)
   }
 
+  @Test(
+    "each SR22 option set reads its manuals' configuration",
+    arguments: [
+      (SR22Options(), "poh"),
+      (.init(hartzellPropeller: true), "poh+hartzell"),
+      (.init(turbonormalized: true), "poh+tornado-alley"),
+      (.init(hartzellPropeller: true, turbonormalized: true), "poh+hartzell+tornado-alley")
+    ]
+  )
+  func configurationForSR22(options: SR22Options, configuration: String) throws {
+    #expect(try Aircraft.sr22(options).definition.data().directoryName == configuration)
+  }
+
   @Test("a manifest in another package format is rejected")
   func rejectsOtherFormat() throws {
     let manifest = try JSONDecoder().decode(

@@ -1,0 +1,81 @@
+{
+  "version": "1.0",
+  "name": "enroute-climb-gradient",
+  "description": "En route climb gradient - flaps up",
+  "type": "polynomial",
+  "variables": [
+    "weight",
+    "altitude",
+    "temperature"
+  ],
+  "uncertainty_key": "poh/enroute climb/gradient",
+  "equation": {
+    "intercept": 2268.791297248435,
+    "terms": [
+      {
+        "coefficient": -0.4118564205095222,
+        "powers": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "coefficient": -0.09544320825768268,
+        "powers": [
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "coefficient": -4.464028144862484,
+        "powers": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "coefficient": 1.354997392359049e-05,
+        "powers": [
+          1,
+          1,
+          0
+        ]
+      },
+      {
+        "coefficient": 0.0006567819894645749,
+        "powers": [
+          1,
+          0,
+          1
+        ]
+      },
+      {
+        "coefficient": 4.772050528520652e-07,
+        "powers": [
+          0,
+          2,
+          0
+        ]
+      },
+      {
+        "coefficient": 4.338429295143621e-05,
+        "powers": [
+          0,
+          1,
+          1
+        ]
+      },
+      {
+        "coefficient": 0.0016599221970308763,
+        "powers": [
+          0,
+          0,
+          2
+        ]
+      }
+    ]
+  }
+}

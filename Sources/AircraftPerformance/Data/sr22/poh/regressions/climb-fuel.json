@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "name": "climb-fuel",
+  "description": "Fuel to climb from sea level",
+  "type": "polynomial",
+  "variables": [
+    "altitude"
+  ],
+  "uncertainty_key": "poh/climb/time fuel distance/fuel",
+  "equation": {
+    "intercept": -0.054775597350602556,
+    "terms": [
+      {
+        "coefficient": 0.00039467848306795573,
+        "powers": [
+          1
+        ]
+      },
+      {
+        "coefficient": -1.332291828006988e-08,
+        "powers": [
+          2
+        ]
+      },
+      {
+        "coefficient": 8.97152092871813e-13,
+        "powers": [
+          3
+        ]
+      }
+    ]
+  }
+}
