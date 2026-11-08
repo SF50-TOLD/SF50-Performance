@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "name": "landing-run-downhill-factor",
+  "description": "Downslope adjustment for landing ground roll",
+  "type": "constant",
+  "variables": [],
+  "uncertainty_key": null,
+  "equation": {
+    "value": 0.27
+  }
+}

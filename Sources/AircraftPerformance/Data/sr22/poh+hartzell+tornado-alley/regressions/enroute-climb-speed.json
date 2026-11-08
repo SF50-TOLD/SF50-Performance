@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "name": "enroute-climb-speed",
+  "description": "En route best rate of climb speed - flaps up",
+  "type": "polynomial",
+  "variables": [
+    "weight",
+    "altitude"
+  ],
+  "uncertainty_key": "hartzell/enroute climb/speed",
+  "equation": {
+    "intercept": 111.61072043170529,
+    "terms": [
+      {
+        "coefficient": 5.219777116822288e-05,
+        "powers": [
+          1,
+          0
+        ]
+      },
+      {
+        "coefficient": -0.0006692543210464976,
+        "powers": [
+          0,
+          1
+        ]
+      },
+      {
+        "coefficient": -7.273284444697255e-09,
+        "powers": [
+          1,
+          1
+        ]
+      },
+      {
+        "coefficient": 4.729903589998191e-09,
+        "powers": [
+          0,
+          2
+        ]
+      }
+    ]
+  }
+}

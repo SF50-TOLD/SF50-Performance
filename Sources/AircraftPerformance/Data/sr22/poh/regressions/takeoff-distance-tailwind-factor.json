@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "name": "takeoff-distance-tailwind-factor",
+  "description": "Tailwind adjustment for takeoff distance",
+  "type": "constant",
+  "variables": [],
+  "uncertainty_key": null,
+  "equation": {
+    "value": 0.5
+  }
+}

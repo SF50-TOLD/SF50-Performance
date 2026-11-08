@@ -15,7 +15,7 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 data_dir="$repo_root/Sources/AircraftPerformance/Data"
 extraction_dir=${DATA_EXTRACTION_DIR:-"$repo_root/../Data-Extraction"}
-default_aircraft=(sf50)
+default_aircraft=(sf50 sr22)
 
 check=false
 aircraft=()

@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "name": "takeoff-climb-speed",
+  "description": "Takeoff best rate of climb speed - flaps 50%",
+  "type": "polynomial",
+  "variables": [
+    "weight",
+    "altitude"
+  ],
+  "uncertainty_key": "poh/takeoff climb/speed",
+  "equation": {
+    "intercept": 90.80461183801852,
+    "terms": [
+      {
+        "coefficient": 5.9898364648142175e-05,
+        "powers": [
+          1,
+          0
+        ]
+      },
+      {
+        "coefficient": -0.0005179899164655541,
+        "powers": [
+          0,
+          1
+        ]
+      },
+      {
+        "coefficient": -1.3383810981764653e-08,
+        "powers": [
+          1,
+          1
+        ]
+      },
+      {
+        "coefficient": 1.747598868991976e-08,
+        "powers": [
+          0,
+          2
+        ]
+      }
+    ]
+  }
+}

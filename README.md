@@ -3,22 +3,25 @@
 [![CI](https://github.com/SF50-TOLD/SF50-Performance/actions/workflows/ci.yml/badge.svg)](https://github.com/SF50-TOLD/SF50-Performance/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Takeoff, landing and climb performance models for the Cirrus SF50 Vision Jet, G1 through G3,
-built from the Airplane Flight Manual. This is the engine behind the
+Takeoff, landing and climb performance models built from aircraft flight manuals, for the Cirrus
+SF50 Vision Jet, G1 through G3, and the Cirrus SR22 (without the G3 wing), with its Hartzell
+composite propeller and Tornado Alley turbonormalizing supplements. This is the engine behind the
 [SF50 TOLD](https://github.com/SF50-TOLD/iOS) app.
 
 ## Disclaimer
 
-This package has not been approved by the FAA or by Cirrus Aircraft as an official source of
-performance information. Always verify performance information with official sources. Use it
-for pre-flight planning only, never in the cockpit.
+This package has not been approved by the FAA, Cirrus Aircraft, Hartzell Propeller or Tornado
+Alley Turbo as an official source of performance information. Always verify performance
+information with official sources. Use it for pre-flight planning only, never in the cockpit.
 
 ## Features
 
 - **Takeoff**: ground run, distance over a 50 ft obstacle, and Vx climb gradient and rate, with
   the wind, slope and surface corrections broken out
 - **Landing**: VREF, ground run, distance from 50 ft, and the go-around climb gradient, on dry,
-  wet and contaminated runways (including AC 91-79B runway condition codes)
+  wet and contaminated runways (including AC 91-79B runway condition codes), or the balked
+  landing climb gradient and rate, as each manual gives them
+- **Climb**: time, fuel and distance to climb, rich or lean of peak, where the manual tabulates it
 - **Climb profiles**: gradient and rate by altitude for the takeoff, en route obstacle and en
   route climb schedules, with and without ice protection, through a column of winds aloft
 - **Limits**: the maximum takeoff or landing weight, or the maximum temperature, a runway allows,
@@ -78,9 +81,10 @@ figure.
 ## AFM data
 
 The tables in `Sources/AircraftPerformance/Data` are digitized from the Cirrus SF50 Airplane Flight
-Manual and its supplements, which are copyright Cirrus Design Corporation. The regression
-equations and residuals are fitted to those tables. They are included so that the models can be
-checked against the manual; they are not a substitute for it.
+Manual, the Cirrus SR22 Pilot's Operating Handbook, and their supplements, which are copyright
+their publishers. The regression equations and residuals are fitted to those tables. They are
+included so that the models can be checked against the manuals; they are not a substitute for
+them.
 
 Each aircraft's data is a data package published by
 [Data-Extraction](https://github.com/SF50-TOLD/Data-Extraction) (format described in its

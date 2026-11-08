@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "name": "climb-fuel-lean-of-peak",
+  "description": "Fuel to climb from sea level, lean of peak technique",
+  "type": "polynomial",
+  "variables": [
+    "altitude"
+  ],
+  "uncertainty_key": "tornado-alley/climb/time fuel distance - lean of peak/fuel",
+  "equation": {
+    "intercept": -0.10781856628886022,
+    "terms": [
+      {
+        "coefficient": 0.0004949793092601156,
+        "powers": [
+          1
+        ]
+      },
+      {
+        "coefficient": -1.1712540120194969e-08,
+        "powers": [
+          2
+        ]
+      },
+      {
+        "coefficient": 6.896737645259172e-13,
+        "powers": [
+          3
+        ]
+      }
+    ]
+  }
+}

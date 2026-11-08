@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "name": "climb-distance",
+  "description": "Distance to climb from sea level",
+  "type": "polynomial",
+  "variables": [
+    "altitude"
+  ],
+  "uncertainty_key": "poh/climb/time fuel distance/distance",
+  "equation": {
+    "intercept": -0.38003277938429036,
+    "terms": [
+      {
+        "coefficient": 0.0016574683185444907,
+        "powers": [
+          1
+        ]
+      },
+      {
+        "coefficient": -6.521602595965544e-08,
+        "powers": [
+          2
+        ]
+      },
+      {
+        "coefficient": 6.5525177833157165e-12,
+        "powers": [
+          3
+        ]
+      }
+    ]
+  }
+}

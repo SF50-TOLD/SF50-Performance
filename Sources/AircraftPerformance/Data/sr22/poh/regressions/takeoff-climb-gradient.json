@@ -1,0 +1,81 @@
+{
+  "version": "1.0",
+  "name": "takeoff-climb-gradient",
+  "description": "Takeoff climb gradient - flaps 50%",
+  "type": "polynomial",
+  "variables": [
+    "weight",
+    "altitude",
+    "temperature"
+  ],
+  "uncertainty_key": "poh/takeoff climb/gradient",
+  "equation": {
+    "intercept": 2412.932521833709,
+    "terms": [
+      {
+        "coefficient": -0.4458997078214374,
+        "powers": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "coefficient": -0.10786736588354533,
+        "powers": [
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "coefficient": -4.6552292720890565,
+        "powers": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "coefficient": 1.6085692736434306e-05,
+        "powers": [
+          1,
+          1,
+          0
+        ]
+      },
+      {
+        "coefficient": 0.0007304621104849262,
+        "powers": [
+          1,
+          0,
+          1
+        ]
+      },
+      {
+        "coefficient": 5.781249337175714e-07,
+        "powers": [
+          0,
+          2,
+          0
+        ]
+      },
+      {
+        "coefficient": 4.304701970002346e-05,
+        "powers": [
+          0,
+          1,
+          1
+        ]
+      },
+      {
+        "coefficient": 0.0006214405144585468,
+        "powers": [
+          0,
+          0,
+          2
+        ]
+      }
+    ]
+  }
+}

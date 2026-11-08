@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "name": "enroute-climb-speed",
+  "description": "En route best rate of climb speed - flaps up",
+  "type": "polynomial",
+  "variables": [
+    "weight",
+    "altitude"
+  ],
+  "uncertainty_key": "poh/enroute climb/speed",
+  "equation": {
+    "intercept": 100.99999999907408,
+    "terms": [
+      {
+        "coefficient": -1.6424497156876909e-18,
+        "powers": [
+          1,
+          0
+        ]
+      },
+      {
+        "coefficient": -0.0004999999998842589,
+        "powers": [
+          0,
+          1
+        ]
+      }
+    ]
+  }
+}

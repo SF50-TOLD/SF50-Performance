@@ -8,6 +8,9 @@ public enum Aircraft: Sendable, Hashable, Codable {
   /// A Cirrus SF50 Vision Jet.
   case sf50(SF50Variant)
 
+  /// A Cirrus SR22 without the G3 wing, with its installed options.
+  case sr22(SR22Options)
+
   /// The aircraft's operating limitations.
   public var limitations: AircraftLimitations { definition.limitations }
 
@@ -24,6 +27,7 @@ public enum Aircraft: Sendable, Hashable, Codable {
   var definition: any AircraftDefinition {
     switch self {
       case .sf50(let variant): SF50Definition(variant: variant)
+      case .sr22(let options): SR22Definition(options: options)
     }
   }
 
@@ -32,6 +36,25 @@ public enum Aircraft: Sendable, Hashable, Codable {
   /// - Throws: ``PerformanceDataError`` if the bundled data could not be read.
   public func configurationInfo() throws -> AircraftConfigurationInfo {
     try definition.configurationInfo()
+  }
+}
+
+/// The options installed on a Cirrus SR22 whose manual supplements change its figures.
+public struct SR22Options: Sendable, Hashable, Codable {
+  /// Whether the Hartzell composite propeller is installed (POH supplement 13772-129).
+  public var hartzellPropeller: Bool
+
+  /// Whether Tornado Alley turbonormalizing is installed (STC SA10588SC, Report 215-6).
+  public var turbonormalized: Bool
+
+  /// Creates a set of options.
+  ///
+  /// - Parameters:
+  ///   - hartzellPropeller: Whether the Hartzell composite propeller is installed.
+  ///   - turbonormalized: Whether Tornado Alley turbonormalizing is installed.
+  public init(hartzellPropeller: Bool = false, turbonormalized: Bool = false) {
+    self.hartzellPropeller = hartzellPropeller
+    self.turbonormalized = turbonormalized
   }
 }
 

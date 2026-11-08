@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "name": "landing-run-wet-unpaved-factor",
+  "description": "Wet grass adjustment for landing ground roll",
+  "type": "constant",
+  "variables": [],
+  "uncertainty_key": null,
+  "equation": {
+    "value": 0.6
+  }
+}

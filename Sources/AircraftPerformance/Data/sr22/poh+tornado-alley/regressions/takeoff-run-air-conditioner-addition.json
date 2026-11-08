@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "name": "takeoff-run-air-conditioner-addition",
+  "description": "Feet added to takeoff ground roll with the air conditioner on",
+  "type": "constant",
+  "variables": [],
+  "uncertainty_key": null,
+  "equation": {
+    "value": 100.0
+  }
+}

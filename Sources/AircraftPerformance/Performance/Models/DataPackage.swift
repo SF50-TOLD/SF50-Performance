@@ -14,6 +14,9 @@ final class DataPackage: Sendable {
   /// The SF50 Vision Jet's package.
   static let sf50 = Result { try DataPackage(name: "sf50") }
 
+  /// The Cirrus SR22's package.
+  static let sr22 = Result { try DataPackage(name: "sr22") }
+
   /// The package's directory in the bundle.
   let directory: URL
 

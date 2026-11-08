@@ -1,0 +1,593 @@
+{
+  "format": 1,
+  "generator": "afm-extraction 2.0.0",
+  "aircraft": {
+    "name": "sr22",
+    "title": "Cirrus SR22 (pre-G3 wing)"
+  },
+  "equation_format": "1.0",
+  "documents": {
+    "poh": {
+      "title": "Pilot's Operating Handbook",
+      "kind": "base",
+      "part_number": "13772-001",
+      "revision": "Reissue A, Revision A10",
+      "applies_to": [],
+      "excludes": [],
+      "sha256": "301caf4c5e890b6471eb6ab17df9139dae442fb695a50c6b85a49226b189d25a",
+      "errata": [
+        {
+          "table": "enroute climb/gradient.csv",
+          "cell": {
+            "weight": 2900,
+            "altitude": 12000,
+            "temperature": -20
+          },
+          "printed": 610,
+          "corrected": 510,
+          "reason": "The POH prints 610 ft/NM, more than the 603 ft/NM it prints 2000 ft lower, though gradient falls with altitude everywhere else in the table. Its neighbours agree on about 510: the column falls 93 ft/NM from 10,000 ft and 88 ft/NM to 14,000 ft (603 and 422), and the row runs about 41 ft/NM above the 0 \u00b0C cell (469), as the rows above and below it do. 610 reads as a misprinted 510.",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, Figure 5-12"
+          ]
+        }
+      ]
+    },
+    "hartzell": {
+      "title": "POH Supplement: Hartzell Compact Series Propeller with Composite Blades",
+      "kind": "supplement",
+      "part_number": "13772-129",
+      "revision": "Revision 02 (08-26-09)",
+      "applies_to": [],
+      "excludes": [],
+      "sha256": "ab0cfa6aeadacdfcb547d6d56728ae5b63b6ad5f4c83c23ca2aae1125f47d2eb",
+      "errata": []
+    },
+    "tornado-alley": {
+      "title": "POH Supplement: Tornado Alley Turbonormalizing System (STC SA10588SC/SE10589SC)",
+      "kind": "supplement",
+      "part_number": "Report 215-6",
+      "revision": "Reissue 3 (Nov 15, 2008)",
+      "applies_to": [],
+      "excludes": [],
+      "sha256": "40feb1513c18d180990564ebdeb508ce6934ae01165b35f4d1a849f8743e207a",
+      "errata": []
+    }
+  },
+  "configurations": {
+    "poh": {
+      "base": "poh",
+      "supplements": [],
+      "tables": {
+        "balked landing/gradient.csv": "poh",
+        "balked landing/rate.csv": "poh",
+        "climb/time fuel distance/distance.csv": "poh",
+        "climb/time fuel distance/fuel.csv": "poh",
+        "climb/time fuel distance/time.csv": "poh",
+        "enroute climb/gradient.csv": "poh",
+        "enroute climb/rate.csv": "poh",
+        "enroute climb/speed.csv": "poh",
+        "landing/100/ground run - downhill factor.csv": "poh",
+        "landing/100/ground run - headwind factor.csv": "poh",
+        "landing/100/ground run - tailwind factor.csv": "poh",
+        "landing/100/ground run - unpaved factor.csv": "poh",
+        "landing/100/ground run - uphill factor.csv": "poh",
+        "landing/100/ground run - wet unpaved factor.csv": "poh",
+        "landing/100/ground run.csv": "poh",
+        "landing/100/total distance - headwind factor.csv": "poh",
+        "landing/100/total distance - tailwind factor.csv": "poh",
+        "landing/100/total distance.csv": "poh",
+        "takeoff climb/gradient.csv": "poh",
+        "takeoff climb/rate.csv": "poh",
+        "takeoff climb/speed.csv": "poh",
+        "takeoff/ground run - air conditioner addition.csv": "poh",
+        "takeoff/ground run - downhill factor.csv": "poh",
+        "takeoff/ground run - headwind factor.csv": "poh",
+        "takeoff/ground run - tailwind factor.csv": "poh",
+        "takeoff/ground run - unpaved factor.csv": "poh",
+        "takeoff/ground run - uphill factor.csv": "poh",
+        "takeoff/ground run - wet unpaved factor.csv": "poh",
+        "takeoff/ground run.csv": "poh",
+        "takeoff/total distance - air conditioner addition.csv": "poh",
+        "takeoff/total distance - headwind factor.csv": "poh",
+        "takeoff/total distance - tailwind factor.csv": "poh",
+        "takeoff/total distance.csv": "poh"
+      },
+      "notes": [
+        {
+          "subject": "takeoff and landing corrections",
+          "text": "Wind factors are fractions of distance per 10 knots, from the POH's 10% per 12 knots of takeoff headwind, 10% per 13 knots of landing headwind and 10% per 2 knots of tailwind; the tailwind correction covers up to 10 knots. Slope, grass and air conditioner corrections are stated against the ground roll, and the POH adds the same change in feet to the total distance. Slope factors are fractions of ground roll per 1% of slope, varying with pressure altitude for takeoff.",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, Figure 5-9 notes",
+            "Cirrus POH 13772-001 Rev A10, Figure 5-20 notes"
+          ]
+        }
+      ],
+      "limits": {}
+    },
+    "poh+hartzell": {
+      "base": "poh",
+      "supplements": [
+        "hartzell"
+      ],
+      "tables": {
+        "balked landing/gradient.csv": "poh",
+        "balked landing/rate.csv": "poh",
+        "climb/time fuel distance/distance.csv": "poh",
+        "climb/time fuel distance/fuel.csv": "poh",
+        "climb/time fuel distance/time.csv": "poh",
+        "enroute climb/gradient.csv": "hartzell",
+        "enroute climb/rate.csv": "hartzell",
+        "enroute climb/speed.csv": "hartzell",
+        "landing/100/ground run - downhill factor.csv": "poh",
+        "landing/100/ground run - headwind factor.csv": "poh",
+        "landing/100/ground run - tailwind factor.csv": "poh",
+        "landing/100/ground run - unpaved factor.csv": "poh",
+        "landing/100/ground run - uphill factor.csv": "poh",
+        "landing/100/ground run - wet unpaved factor.csv": "poh",
+        "landing/100/ground run.csv": "poh",
+        "landing/100/total distance - headwind factor.csv": "poh",
+        "landing/100/total distance - tailwind factor.csv": "poh",
+        "landing/100/total distance.csv": "poh",
+        "takeoff climb/gradient.csv": "poh",
+        "takeoff climb/rate.csv": "poh",
+        "takeoff climb/speed.csv": "poh",
+        "takeoff/ground run - air conditioner addition.csv": "poh",
+        "takeoff/ground run - downhill factor.csv": "poh",
+        "takeoff/ground run - headwind factor.csv": "poh",
+        "takeoff/ground run - tailwind factor.csv": "poh",
+        "takeoff/ground run - unpaved factor.csv": "poh",
+        "takeoff/ground run - uphill factor.csv": "poh",
+        "takeoff/ground run - wet unpaved factor.csv": "poh",
+        "takeoff/ground run.csv": "poh",
+        "takeoff/total distance - air conditioner addition.csv": "poh",
+        "takeoff/total distance - headwind factor.csv": "poh",
+        "takeoff/total distance - tailwind factor.csv": "poh",
+        "takeoff/total distance.csv": "poh"
+      },
+      "notes": [
+        {
+          "subject": "takeoff and landing corrections",
+          "text": "Wind factors are fractions of distance per 10 knots, from the POH's 10% per 12 knots of takeoff headwind, 10% per 13 knots of landing headwind and 10% per 2 knots of tailwind; the tailwind correction covers up to 10 knots. Slope, grass and air conditioner corrections are stated against the ground roll, and the POH adds the same change in feet to the total distance. Slope factors are fractions of ground roll per 1% of slope, varying with pressure altitude for takeoff.",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, Figure 5-9 notes",
+            "Cirrus POH 13772-001 Rev A10, Figure 5-20 notes"
+          ]
+        },
+        {
+          "subject": "enroute climb",
+          "text": "Enroute climb gradient and rate come from the Hartzell supplement whenever the composite propeller is installed, with or without turbonormalizing. The POH approves only metal propellers, so the composite propeller is approved only through 13772-129, which replaces exactly these tables and requires their higher climb speeds for engine cooling. Tornado Alley prints no climb gradient or rate tables of its own and refers to the basic AFM, which includes the installed supplements. The Hartzell tables are also the conservative choice.",
+          "sources": [
+            "Cirrus POH supplement 13772-129 Rev 2, pp. 4-6",
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 26",
+            "FAA AC 20-188 \u00b65\u20137.5 (https://www.faa.gov/documentLibrary/media/Advisory_Circular/AC_20-188.pdf)"
+          ]
+        },
+        {
+          "subject": "time, fuel and distance to climb",
+          "text": "The POH table applies, but it assumes 91-101 KIAS, below the 102-112 KIAS the composite propeller needs for cooling. The Hartzell supplement doesn't replace it, so treat its figures as optimistic.",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, Figure 5-15",
+            "Cirrus POH supplement 13772-129 Rev 2, p. 4"
+          ]
+        }
+      ],
+      "limits": {}
+    },
+    "poh+tornado-alley": {
+      "base": "poh",
+      "supplements": [
+        "tornado-alley"
+      ],
+      "tables": {
+        "balked landing/gradient.csv": "poh",
+        "balked landing/rate.csv": "poh",
+        "climb/time fuel distance - lean of peak/distance.csv": "tornado-alley",
+        "climb/time fuel distance - lean of peak/fuel.csv": "tornado-alley",
+        "climb/time fuel distance - lean of peak/time.csv": "tornado-alley",
+        "climb/time fuel distance/distance.csv": "tornado-alley",
+        "climb/time fuel distance/fuel.csv": "tornado-alley",
+        "climb/time fuel distance/time.csv": "tornado-alley",
+        "enroute climb/gradient.csv": "poh",
+        "enroute climb/rate.csv": "poh",
+        "enroute climb/speed.csv": "poh",
+        "landing/100/ground run - downhill factor.csv": "poh",
+        "landing/100/ground run - headwind factor.csv": "poh",
+        "landing/100/ground run - tailwind factor.csv": "poh",
+        "landing/100/ground run - unpaved factor.csv": "poh",
+        "landing/100/ground run - uphill factor.csv": "poh",
+        "landing/100/ground run - wet unpaved factor.csv": "poh",
+        "landing/100/ground run.csv": "poh",
+        "landing/100/total distance - headwind factor.csv": "poh",
+        "landing/100/total distance - tailwind factor.csv": "poh",
+        "landing/100/total distance.csv": "poh",
+        "takeoff climb/gradient.csv": "poh",
+        "takeoff climb/rate.csv": "poh",
+        "takeoff climb/speed.csv": "poh",
+        "takeoff/ground run - air conditioner addition.csv": "poh",
+        "takeoff/ground run - downhill factor.csv": "poh",
+        "takeoff/ground run - headwind factor.csv": "poh",
+        "takeoff/ground run - tailwind factor.csv": "poh",
+        "takeoff/ground run - unpaved factor.csv": "poh",
+        "takeoff/ground run - uphill factor.csv": "poh",
+        "takeoff/ground run - wet unpaved factor.csv": "poh",
+        "takeoff/ground run.csv": "poh",
+        "takeoff/total distance - air conditioner addition.csv": "poh",
+        "takeoff/total distance - headwind factor.csv": "poh",
+        "takeoff/total distance - tailwind factor.csv": "poh",
+        "takeoff/total distance.csv": "poh"
+      },
+      "notes": [
+        {
+          "subject": "takeoff and landing corrections",
+          "text": "Wind factors are fractions of distance per 10 knots, from the POH's 10% per 12 knots of takeoff headwind, 10% per 13 knots of landing headwind and 10% per 2 knots of tailwind; the tailwind correction covers up to 10 knots. Slope, grass and air conditioner corrections are stated against the ground roll, and the POH adds the same change in feet to the total distance. Slope factors are fractions of ground roll per 1% of slope, varying with pressure altitude for takeoff.",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, Figure 5-9 notes",
+            "Cirrus POH 13772-001 Rev A10, Figure 5-20 notes"
+          ]
+        },
+        {
+          "subject": "takeoff, takeoff climb, balked landing and landing",
+          "text": "These come from the POH unchanged: Tornado Alley states that performance with the system installed is equal to or better than the basic AFM's and prints no takeoff or landing tables.",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 26"
+          ]
+        },
+        {
+          "subject": "time, fuel and distance to climb",
+          "text": "Tornado Alley's rich of peak table replaces the POH's, and its lean of peak table is added. Both are manufacturer data, not FAA approved.",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, pp. 26-28"
+          ]
+        }
+      ],
+      "limits": {
+        "maximum-takeoff-altitude": {
+          "value": 10000,
+          "unit": "ft",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 15"
+          ]
+        }
+      }
+    },
+    "poh+hartzell+tornado-alley": {
+      "base": "poh",
+      "supplements": [
+        "hartzell",
+        "tornado-alley"
+      ],
+      "tables": {
+        "balked landing/gradient.csv": "poh",
+        "balked landing/rate.csv": "poh",
+        "climb/time fuel distance - lean of peak/distance.csv": "tornado-alley",
+        "climb/time fuel distance - lean of peak/fuel.csv": "tornado-alley",
+        "climb/time fuel distance - lean of peak/time.csv": "tornado-alley",
+        "climb/time fuel distance/distance.csv": "tornado-alley",
+        "climb/time fuel distance/fuel.csv": "tornado-alley",
+        "climb/time fuel distance/time.csv": "tornado-alley",
+        "enroute climb/gradient.csv": "hartzell",
+        "enroute climb/rate.csv": "hartzell",
+        "enroute climb/speed.csv": "hartzell",
+        "landing/100/ground run - downhill factor.csv": "poh",
+        "landing/100/ground run - headwind factor.csv": "poh",
+        "landing/100/ground run - tailwind factor.csv": "poh",
+        "landing/100/ground run - unpaved factor.csv": "poh",
+        "landing/100/ground run - uphill factor.csv": "poh",
+        "landing/100/ground run - wet unpaved factor.csv": "poh",
+        "landing/100/ground run.csv": "poh",
+        "landing/100/total distance - headwind factor.csv": "poh",
+        "landing/100/total distance - tailwind factor.csv": "poh",
+        "landing/100/total distance.csv": "poh",
+        "takeoff climb/gradient.csv": "poh",
+        "takeoff climb/rate.csv": "poh",
+        "takeoff climb/speed.csv": "poh",
+        "takeoff/ground run - air conditioner addition.csv": "poh",
+        "takeoff/ground run - downhill factor.csv": "poh",
+        "takeoff/ground run - headwind factor.csv": "poh",
+        "takeoff/ground run - tailwind factor.csv": "poh",
+        "takeoff/ground run - unpaved factor.csv": "poh",
+        "takeoff/ground run - uphill factor.csv": "poh",
+        "takeoff/ground run - wet unpaved factor.csv": "poh",
+        "takeoff/ground run.csv": "poh",
+        "takeoff/total distance - air conditioner addition.csv": "poh",
+        "takeoff/total distance - headwind factor.csv": "poh",
+        "takeoff/total distance - tailwind factor.csv": "poh",
+        "takeoff/total distance.csv": "poh"
+      },
+      "notes": [
+        {
+          "subject": "takeoff and landing corrections",
+          "text": "Wind factors are fractions of distance per 10 knots, from the POH's 10% per 12 knots of takeoff headwind, 10% per 13 knots of landing headwind and 10% per 2 knots of tailwind; the tailwind correction covers up to 10 knots. Slope, grass and air conditioner corrections are stated against the ground roll, and the POH adds the same change in feet to the total distance. Slope factors are fractions of ground roll per 1% of slope, varying with pressure altitude for takeoff.",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, Figure 5-9 notes",
+            "Cirrus POH 13772-001 Rev A10, Figure 5-20 notes"
+          ]
+        },
+        {
+          "subject": "enroute climb",
+          "text": "Enroute climb gradient and rate come from the Hartzell supplement whenever the composite propeller is installed, with or without turbonormalizing. The POH approves only metal propellers, so the composite propeller is approved only through 13772-129, which replaces exactly these tables and requires their higher climb speeds for engine cooling. Tornado Alley prints no climb gradient or rate tables of its own and refers to the basic AFM, which includes the installed supplements. The Hartzell tables are also the conservative choice.",
+          "sources": [
+            "Cirrus POH supplement 13772-129 Rev 2, pp. 4-6",
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 26",
+            "FAA AC 20-188 \u00b65\u20137.5 (https://www.faa.gov/documentLibrary/media/Advisory_Circular/AC_20-188.pdf)"
+          ]
+        },
+        {
+          "subject": "takeoff, takeoff climb, balked landing and landing",
+          "text": "These come from the POH unchanged: Tornado Alley states that performance with the system installed is equal to or better than the basic AFM's and prints no takeoff or landing tables.",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 26"
+          ]
+        },
+        {
+          "subject": "time, fuel and distance to climb",
+          "text": "Tornado Alley's rich of peak table replaces the POH's, and its lean of peak table is added. Both are manufacturer data, not FAA approved.",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, pp. 26-28"
+          ]
+        },
+        {
+          "subject": "unconfirmed combination",
+          "text": "No Cirrus, Tornado Alley or Hartzell document addresses the composite propeller and turbonormalizing together; these sources follow from the supplements' own wording. AC 20-188 recommends confirming how combined supplements apply with their holders.",
+          "sources": [
+            "FAA AC 20-188 \u00b65\u20137.5 (https://www.faa.gov/documentLibrary/media/Advisory_Circular/AC_20-188.pdf)"
+          ]
+        }
+      ],
+      "limits": {
+        "maximum-takeoff-altitude": {
+          "value": 10000,
+          "unit": "ft",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 15"
+          ]
+        }
+      }
+    }
+  },
+  "precedence": [],
+  "equations": {
+    "takeoff-ground-run": {
+      "table": "takeoff/ground run.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "takeoff-total-distance": {
+      "table": "takeoff/total distance.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "takeoff-climb-gradient": {
+      "table": "takeoff climb/gradient.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "takeoff-climb-rate": {
+      "table": "takeoff climb/rate.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "takeoff-climb-speed": {
+      "table": "takeoff climb/speed.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        }
+      ]
+    },
+    "enroute-climb-gradient": {
+      "table": "enroute climb/gradient.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-climb-rate": {
+      "table": "enroute climb/rate.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "enroute-climb-speed": {
+      "table": "enroute climb/speed.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        }
+      ]
+    },
+    "climb-time": {
+      "table": "climb/time fuel distance/time.csv",
+      "variables": [
+        {
+          "name": "altitude",
+          "unit": "ft"
+        }
+      ]
+    },
+    "climb-fuel": {
+      "table": "climb/time fuel distance/fuel.csv",
+      "variables": [
+        {
+          "name": "altitude",
+          "unit": "ft"
+        }
+      ]
+    },
+    "climb-distance": {
+      "table": "climb/time fuel distance/distance.csv",
+      "variables": [
+        {
+          "name": "altitude",
+          "unit": "ft"
+        }
+      ]
+    },
+    "climb-time-lean-of-peak": {
+      "table": "climb/time fuel distance - lean of peak/time.csv",
+      "variables": [
+        {
+          "name": "altitude",
+          "unit": "ft"
+        }
+      ]
+    },
+    "climb-fuel-lean-of-peak": {
+      "table": "climb/time fuel distance - lean of peak/fuel.csv",
+      "variables": [
+        {
+          "name": "altitude",
+          "unit": "ft"
+        }
+      ]
+    },
+    "climb-distance-lean-of-peak": {
+      "table": "climb/time fuel distance - lean of peak/distance.csv",
+      "variables": [
+        {
+          "name": "altitude",
+          "unit": "ft"
+        }
+      ]
+    },
+    "balked-landing-climb-gradient": {
+      "table": "balked landing/gradient.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "balked-landing-climb-rate": {
+      "table": "balked landing/rate.csv",
+      "variables": [
+        {
+          "name": "weight",
+          "unit": "lb"
+        },
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "landing-run-flaps100": {
+      "table": "landing/100/ground run.csv",
+      "variables": [
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    },
+    "landing-distance-flaps100": {
+      "table": "landing/100/total distance.csv",
+      "variables": [
+        {
+          "name": "altitude",
+          "unit": "ft"
+        },
+        {
+          "name": "temperature",
+          "unit": "degC"
+        }
+      ]
+    }
+  }
+}

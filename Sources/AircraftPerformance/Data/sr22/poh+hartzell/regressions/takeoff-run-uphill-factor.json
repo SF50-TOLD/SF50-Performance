@@ -1,0 +1,50 @@
+{
+  "version": "1.0",
+  "name": "takeoff-run-uphill-factor",
+  "description": "Upslope adjustment for takeoff ground roll",
+  "type": "piecewise",
+  "variables": [
+    "altitude"
+  ],
+  "uncertainty_key": null,
+  "equation": {
+    "breakpoints": [
+      {
+        "condition": {
+          "variable": "altitude",
+          "operator": "<=",
+          "value": 5000.0
+        },
+        "result": {
+          "type": "linear",
+          "slope": 1.5999999999999996e-05,
+          "intercept": 0.22
+        }
+      },
+      {
+        "condition": {
+          "variable": "altitude",
+          "operator": "<=",
+          "value": 10000.0
+        },
+        "result": {
+          "type": "linear",
+          "slope": 2.6000000000000002e-05,
+          "intercept": 0.16999999999999998
+        }
+      },
+      {
+        "condition": {
+          "variable": "altitude",
+          "operator": ">",
+          "value": 10000.0
+        },
+        "result": {
+          "type": "linear",
+          "slope": 2.6000000000000002e-05,
+          "intercept": 0.16999999999999998
+        }
+      }
+    ]
+  }
+}

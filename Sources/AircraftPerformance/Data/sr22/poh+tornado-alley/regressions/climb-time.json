@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "name": "climb-time",
+  "description": "Time to climb from sea level",
+  "type": "polynomial",
+  "variables": [
+    "altitude"
+  ],
+  "uncertainty_key": "tornado-alley/climb/time fuel distance/time",
+  "equation": {
+    "intercept": 0.07655630306669536,
+    "terms": [
+      {
+        "coefficient": 0.0007977634663682986,
+        "powers": [
+          1
+        ]
+      },
+      {
+        "coefficient": 1.68380526084504e-08,
+        "powers": [
+          2
+        ]
+      },
+      {
+        "coefficient": 8.337201314916419e-14,
+        "powers": [
+          3
+        ]
+      }
+    ]
+  }
+}

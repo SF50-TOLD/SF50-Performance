@@ -174,15 +174,18 @@ final class DataTable: Sendable {
   /// Interpolates an output value for inputs named by what they are, in whatever order the
   /// table's columns hold them.
   ///
+  /// A column that holds a single value, such as a correction printed for one weight only, gives
+  /// that value's figure for every input, so it is held at it rather than reported offscale.
+  ///
   /// - Parameters:
   ///   - inputs: A value for every input the table's columns hold; others are ignored.
   ///   - clamping: The clamping mode for every input.
   /// - Returns: The result ``value(for:clamping:)`` gives for the inputs in column order.
   func value(for inputs: [TableInput: Double], clamping: Clamping = .none) -> Value<Double> {
-    value(
-      for: positionalInputs(inputs),
-      clamping: Array(repeating: clamping, count: nInputs)
-    )
+    let positional = positionalInputs(inputs).enumerated().map { dimension, input in
+      dimMin[dimension] == dimMax[dimension] ? dimMin[dimension] : input
+    }
+    return value(for: positional, clamping: Array(repeating: clamping, count: nInputs))
   }
 
   /// The values the table covers for an input, or `nil` if it has no column for it.
