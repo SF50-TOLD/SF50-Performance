@@ -102,7 +102,22 @@
           ]
         }
       ],
-      "limits": {}
+      "limits": {
+        "maximum-takeoff-altitude": {
+          "value": 10000,
+          "unit": "ft",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, p. 2-16"
+          ]
+        },
+        "maximum-operating-altitude": {
+          "value": 17500,
+          "unit": "ft",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, p. 2-16"
+          ]
+        }
+      }
     },
     "poh+hartzell": {
       "base": "poh",
@@ -171,7 +186,22 @@
           ]
         }
       ],
-      "limits": {}
+      "limits": {
+        "maximum-takeoff-altitude": {
+          "value": 10000,
+          "unit": "ft",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, p. 2-16"
+          ]
+        },
+        "maximum-operating-altitude": {
+          "value": 17500,
+          "unit": "ft",
+          "sources": [
+            "Cirrus POH 13772-001 Rev A10, p. 2-16"
+          ]
+        }
+      }
     },
     "poh+tornado-alley": {
       "base": "poh",
@@ -245,7 +275,22 @@
           "value": 10000,
           "unit": "ft",
           "sources": [
-            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 15"
+            "Cirrus POH 13772-001 Rev A10, p. 2-16",
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 9"
+          ]
+        },
+        "maximum-operating-altitude": {
+          "value": 25000,
+          "unit": "ft",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 9"
+          ]
+        },
+        "minimum-outside-air-temperature": {
+          "value": -40,
+          "unit": "degC",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 9"
           ]
         }
       }
@@ -339,7 +384,22 @@
           "value": 10000,
           "unit": "ft",
           "sources": [
-            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 15"
+            "Cirrus POH 13772-001 Rev A10, p. 2-16",
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 9"
+          ]
+        },
+        "maximum-operating-altitude": {
+          "value": 25000,
+          "unit": "ft",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 9"
+          ]
+        },
+        "minimum-outside-air-temperature": {
+          "value": -40,
+          "unit": "degC",
+          "sources": [
+            "Tornado Alley Turbo Report 215-6 Reissue 3, p. 9"
           ]
         }
       }
