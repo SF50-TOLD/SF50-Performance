@@ -113,7 +113,7 @@ enum ResidualErrorCalculator {
   }
 
   private static func loadResidualData() throws -> [String: ResidualData] {
-    let url = try AircraftData.dataDirectory().appending(component: residualFilename)
+    let url = try DataPackage.sf50.get().directory.appending(component: residualFilename)
     do {
       let data = try Data(contentsOf: url)
       return try JSONDecoder().decode([String: ResidualData].self, from: data)

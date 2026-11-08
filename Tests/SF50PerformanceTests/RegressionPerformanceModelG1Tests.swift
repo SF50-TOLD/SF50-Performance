@@ -10,7 +10,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `takeoff ground run within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/takeoff/ground run.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -35,7 +35,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `takeoff distance within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/takeoff/total distance.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -60,7 +60,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `takeoff climb gradient within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/takeoff climb/gradient.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -83,7 +83,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `takeoff climb rate within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/takeoff climb/rate.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -109,7 +109,7 @@ struct RegressionPerformanceModelG1Tests {
   @Test
   func `VREF gives every tabulated speed`() throws {
     // Test VREF values for different flap settings against DataTable values
-    let baseURL = try AircraftData.dataDirectory()
+    let baseURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/vref")
 
     let flapConfigs: [(file: String, flapSetting: FlapSetting)] = [
@@ -166,7 +166,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `landing ground run within tolerance flaps 50`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/landing/50/ground run.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -192,7 +192,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `landing ground run within tolerance flaps 100`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/landing/100/ground run.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -220,7 +220,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `landing distance within tolerance flaps 50`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/landing/50/total distance.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -246,7 +246,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `landing distance within tolerance flaps 100`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/landing/100/total distance.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -289,7 +289,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `enroute climb gradient normal within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/enroute climb/normal/gradient.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -317,7 +317,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `enroute climb rate normal within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/enroute climb/normal/rate.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -345,7 +345,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `enroute climb speed normal within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/enroute climb/normal/speed.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -375,7 +375,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `enroute climb gradient ice-contaminated within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/enroute climb/ice contaminated/gradient.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -402,7 +402,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `enroute climb rate ice-contaminated within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/enroute climb/ice contaminated/rate.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -429,7 +429,7 @@ struct RegressionPerformanceModelG1Tests {
 
   @Test
   func `enroute climb speed ice-contaminated within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g1/enroute climb/ice contaminated/speed.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
