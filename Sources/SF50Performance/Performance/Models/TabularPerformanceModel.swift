@@ -47,15 +47,15 @@ final class TabularPerformanceModel: BasePerformanceModel {
   // MARK: - Non-Distance Outputs
 
   override var takeoffClimbGradientFtNM: Value<Double> {
-    atApprovedAirport { takeoffClimbGradientData.value(for: [weight, chartElevation, temperature]) }
+    atApprovedAirport { takeoffClimbGradientData.value(for: chartInputs) }
   }
 
   override var takeoffClimbRateFtMin: Value<Double> {
-    atApprovedAirport { takeoffClimbRateData.value(for: [weight, chartElevation, temperature]) }
+    atApprovedAirport { takeoffClimbRateData.value(for: chartInputs) }
   }
 
   override var VrefKts: Value<Double> {
-    vrefData.value(for: [weight])
+    vrefData.value(for: [.weight: weight])
   }
 
   /// Whether the AFM's go-around climb gradient is met.
@@ -81,21 +81,21 @@ final class TabularPerformanceModel: BasePerformanceModel {
     let data =
       configuration.iceProtection
       ? enrouteClimb_gradientIceContaminatedData : enrouteClimb_gradientNormalData
-    return data.value(for: [altitude, temperature, weight])
+    return data.value(for: enrouteInputs)
   }
 
   override var enrouteClimbRateFtMin: Value<Double> {
     let data =
       configuration.iceProtection
       ? enrouteClimb_rateIceContaminatedData : enrouteClimb_rateNormalData
-    return data.value(for: [altitude, temperature, weight])
+    return data.value(for: enrouteInputs)
   }
 
   override var enrouteClimbSpeedKIAS: Value<Double> {
     let data =
       configuration.iceProtection
       ? enrouteClimb_speedIceContaminatedData : enrouteClimb_speedNormalData
-    return data.value(for: [altitude, temperature, weight])
+    return data.value(for: enrouteInputs)
   }
 
   // MARK: - Initializer
@@ -181,25 +181,25 @@ final class TabularPerformanceModel: BasePerformanceModel {
       switch target {
         case .takeoffRun:
           takeoffRunData.value(
-            for: [weight, chartElevation, temperature],
-            clamping: [.clampLow, .clampLow, .clampLow]
+            for: chartInputs,
+            clamping: .clampLow
           )
         case .takeoffDistance:
           takeoffDistanceData.value(
-            for: [weight, chartElevation, temperature],
-            clamping: [.clampLow, .clampLow, .clampLow]
+            for: chartInputs,
+            clamping: .clampLow
           )
         case .landingRun:
           landingTables.hasGroundRun
             ? landingRunData.value(
-              for: [weight, chartElevation, temperature],
-              clamping: [.clampLow, .clampLow, .clampLow]
+              for: chartInputs,
+              clamping: .clampLow
             )
             : .notAvailable
         case .landingDistance:
           landingDistanceData.value(
-            for: [weight, chartElevation, temperature],
-            clamping: [.clampLow, .clampLow, .clampLow]
+            for: chartInputs,
+            clamping: .clampLow
           ) * (landingTables.totalDistanceFactor ?? 1)
       }
     }
@@ -293,13 +293,15 @@ final class TabularPerformanceModel: BasePerformanceModel {
     }
   }
 
-  /// Looks up a weight-dependent adjustment factor from a data table.
+  /// Looks up an adjustment factor, which varies with weight or pressure altitude, from a data
+  /// table.
   ///
-  /// These factors grow with weight, so holding a light aircraft at the lightest tabulated weight
-  /// overstates the penalty and the answer stays on the safe side. A weight above the heaviest
-  /// tabulated one would have its penalty understated, so it comes back offscale instead.
+  /// These factors grow with their input, so holding a light aircraft at the lightest tabulated
+  /// weight (or a low airport at the lowest altitude) overstates the penalty and the answer stays
+  /// on the safe side. An input above the highest tabulated one would have its penalty
+  /// understated, so it comes back offscale instead.
   private func lookupFactor(_ data: DataTable) -> Value<Double> {
-    data.value(for: [weight], clamping: [.clampLow])
+    data.value(for: chartInputs, clamping: .clampLow)
   }
 }
 
@@ -311,6 +313,16 @@ extension TabularPerformanceModel {
   /// The tables answer only there; the regression model is free to extrapolate past them.
   private var isAirportElevationApproved: Bool {
     (limitations.minAirportElevation...limitations.maxAirportElevation).contains(runway.elevation)
+  }
+
+  /// The inputs the takeoff and landing tables, and their factors, are read at.
+  private var chartInputs: [TableInput: Double] {
+    [.weight: weight, .altitude: chartElevation, .temperature: temperature]
+  }
+
+  /// The inputs the en route climb tables are read at.
+  private var enrouteInputs: [TableInput: Double] {
+    [.weight: weight, .altitude: altitude, .temperature: temperature]
   }
 
   /// The elevation the takeoff and landing tables are read at.

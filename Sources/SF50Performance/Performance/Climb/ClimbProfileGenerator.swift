@@ -448,15 +448,17 @@ public enum ClimbProfileGenerator {
     /// `Double`, so a substituted figure would arrive at the climb integration indistinguishable
     /// from one the chart covered. Until a readout can say a figure came from the edge of a
     /// chart, the table is asked only for what it actually holds.
-    private func tableValue(_ table: DataTable, inputs: [Double]) -> Value<Double> {
+    private func tableValue(_ table: DataTable, inputs: [TableInput: Double]) -> Value<Double> {
       table.value(for: inputs)
     }
 
     func takeoffClimbGradient(weight: Double, altitude: Double, temperature: Double)
       -> Value<Double>
     {
-      // Takeoff table uses [weight, altitude, temperature]
-      tableValue(takeoffGradientTable, inputs: [weight, altitude, temperature])
+      tableValue(
+        takeoffGradientTable,
+        inputs: [.weight: weight, .altitude: altitude, .temperature: temperature]
+      )
     }
 
     func enrouteObstacleClimbGradient(
@@ -465,9 +467,11 @@ public enum ClimbProfileGenerator {
       temperature: Double,
       iceContaminated: Bool
     ) -> Value<Double> {
-      // Obstacle tables use [altitude, temperature, weight]
       let table = iceContaminated ? obstacleGradientIceTable : obstacleGradientNormalTable
-      return tableValue(table, inputs: [altitude, temperature, weight])
+      return tableValue(
+        table,
+        inputs: [.weight: weight, .altitude: altitude, .temperature: temperature]
+      )
     }
 
     func enrouteClimbGradient(
@@ -476,9 +480,11 @@ public enum ClimbProfileGenerator {
       temperature: Double,
       iceContaminated: Bool
     ) -> Value<Double> {
-      // Enroute tables use [altitude, temperature, weight]
       let table = iceContaminated ? enrouteGradientIceTable : enrouteGradientNormalTable
-      return tableValue(table, inputs: [altitude, temperature, weight])
+      return tableValue(
+        table,
+        inputs: [.weight: weight, .altitude: altitude, .temperature: temperature]
+      )
     }
 
     func enrouteClimbSpeed(
@@ -487,9 +493,11 @@ public enum ClimbProfileGenerator {
       temperature: Double,
       iceContaminated: Bool
     ) -> Value<Double> {
-      // Enroute tables use [altitude, temperature, weight]
       let table = iceContaminated ? enrouteSpeedIceTable : enrouteSpeedNormalTable
-      return tableValue(table, inputs: [altitude, temperature, weight])
+      return tableValue(
+        table,
+        inputs: [.weight: weight, .altitude: altitude, .temperature: temperature]
+      )
     }
   }
 }
