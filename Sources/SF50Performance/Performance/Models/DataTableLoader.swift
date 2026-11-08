@@ -193,22 +193,14 @@ struct DataTableLoader {
 
   // MARK: - Prefix Helpers
 
-  /// Returns the AFM table prefix for Vref lookup based on flap setting.
-  func vrefPrefix(for flapSetting: FlapSetting) -> String {
+  /// The name the tables give a flap setting, as a VREF table's file name or a landing table
+  /// directory.
+  func tablePrefix(for flapSetting: FlapSetting) -> String {
     switch flapSetting {
       case .flapsUp: "up"
       case .flapsUpIce: "up ice"
       case .flaps50: "50"
       case .flaps50Ice: "50 ice"
-      case .flaps100: "100"
-    }
-  }
-
-  /// Returns the AFM table prefix for landing distance lookup based on flap setting.
-  func landingPrefix(for flapSetting: FlapSetting) -> String {
-    switch flapSetting {
-      case .flaps50, .flapsUp: "50"
-      case .flaps50Ice, .flapsUpIce: "50 ice"
       case .flaps100: "100"
     }
   }

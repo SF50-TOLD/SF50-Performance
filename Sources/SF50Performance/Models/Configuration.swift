@@ -70,12 +70,7 @@ public enum AircraftType: Sendable, Hashable {
   case g3
 
   /// The operational limitations for this aircraft type.
-  public var limitations: any Limitations.Type {
-    switch self {
-      case .g1: LimitationsG1.self
-      case .g2, .g2Plus, .g3: LimitationsG2.self
-    }
-  }
+  public var limitations: any Limitations.Type { definition.limitations }
 
   /// Whether the aircraft flies the updated thrust schedule (SB5X-72-01, AFM supplement
   /// 31452-111), whose takeoff and takeoff climb figures differ from the basic AFM's.
