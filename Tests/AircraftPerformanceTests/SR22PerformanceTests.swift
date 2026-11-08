@@ -179,6 +179,37 @@ struct SR22PerformanceTests {
     )
   }
 
+  @Test(arguments: [false, true], [false, true])
+  func `the limitations agree with the limits the package records`(
+    hartzellPropeller: Bool,
+    turbonormalized: Bool
+  ) throws {
+    let
+      definition = SR22Definition(
+        options: .init(hartzellPropeller: hartzellPropeller, turbonormalized: turbonormalized)
+      ),
+      manifest = try definition.package().manifest,
+      selection = definition.configurationSelection,
+      name = try #require(
+        manifest.configurationName(base: selection.base, supplements: selection.supplements)
+      ),
+      limits = try #require(manifest.configurations[name]?.limits),
+      limitations = definition.limitations
+
+    #expect(
+      limitations.maxTakeoffElevation?.converted(to: .feet).value
+        == limits["maximum-takeoff-altitude"]?.value
+    )
+    #expect(
+      limitations.maxEnrouteAltitude.converted(to: .feet).value
+        == limits["maximum-operating-altitude"]?.value
+    )
+    #expect(
+      limitations.minTemperature?.converted(to: .celsius).value
+        == limits["minimum-outside-air-temperature"]?.value
+    )
+  }
+
   @Test
   func `the tabulated weights come from the ground run tables`() throws {
     let aircraft = Aircraft.sr22(Self.base)

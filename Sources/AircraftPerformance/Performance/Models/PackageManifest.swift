@@ -113,6 +113,22 @@ struct PackageManifest: Decodable, Sendable {
 
     /// Guidance that applies to the configuration.
     let notes: [Note]
+
+    /// Operating limits the configuration's manuals set, keyed by name, such as
+    /// `maximum-takeoff-altitude`.
+    let limits: [String: Limit]?
+  }
+
+  /// An operating limit a manual sets.
+  struct Limit: Decodable, Sendable {
+    /// The limit's value, in ``unit``.
+    let value: Double
+
+    /// The value's unit, such as `ft` or `degC`.
+    let unit: String
+
+    /// Where the limit comes from.
+    let sources: [String]
   }
 
   /// Guidance for a configuration, such as a limitation a supplement adds.
