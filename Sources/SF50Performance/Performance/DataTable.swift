@@ -46,6 +46,10 @@ final class DataTable: Sendable {
   private let data: [Row]
   private let nInputs: Int
 
+  /// The input each input column holds, in column order, as the header names them; `nil` for a
+  /// column whose name isn't a ``TableInput``. Empty for a table built without a header.
+  let columns: [TableInput?]
+
   /// For each input dimension, the sorted-ascending array of unique axis values.
   private let sortedAxes: [[Double]]
 
@@ -76,18 +80,17 @@ final class DataTable: Sendable {
   /// Creates a data table from a CSV string.
   ///
   /// The CSV format should have N input columns followed by 1 output column.
-  /// Each row is parsed as comma-separated floating-point values; rows with no numeric value,
-  /// such as a header, are skipped.
+  /// Each row is parsed as comma-separated floating-point values; a row with no numeric value is
+  /// the header, which names the columns.
   ///
   /// - Parameter csv: A string containing CSV data with numeric values.
   convenience init(csv: String) {
-    let rows = csv.split(whereSeparator: \.isNewline).compactMap { line -> Row? in
-      let values = line.split(separator: ",")
-        .map { $0.trimmingCharacters(in: .whitespaces) }
-        .compactMap { Double($0) }
-      return values.isEmpty ? nil : values
+    let lines = csv.split(whereSeparator: \.isNewline).map { line in
+      line.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
     }
-    self.init(data: rows)
+    let rows = lines.map { $0.compactMap { Double($0) } }.filter { !$0.isEmpty },
+      header = lines.first { $0.allSatisfy { Double($0) == nil } } ?? []
+    self.init(data: rows, columns: header.dropLast().map { TableInput(columnName: $0) })
   }
 
   /// Creates a data table from raw data arrays.
@@ -97,11 +100,14 @@ final class DataTable: Sendable {
   /// The sorted axes, per-dimension bounds and corner index used by the interpolation hot path
   /// are computed here once; the table is immutable thereafter.
   ///
-  /// - Parameter data: A 2D array where each row contains input values followed by an output value.
-  init(data: [[Double]]) {
+  /// - Parameters:
+  ///   - data: A 2D array where each row contains input values followed by an output value.
+  ///   - columns: The input each input column holds, or empty to look values up by position only.
+  init(data: [[Double]], columns: [TableInput?] = []) {
     let nInputs = (data.first?.count ?? 1) - 1
     self.data = data
     self.nInputs = nInputs
+    self.columns = columns
 
     guard !data.isEmpty, nInputs > 0 else {
       sortedAxes = []
@@ -165,6 +171,35 @@ final class DataTable: Sendable {
   }
 
   /// Resolves an input against one dimension's range, honouring the caller's clamping mode.
+  /// Interpolates an output value for inputs named by what they are, in whatever order the
+  /// table's columns hold them.
+  ///
+  /// - Parameters:
+  ///   - inputs: A value for every input the table's columns hold; others are ignored.
+  ///   - clamping: The clamping mode for every input.
+  /// - Returns: The result ``value(for:clamping:)`` gives for the inputs in column order.
+  func value(for inputs: [TableInput: Double], clamping: Clamping = .none) -> Value<Double> {
+    value(
+      for: positionalInputs(inputs),
+      clamping: Array(repeating: clamping, count: nInputs)
+    )
+  }
+
+  /// The values the table covers for an input, or `nil` if it has no column for it.
+  func domain(of input: TableInput) -> ClosedRange<Double>? {
+    columns.firstIndex(of: input).map { dimMin[$0]...dimMax[$0] }
+  }
+
+  private func positionalInputs(_ inputs: [TableInput: Double]) -> [Double] {
+    precondition(columns.count == nInputs, "Table has no header naming its inputs")
+    return columns.map { column in
+      guard let column, let value = inputs[column] else {
+        preconditionFailure("No input for column \(String(describing: column))")
+      }
+      return value
+    }
+  }
+
   private func clampInput(_ input: Double, dimension: Int, mode: Clamping) -> ClampOutcome {
     let minVal = dimMin[dimension],
       maxVal = dimMax[dimension]

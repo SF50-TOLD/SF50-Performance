@@ -154,8 +154,7 @@ struct BoundsChecker: Sendable {
       weight: weight,
       altitude: altitude,
       temperature: temperature,
-      dataTable: dataTable,
-      axes: .enrouteClimb
+      dataTable: dataTable
     )
   }
 
@@ -192,36 +191,27 @@ struct BoundsChecker: Sendable {
       altitude: altitude,
       temperature: temperature,
       dataTable: iceContaminated
-        ? obstacleClimbGradientData_iceContaminated : obstacleClimbGradientData_normal,
-      axes: .enrouteClimb
+        ? obstacleClimbGradientData_iceContaminated : obstacleClimbGradientData_normal
     )
   }
 
   // MARK: - Private Helpers
 
+  /// Whether inputs lie within a table's range, checking weight, then altitude, then temperature.
   private func checkBoundsStatus(
     weight: Double,
     altitude: Double,
     temperature: Double,
-    dataTable: DataTable,
-    axes: AxisOrder = .distance
+    dataTable: DataTable
   ) -> BoundsStatus {
-    let inputs = [
-      (value: weight, dimension: axes.weight),
-      (value: altitude, dimension: axes.altitude),
-      (value: temperature, dimension: axes.temperature)
+    let inputs: [(TableInput, Double)] = [
+      (.weight, weight), (.altitude, altitude), (.temperature, temperature)
     ]
-
-    for (value, dimension) in inputs {
-      if value < dataTable.min(dimension: dimension) {
-        return .belowMinimum
-      }
-      if value > dataTable.max(dimension: dimension) {
-        return .aboveMaximum
-      }
+    for (input, value) in inputs {
+      guard let range = dataTable.domain(of: input) else { continue }
+      if value < range.lowerBound { return .belowMinimum }
+      if value > range.upperBound { return .aboveMaximum }
     }
-
-    // All parameters within bounds
     return .withinBounds
   }
 
@@ -230,18 +220,5 @@ struct BoundsChecker: Sendable {
     case gradient
     case rate
     case speed
-  }
-
-  /// Which column of a table each input occupies.
-  ///
-  /// The AFM's own column order is not the same throughout: the distance tables lead with weight,
-  /// the en route climb tables with pressure altitude.
-  private struct AxisOrder: Sendable {
-    static let distance = Self(weight: 0, altitude: 1, temperature: 2),
-      enrouteClimb = Self(weight: 2, altitude: 0, temperature: 1)
-
-    let weight: Int,
-      altitude: Int,
-      temperature: Int
   }
 }

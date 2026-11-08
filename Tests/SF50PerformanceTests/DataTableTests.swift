@@ -5,6 +5,27 @@ import Testing
 
 struct DataTableTests {
 
+  // MARK: - Named Inputs
+
+  @Test
+  func `named inputs are read in the header's column order, under either spelling`() {
+    let table = DataTable(
+      csv: """
+        pressure_alt_ft,oat_c,weight_lb,value
+        0,0,5000,100
+        0,0,6000,200
+        2000,0,5000,300
+        2000,0,6000,400
+        """
+    )
+
+    #expect(
+      table.value(for: [.weight: 6000, .altitude: 2000, .temperature: 0]) == .value(400)
+    )
+    #expect(table.domain(of: .weight) == 5000...6000)
+    #expect(table.domain(of: .depth) == nil)
+  }
+
   // MARK: - 1D Interpolation Tests
 
   @Test
