@@ -12,7 +12,7 @@ import Foundation
 /// Performance data is organized in the bundle as:
 ///
 /// ```
-/// Data/
+/// Data/sf50/
 /// ├── g1/
 /// │   ├── takeoff/
 /// │   │   ├── ground run.csv

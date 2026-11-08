@@ -9,7 +9,7 @@ struct RegressionPerformanceModelG2PlusTests {
 
   @Test
   func `takeoff ground run within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g2+/takeoff/ground run.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -34,7 +34,7 @@ struct RegressionPerformanceModelG2PlusTests {
 
   @Test
   func `takeoff distance within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g2+/takeoff/total distance.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -59,7 +59,7 @@ struct RegressionPerformanceModelG2PlusTests {
 
   @Test
   func `takeoff climb gradient within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g2+/takeoff climb/gradient.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 
@@ -82,7 +82,7 @@ struct RegressionPerformanceModelG2PlusTests {
 
   @Test
   func `takeoff climb rate within tolerance`() throws {
-    let csvURL = try AircraftData.dataDirectory()
+    let csvURL = try DataPackage.sf50.get().directory
       .appending(path: "g2+/takeoff climb/rate.csv")
     let dataTable = try DataTable(fileURL: csvURL)
 

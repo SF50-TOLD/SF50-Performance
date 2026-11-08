@@ -14,6 +14,12 @@ public enum PerformanceDataError: Error, LocalizedError {
   /// A regression equation names residuals the bundle does not carry.
   case missingResiduals(table: String)
 
+  /// A data package has no configuration with a base manual and exactly a set of supplements.
+  case missingConfiguration(package: String, base: String, supplements: [String])
+
+  /// A data package is in a format, or holds equations in a version, this package doesn't read.
+  case unsupportedPackageFormat(package: String, format: String)
+
   public var errorDescription: String? {
     String(
       localized: "Performance data couldn’t be loaded.",
@@ -42,6 +48,21 @@ public enum PerformanceDataError: Error, LocalizedError {
           localized: "No residuals were found for the regression table “\(table)”.",
           bundle: .module,
           comment: "Failure reason for bundled performance data. The argument is a table name."
+        )
+      case let .missingConfiguration(package, base, supplements):
+        String(
+          localized:
+            "The “\(package)” data has no configuration of “\(base)” and supplements [\(supplements.joined(separator: ", "))].",
+          bundle: .module,
+          comment:
+            "Failure reason for bundled performance data. The arguments are a data package name, a base manual name and a list of supplement names."
+        )
+      case let .unsupportedPackageFormat(package, format):
+        String(
+          localized: "The “\(package)” data is in an unsupported format (\(format)).",
+          bundle: .module,
+          comment:
+            "Failure reason for bundled performance data. The arguments are a data package name and its format."
         )
     }
   }

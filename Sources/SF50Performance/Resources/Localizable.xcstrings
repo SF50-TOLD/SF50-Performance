@@ -245,6 +245,30 @@
         }
       }
     },
+    "The “%@” data has no configuration of “%@” and supplements [%@].": {
+      "comment": "Failure reason for bundled performance data. The arguments are a data package name, a base manual name and a list of supplement names.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The “%1$@” data has no configuration of “%2$@” and supplements [%3$@]."
+          }
+        }
+      }
+    },
+    "The “%@” data is in an unsupported format (%@).": {
+      "comment": "Failure reason for bundled performance data. The arguments are a data package name and its format.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The “%1$@” data is in an unsupported format (%2$@)."
+          }
+        }
+      }
+    },
     "Unpaved Surface": {
       "comment": "A distance adjustment for a turf runway.",
       "extractionState": "manual"

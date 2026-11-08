@@ -1,51 +1,42 @@
 import Foundation
 
-/// The digitized AFM tables and fitted regression equations for one data set.
+/// The digitized AFM tables and fitted regression equations of one configuration in a
+/// ``DataPackage``.
 ///
-/// Each data set is read from the bundle once, the first time a model asks for it, and shared by
-/// every model built afterwards. Swift initializes the `static let`s that hold them lazily and
-/// exactly once, so concurrent first requests need no lock.
-///
-/// The updated thrust schedule's data set (`g2+`) holds only the tables the schedule changes, and
-/// takes the rest from the G2's.
+/// Each table is read from the document the package's manifest names for it, so a configuration
+/// that layers a supplement over its base reads the supplement's tables where it prints them and
+/// the base's everywhere else. Equations are read from the configuration's own `regressions`
+/// directory, which holds its complete set.
 struct AircraftData: Sendable {
-  private static let dataDirectoryName = "Data",
-    packageName = "sf50",
-    regressionsDirectoryName = "regressions",
-    tableExtension = "csv",
+  private static let regressionsDirectoryName = "regressions",
     equationExtension = "json"
 
-  private static let g1 = Result { try Self(directory: "g1") }
-  private static let g2 = Result { try Self(directory: "g2") }
-  private static let g2Plus = Result { try Self(directory: "g2+", tableFallback: "g2") }
-
-  /// The data set's directory name, which also prefixes its residual table names.
+  /// The configuration's name, such as `g2+`.
   let directoryName: String
 
-  /// Tables keyed by path relative to the data set's directory, such as `takeoff/ground run.csv`.
+  /// Tables keyed by path relative to a document's directory, such as `takeoff/ground run.csv`.
   private let tables: [String: DataTable]
 
   /// Regression equations keyed by file name, such as `takeoff-ground-run.json`.
   private let equations: [String: RegressionEquation]
 
   /**
-   * Reads a data set from the bundle.
+   * Reads a configuration's tables and equations from its package.
    *
    * - Parameters:
-   *   - directory: The data set's directory under `Data`.
-   *   - tableFallback: A data set to take any table this one lacks from.
+   *   - configuration: The configuration's name in the package's manifest.
+   *   - package: The package holding it.
    * - Throws: ``PerformanceDataError`` if a file cannot be read, or if an equation names residuals
-   *   the bundle does not carry.
+   *   the package does not carry.
    */
-  private init(directory: String, tableFallback: String? = nil) throws {
-    let root = try Self.dataDirectory()
-    var tables = try Self.loadTables(in: root.appending(component: directory))
-    if let tableFallback {
-      let fallbackTables = try Self.loadTables(in: root.appending(component: tableFallback))
-      tables.merge(fallbackTables) { own, _ in own }
+  init(configuration: String, in package: DataPackage) throws {
+    guard let tablePaths = package.manifest.configurations[configuration]?.tables else {
+      throw PerformanceDataError.missingResource(path: configuration)
     }
-    let equations = try Self.loadEquations(
-      in: root.appending(component: directory).appending(component: Self.regressionsDirectoryName)
+    tables = try Self.loadTables(tablePaths, in: package.directory)
+    equations = try Self.loadEquations(
+      in: package.directory.appending(component: configuration)
+        .appending(component: Self.regressionsDirectoryName)
     )
 
     try ResidualErrorCalculator.validate(
@@ -53,9 +44,7 @@ struct AircraftData: Sendable {
         + ResidualErrorCalculator.contaminationTables
     )
 
-    directoryName = directory
-    self.tables = tables
-    self.equations = equations
+    directoryName = configuration
   }
 
   // MARK: - Type Methods
@@ -66,38 +55,37 @@ struct AircraftData: Sendable {
   /// - Returns: The G1, G2 or updated-thrust data set.
   /// - Throws: ``PerformanceDataError`` if the data set could not be read from the bundle.
   static func forType(_ aircraftType: AircraftType) throws -> Self {
-    switch aircraftType {
-      case .g1: try g1.get()
-      case .g2, .g2Plus, .g3: try aircraftType.hasUpdatedThrustSchedule ? g2Plus.get() : g2.get()
-    }
+    let selection = aircraftType.dataConfiguration
+    return try DataPackage.sf50.get().configuration(
+      base: selection.base,
+      supplements: selection.supplements
+    )
   }
 
-  /// The bundled SF50 data package, holding every data set and the residuals.
-  static func dataDirectory() throws -> URL {
-    guard let resources = Bundle.module.resourceURL else {
-      throw PerformanceDataError.missingResource(path: dataDirectoryName)
-    }
-    return resources.appending(component: dataDirectoryName, directoryHint: .isDirectory)
-      .appending(component: packageName, directoryHint: .isDirectory)
-  }
-
-  private static func loadTables(in directory: URL) throws -> [String: DataTable] {
-    try files(withExtension: tableExtension, in: directory, recursive: true).reduce(into: [:]) {
-      tables,
-      path in
-      let url = directory.appending(path: path)
+  /// Reads each table from the document the manifest names for it.
+  private static func loadTables(
+    _ documents: [String: String],
+    in packageDirectory: URL
+  ) throws -> [String: DataTable] {
+    try documents.reduce(into: [:]) { tables, entry in
+      let (path, document) = entry
       do {
-        tables[path] = try DataTable(fileURL: url)
+        tables[path] = try DataTable(
+          fileURL: packageDirectory.appending(component: document).appending(path: path)
+        )
       } catch {
-        throw PerformanceDataError.unreadableResource(path: path, underlying: error)
+        throw PerformanceDataError.unreadableResource(
+          path: "\(document)/\(path)",
+          underlying: error
+        )
       }
     }
   }
 
   private static func loadEquations(in directory: URL) throws -> [String: RegressionEquation] {
-    try files(withExtension: equationExtension, in: directory, recursive: false).reduce(
-      into: [:]
-    ) { equations, path in
+    try files(withExtension: equationExtension, in: directory).reduce(into: [:]) {
+      equations,
+      path in
       do {
         equations[path] = try RegressionEquation(fileURL: directory.appending(path: path))
       } catch {
@@ -106,20 +94,15 @@ struct AircraftData: Sendable {
     }
   }
 
-  /// The paths, relative to `directory`, of the files there with an extension.
-  private static func files(
-    withExtension pathExtension: String,
-    in directory: URL,
-    recursive: Bool
-  ) throws -> [String] {
-    let directoryPath = directory.path(percentEncoded: false),
-      fileManager = FileManager.default
+  /// The names of the files in a directory with an extension.
+  private static func files(withExtension pathExtension: String, in directory: URL) throws
+    -> [String]
+  {
     do {
-      let paths =
-        recursive
-        ? try fileManager.subpathsOfDirectory(atPath: directoryPath)
-        : try fileManager.contentsOfDirectory(atPath: directoryPath)
-      return paths.filter { $0.hasSuffix(".\(pathExtension)") }
+      let names = try FileManager.default.contentsOfDirectory(
+        atPath: directory.path(percentEncoded: false)
+      )
+      return names.filter { $0.hasSuffix(".\(pathExtension)") }
     } catch {
       throw PerformanceDataError.unreadableResource(
         path: directory.lastPathComponent,
@@ -130,10 +113,10 @@ struct AircraftData: Sendable {
 
   // MARK: - Lookups
 
-  /// The table at a path relative to the data set's directory.
+  /// The table at a path relative to a document's directory.
   ///
   /// - Parameter path: The table's path, such as `takeoff/ground run.csv`.
-  /// - Throws: ``PerformanceDataError/missingResource(path:)`` if the data set has no such table.
+  /// - Throws: ``PerformanceDataError/missingResource(path:)`` if the configuration has no such table.
   func table(_ path: String) throws -> DataTable {
     guard let table = tables[path] else {
       throw PerformanceDataError.missingResource(path: "\(directoryName)/\(path)")
@@ -141,11 +124,11 @@ struct AircraftData: Sendable {
     return table
   }
 
-  /// The regression equation in a file of the data set's `regressions` directory.
+  /// The regression equation in a file of the configuration's `regressions` directory.
   ///
   /// - Parameter filename: The equation's file name, such as `takeoff-ground-run.json`.
-  /// - Throws: ``PerformanceDataError/missingResource(path:)`` if the data set has no such
-  ///   equation.
+  /// - Throws: ``PerformanceDataError/missingResource(path:)`` if the configuration has no
+  ///   such equation.
   func equation(_ filename: String) throws -> RegressionEquation {
     guard let equation = equations[filename] else {
       throw PerformanceDataError.missingResource(
@@ -153,5 +136,17 @@ struct AircraftData: Sendable {
       )
     }
     return equation
+  }
+}
+
+extension AircraftType {
+  /// The SF50 package's base AFM and the supplements layered over it for this aircraft.
+  ///
+  /// The G2 and G3 share the G2 AFM, and the updated thrust schedule is its 31452-111 supplement.
+  var dataConfiguration: (base: String, supplements: Set<String>) {
+    switch self {
+      case .g1: ("g1", [])
+      case .g2, .g2Plus, .g3: ("g2", hasUpdatedThrustSchedule ? ["g2+"] : [])
+    }
   }
 }

@@ -11,7 +11,7 @@ import Foundation
 /// Equation files are organized in the bundle as:
 ///
 /// ```
-/// Data/
+/// Data/sf50/
 /// ├── g1/
 /// │   └── regressions/
 /// │       ├── takeoff-ground-run.json
