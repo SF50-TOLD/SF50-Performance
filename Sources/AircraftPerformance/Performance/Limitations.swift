@@ -1,93 +1,101 @@
 public import Foundation
 
-/// Protocol defining aircraft operational limitations.
-///
-/// ``Limitations`` provides access to the aircraft's certified operating limits
-/// as specified in the Aircraft Flight Manual (AFM). Different aircraft generations
-/// may have different limitations.
-public protocol Limitations {
+/// An aircraft's certified operating limitations, as its flight manual states them.
+public struct AircraftLimitations: Sendable, Hashable {
   /// Maximum certified takeoff weight.
-  static var maxTakeoffWeight: Measurement<UnitMass> { get }
+  public let maxTakeoffWeight: Measurement<UnitMass>
 
   /// Maximum certified landing weight.
-  static var maxLandingWeight: Measurement<UnitMass> { get }
+  public let maxLandingWeight: Measurement<UnitMass>
 
-  /// Maximum zero fuel weight.
-  static var maxZeroFuelWeight: Measurement<UnitMass> { get }
+  /// Maximum zero fuel weight, or `nil` if the manual sets none.
+  public let maxZeroFuelWeight: Measurement<UnitMass>?
 
   /// Maximum pressure altitude for enroute flight.
-  static var maxEnrouteAltitude: Measurement<UnitLength> { get }
+  public let maxEnrouteAltitude: Measurement<UnitLength>
 
   /// Highest airport elevation approved for takeoff and landing.
-  static var maxAirportElevation: Measurement<UnitLength> { get }
+  public let maxAirportElevation: Measurement<UnitLength>
 
   /// Lowest airport elevation approved for takeoff and landing.
   ///
   /// Performance below sea level is read from the sea-level figures.
-  static var minAirportElevation: Measurement<UnitLength> { get }
+  public let minAirportElevation: Measurement<UnitLength>
+
+  /// Highest airport elevation approved for takeoff, where it is lower than
+  /// ``maxAirportElevation``, or `nil` if it isn't.
+  public let maxTakeoffElevation: Measurement<UnitLength>?
 
   /// Maximum tailwind component for takeoff and landing.
-  static var maxTailwind: Measurement<UnitSpeed> { get }
+  public let maxTailwind: Measurement<UnitSpeed>
 
-  /// Maximum demonstrated crosswind component with flaps 50, which the AFM does not consider
-  /// limiting.
-  static var maxCrosswind_flaps50: Measurement<UnitSpeed> { get }
-
-  /// Maximum demonstrated crosswind component with flaps 100, which the AFM does not consider
-  /// limiting.
-  static var maxCrosswind_flaps100: Measurement<UnitSpeed> { get }
+  /// The demonstrated crosswind component for each flap setting the manual gives one for, which
+  /// it does not consider limiting.
+  public let demonstratedCrosswind: [FlapSetting: Measurement<UnitSpeed>]
 
   /// Maximum usable fuel capacity.
-  static var maxFuel: Measurement<UnitVolume> { get }
+  public let maxFuel: Measurement<UnitVolume>
 
   /// Minimum operating temperature.
-  static var minTemperature: Measurement<UnitTemperature> { get }
+  public let minTemperature: Measurement<UnitTemperature>
 
   /// Maximum operating temperature.
-  static var maxTemperature: Measurement<UnitTemperature> { get }
-}
+  public let maxTemperature: Measurement<UnitTemperature>
 
-extension Limitations {
-  /// The maximum demonstrated crosswind component for a flap setting.
-  static func maxCrosswind(for flapSetting: FlapSetting) -> Measurement<UnitSpeed> {
-    flapSetting == .flaps100 ? maxCrosswind_flaps100 : maxCrosswind_flaps50
+  /// Creates a set of limitations.
+  ///
+  /// - Parameters:
+  ///   - maxTakeoffWeight: Maximum certified takeoff weight.
+  ///   - maxLandingWeight: Maximum certified landing weight.
+  ///   - maxZeroFuelWeight: Maximum zero fuel weight, or `nil` if the manual sets none.
+  ///   - maxEnrouteAltitude: Maximum pressure altitude for enroute flight.
+  ///   - maxAirportElevation: Highest airport elevation approved for takeoff and landing.
+  ///   - minAirportElevation: Lowest airport elevation approved for takeoff and landing.
+  ///   - maxTakeoffElevation: A lower highest elevation for takeoff alone, if the manual sets one.
+  ///   - maxTailwind: Maximum tailwind component for takeoff and landing.
+  ///   - demonstratedCrosswind: The demonstrated crosswind component by flap setting.
+  ///   - maxFuel: Maximum usable fuel capacity.
+  ///   - minTemperature: Minimum operating temperature.
+  ///   - maxTemperature: Maximum operating temperature.
+  public init(
+    maxTakeoffWeight: Measurement<UnitMass>,
+    maxLandingWeight: Measurement<UnitMass>,
+    maxZeroFuelWeight: Measurement<UnitMass>?,
+    maxEnrouteAltitude: Measurement<UnitLength>,
+    maxAirportElevation: Measurement<UnitLength>,
+    minAirportElevation: Measurement<UnitLength>,
+    maxTakeoffElevation: Measurement<UnitLength>? = nil,
+    maxTailwind: Measurement<UnitSpeed>,
+    demonstratedCrosswind: [FlapSetting: Measurement<UnitSpeed>],
+    maxFuel: Measurement<UnitVolume>,
+    minTemperature: Measurement<UnitTemperature>,
+    maxTemperature: Measurement<UnitTemperature>
+  ) {
+    self.maxTakeoffWeight = maxTakeoffWeight
+    self.maxLandingWeight = maxLandingWeight
+    self.maxZeroFuelWeight = maxZeroFuelWeight
+    self.maxEnrouteAltitude = maxEnrouteAltitude
+    self.maxAirportElevation = maxAirportElevation
+    self.minAirportElevation = minAirportElevation
+    self.maxTakeoffElevation = maxTakeoffElevation
+    self.maxTailwind = maxTailwind
+    self.demonstratedCrosswind = demonstratedCrosswind
+    self.maxFuel = maxFuel
+    self.minTemperature = minTemperature
+    self.maxTemperature = maxTemperature
   }
-}
 
-/// Operational limitations for first-generation SF50 Vision Jet (G1).
-public struct LimitationsG1: Limitations {
-  public static let maxTakeoffWeight = Measurement(value: 6000, unit: UnitMass.pounds)
-  public static let maxLandingWeight = Measurement(value: 5550, unit: UnitMass.pounds)
-  public static let maxZeroFuelWeight = Measurement(value: 4900, unit: UnitMass.pounds)
-  public static let maxEnrouteAltitude = Measurement(value: 28_000, unit: UnitLength.feet)
-  // takeoff and landing
-  public static let maxAirportElevation = Measurement(value: 10_000, unit: UnitLength.feet)
-  public static let minAirportElevation = Measurement(value: -1000, unit: UnitLength.feet)
-  public static let maxTailwind = Measurement(value: 10, unit: UnitSpeed.knots)
-  public static let maxCrosswind_flaps50 = Measurement(value: 18, unit: UnitSpeed.knots)
-  public static let maxCrosswind_flaps100 = Measurement(value: 16, unit: UnitSpeed.knots)
-  public static let maxFuel = Measurement(value: 296, unit: UnitVolume.gallons)
-  public static let minTemperature = Measurement(value: -40, unit: UnitTemperature.celsius)
-  public static let maxTemperature = Measurement(value: 50, unit: UnitTemperature.celsius)
+  /// The demonstrated crosswind component for a flap setting, or `nil` if the manual gives none.
+  public func maxCrosswind(for flapSetting: FlapSetting) -> Measurement<UnitSpeed>? {
+    demonstratedCrosswind[flapSetting]
+  }
 
-  private init() {}
-}
-
-/// Operational limitations for second-generation SF50 Vision Jet (G2).
-public struct LimitationsG2: Limitations {
-  public static let maxTakeoffWeight = Measurement(value: 6000, unit: UnitMass.pounds)
-  public static let maxLandingWeight = Measurement(value: 5550, unit: UnitMass.pounds)
-  public static let maxZeroFuelWeight = Measurement(value: 4900, unit: UnitMass.pounds)
-  public static let maxEnrouteAltitude = Measurement(value: 31_000, unit: UnitLength.feet)
-  // takeoff and landing
-  public static let maxAirportElevation = Measurement(value: 10_000, unit: UnitLength.feet)
-  public static let minAirportElevation = Measurement(value: -1000, unit: UnitLength.feet)
-  public static let maxTailwind = Measurement(value: 10, unit: UnitSpeed.knots)
-  public static let maxCrosswind_flaps50 = Measurement(value: 18, unit: UnitSpeed.knots)
-  public static let maxCrosswind_flaps100 = Measurement(value: 16, unit: UnitSpeed.knots)
-  public static let maxFuel = Measurement(value: 296, unit: UnitVolume.gallons)
-  public static let minTemperature = Measurement(value: -40, unit: UnitTemperature.celsius)
-  public static let maxTemperature = Measurement(value: 50, unit: UnitTemperature.celsius)
-
-  private init() {}
+  /// The elevations approved for takeoff or landing.
+  func approvedElevations(for operation: Operation) -> ClosedRange<Measurement<UnitLength>> {
+    let highest =
+      operation == .takeoff
+      ? Swift.min(maxTakeoffElevation ?? maxAirportElevation, maxAirportElevation)
+      : maxAirportElevation
+    return minAirportElevation...highest
+  }
 }

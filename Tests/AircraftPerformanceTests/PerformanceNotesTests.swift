@@ -7,7 +7,7 @@ import Testing
 
 @Suite
 struct `Performance Notes` {
-  private static let calculator = PerformanceCalculator(settings: .init(aircraftType: .g1))
+  private static let calculator = PerformanceCalculator(settings: .init(aircraft: .sf50(.g1)))
 
   private static let standardAltimeter = Measurement(
     value: 29.92,
@@ -143,7 +143,7 @@ struct `Performance Notes` {
     throws
   {
     let regression = PerformanceCalculator(
-      settings: .init(aircraftType: .g1, modelKind: .regression)
+      settings: .init(aircraft: .sf50(.g1), modelKind: .regression)
     )
     let notes = try Self.takeoffNotes(
       runway: Self.runway(elevation: 10_500),
@@ -199,7 +199,7 @@ struct `Performance Notes` {
   @Test
   func `qualifies a contaminated landing and the safety factor it does not take`() throws {
     let factored = PerformanceCalculator(
-      settings: .init(aircraftType: .g1, safetyFactorDry: 1.2, safetyFactorContaminated: 1.4)
+      settings: .init(aircraft: .sf50(.g1), safetyFactorDry: 1.2, safetyFactorContaminated: 1.4)
     )
 
     let rwyCC = try Self.landingNotes(

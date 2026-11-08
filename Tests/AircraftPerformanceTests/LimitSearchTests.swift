@@ -5,7 +5,7 @@ import Testing
 
 @Suite
 struct `Limit Searches` {
-  private static let calculator = PerformanceCalculator(settings: .init(aircraftType: .g1))
+  private static let calculator = PerformanceCalculator(settings: .init(aircraft: .sf50(.g1)))
 
   private static let emptyWeight = Measurement(value: 3550, unit: UnitMass.pounds)
 
@@ -120,7 +120,7 @@ struct `Limit Searches` {
       minimumWeight: Self.emptyWeight
     )
 
-    #expect(result.limit == LimitationsG1.maxTakeoffWeight)
+    #expect(result.limit == SF50Definition.g1Limitations.maxTakeoffWeight)
     #expect(result.reliesOnOffscaleData)
   }
 
@@ -218,7 +218,7 @@ struct `Limit Searches` {
       minimumWeight: Self.emptyWeight
     )
 
-    #expect(result.limit == LimitationsG1.maxTakeoffWeight)
+    #expect(result.limit == SF50Definition.g1Limitations.maxTakeoffWeight)
     #expect(result.bindingConstraint == .structuralLimit)
   }
 
@@ -236,7 +236,7 @@ struct `Limit Searches` {
     )
 
     #expect(result.bindingConstraint == .obstacleClearance)
-    #expect(result.limit.map { $0 < LimitationsG1.maxTakeoffWeight } ?? false)
+    #expect(result.limit.map { $0 < SF50Definition.g1Limitations.maxTakeoffWeight } ?? false)
   }
 
   @Test
@@ -260,7 +260,7 @@ struct `Limit Searches` {
       runway: Self.runway(length: 10_000),
       obstacle: nil
     )
-    #expect(long.limit == LimitationsG1.maxTemperature)
+    #expect(long.limit == SF50Definition.g1Limitations.maxTemperature)
     #expect(long.bindingConstraint == .temperatureLimit)
   }
 
@@ -275,7 +275,7 @@ struct `Limit Searches` {
 
     let limit = try #require(result.limit).converted(to: .pounds).value
     #expect(result.bindingConstraint == .fieldLength)
-    #expect(limit < LimitationsG1.maxLandingWeight.converted(to: .pounds).value)
+    #expect(limit < SF50Definition.g1Limitations.maxLandingWeight.converted(to: .pounds).value)
     #expect(try Self.landingDistanceFt(weight: limit) <= 2400)
     #expect(try Self.landingDistanceFt(weight: limit + 50) > 2400)
   }
@@ -301,7 +301,7 @@ struct `Limit Searches` {
   @Test
   func `limits the landing weight by the go-around climb gradient at a high, hot airport`() throws {
     let calculator = PerformanceCalculator(
-      settings: .init(aircraftType: .g1, modelKind: .regression)
+      settings: .init(aircraft: .sf50(.g1), modelKind: .regression)
     )
     let hot = Self.conditions.replacingTemperature(with: .init(value: 30, unit: .celsius))
     let result = try calculator.maxLandingWeight(
@@ -312,7 +312,7 @@ struct `Limit Searches` {
     )
 
     #expect(result.bindingConstraint == .goAroundClimbGradient)
-    #expect(result.limit.map { $0 < LimitationsG1.maxLandingWeight } == true)
+    #expect(result.limit.map { $0 < SF50Definition.g1Limitations.maxLandingWeight } == true)
   }
 
   @Test
@@ -327,7 +327,7 @@ struct `Limit Searches` {
     #expect(tabular.bindingConstraint == .elevationLimit)
 
     let regression = try PerformanceCalculator(
-      settings: .init(aircraftType: .g1, modelKind: .regression)
+      settings: .init(aircraft: .sf50(.g1), modelKind: .regression)
     ).maxTakeoffWeight(
       conditions: Self.conditions,
       runway: high,
@@ -347,6 +347,6 @@ struct `Limit Searches` {
     )
 
     #expect(result.bindingConstraint == .AFMData)
-    #expect(result.limit.map { $0 < LimitationsG1.maxLandingWeight } == true)
+    #expect(result.limit.map { $0 < SF50Definition.g1Limitations.maxLandingWeight } == true)
   }
 }

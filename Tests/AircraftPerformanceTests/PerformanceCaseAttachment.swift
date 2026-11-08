@@ -30,7 +30,7 @@ struct PerformanceCase {
   // MARK: - Instance Properties
 
   private let modelKind: ModelKind,
-    aircraftType: AircraftType
+    aircraft: Aircraft
 
   private let conditions: Conditions,
     configuration: Configuration,
@@ -41,7 +41,7 @@ struct PerformanceCase {
   private var inputFields: [String] {
     [
       modelKind.rawValue,
-      String(describing: aircraftType),
+      String(describing: aircraft),
       field(configuration.weight.converted(to: .pounds).value),
       field(runway.elevation.converted(to: .feet).value),
       field(conditions.temperature?.converted(to: .celsius).value),
@@ -66,10 +66,10 @@ struct PerformanceCase {
   /// - Parameters:
   ///   - model: The model under test, whose conditions, configuration, runway, and NOTAM
   ///     become the CSV row.
-  ///   - aircraftType: The type the model was built for, which it doesn't retain.
-  init(for model: BasePerformanceModel, aircraftType: AircraftType) {
+  ///   - aircraft: The aircraft the model was built for, which it doesn't retain.
+  init(for model: BasePerformanceModel, aircraft: Aircraft) {
     modelKind = model is TabularPerformanceModel ? .tabular : .regression
-    self.aircraftType = aircraftType
+    self.aircraft = aircraft
     conditions = model.conditions
     configuration = model.configuration
     runway = model.runway

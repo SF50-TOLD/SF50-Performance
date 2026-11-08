@@ -24,7 +24,7 @@ public enum ClimbProfileGenerator {
   /// - Parameters:
   ///   - windsAloft: Atmospheric observations at various altitudes.
   ///   - weightLb: Aircraft weight in pounds.
-  ///   - aircraftType: Aircraft variant (determines which equations/tables to load).
+  ///   - aircraft: The aircraft, whose data package and configuration the figures come from.
   ///   - seaLevelPressureInHg: Sea-level pressure for TAS computation.
   ///   - useRegressionModel: If true, use regression equations; otherwise use tabular data.
   /// - Returns: A ``ClimbProfile`` with data points at each winds-aloft altitude.
@@ -32,11 +32,11 @@ public enum ClimbProfileGenerator {
   public static func generate(
     windsAloft: [WindsAloftObservation],
     weightLb: Double,
-    aircraftType: AircraftType,
+    aircraft: Aircraft,
     seaLevelPressureInHg: Double,
     useRegressionModel: Bool
   ) throws -> ClimbProfile {
-    let data = try AircraftData.forType(aircraftType),
+    let data = try aircraft.definition.data(),
       source: any EquationSource =
         useRegressionModel ? try RegressionSource(data: data) : try TabularSource(data: data)
 

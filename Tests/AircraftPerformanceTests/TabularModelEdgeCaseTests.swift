@@ -20,7 +20,7 @@ struct TabularModelEdgeCaseTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let groundRun = model.takeoffRunFt
@@ -28,7 +28,7 @@ struct TabularModelEdgeCaseTests {
 
     // Should interpolate successfully, not return offscale
     guard case .value = groundRun else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail(
           "Takeoff ground run should interpolate at 5992 lb, 2621 ft, 19°C but got \(groundRun)",
           computing: "takeoff run"
@@ -37,7 +37,7 @@ struct TabularModelEdgeCaseTests {
     }
 
     guard case .value = totalDistance else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail(
           "Takeoff distance should interpolate at 5992 lb, 2621 ft, 19°C but got \(totalDistance)",
           computing: "takeoff distance"
@@ -71,7 +71,7 @@ struct TabularModelEdgeCaseTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let landingRun = model.landingRunFt
@@ -79,7 +79,7 @@ struct TabularModelEdgeCaseTests {
 
     // Should interpolate successfully, not return offscale
     guard case .value = landingRun else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail(
           "Landing run should interpolate at 5214 lb, 8900 ft, 7°C but got \(landingRun)",
           computing: "landing run"
@@ -88,7 +88,7 @@ struct TabularModelEdgeCaseTests {
     }
 
     guard case .value = landingDistance else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail(
           "Landing distance should interpolate at 5214 lb, 8900 ft, 7°C but got \(landingDistance)",
           computing: "landing distance"
@@ -114,13 +114,13 @@ struct TabularModelEdgeCaseTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let result = model.takeoffRunFt
 
     guard case .value = result else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail(
           "Should find valid interpolation bounds despite ISA temperatures, got \(result)",
           computing: "takeoff run"
@@ -144,7 +144,7 @@ struct TabularModelEdgeCaseTests {
         configuration: Helper.createTestConfiguration(weight: weight),
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       ).takeoffRunFt
     }
 
@@ -165,7 +165,7 @@ struct TabularModelEdgeCaseTests {
       configuration: Helper.createTestConfiguration(weight: 5500),
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     #expect(model.takeoffRunFt == .notAuthorized)
@@ -182,7 +182,7 @@ struct TabularModelEdgeCaseTests {
         configuration: Helper.createTestConfiguration(weight: 5500),
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
     }
 
@@ -204,7 +204,7 @@ struct TabularModelEdgeCaseTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let result = model.takeoffRunFt
@@ -236,14 +236,14 @@ struct TabularModelEdgeCaseTests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.takeoffRunFt
 
       if testCase.shouldSucceed {
         guard case .value = result else {
-          PerformanceCase(for: model, aircraftType: .g1)
+          PerformanceCase(for: model, aircraft: .sf50(.g1))
             .fail("Expected a value at the boundary, got \(result)", computing: "takeoff run")
           continue
         }
@@ -273,13 +273,13 @@ struct TabularModelEdgeCaseTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let result = model.takeoffRunFt
 
     guard case .value(let value) = result else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail("Should interpolate successfully at exact match altitude", computing: "takeoff run")
       return
     }
@@ -307,13 +307,13 @@ struct TabularModelEdgeCaseTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let result = model.takeoffRunFt
 
     guard case .value = result else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail(
           "Should handle degenerate case with exact weight/altitude match",
           computing: "takeoff run"
@@ -334,13 +334,13 @@ struct TabularModelEdgeCaseTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let result = model.takeoffRunFt
 
     guard case .value = result else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail("Should handle 2D interpolation with exact weight match", computing: "takeoff run")
       return
     }
@@ -369,7 +369,7 @@ struct TabularModelEdgeCaseTests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let modelG2Plus = try TabularPerformanceModel(
@@ -377,7 +377,7 @@ struct TabularModelEdgeCaseTests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g2Plus
+        aircraft: .sf50(.g2Plus)
       )
 
       // Check takeoff performance
@@ -389,12 +389,12 @@ struct TabularModelEdgeCaseTests {
       let g2HasValue = if case .value = g2TakeoffRun { true } else { false }
 
       if !g1HasValue {
-        PerformanceCase(for: modelG1, aircraftType: .g1)
+        PerformanceCase(for: modelG1, aircraft: .sf50(.g1))
           .fail("\(issue.description): G1 returned \(g1TakeoffRun)", computing: "takeoff run")
       }
 
       if !g2HasValue {
-        PerformanceCase(for: modelG2Plus, aircraftType: .g2Plus)
+        PerformanceCase(for: modelG2Plus, aircraft: .sf50(.g2Plus))
           .fail("\(issue.description): G2+ returned \(g2TakeoffRun)", computing: "takeoff run")
       }
     }
@@ -419,11 +419,11 @@ struct TabularModelEdgeCaseTests {
         configuration: baseConfig,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       guard case .value(let takeoffRun) = model.takeoffRunFt else { continue }
-      let current = PerformanceCase(for: model, aircraftType: .g1).computed(takeoffRun)
+      let current = PerformanceCase(for: model, aircraft: .sf50(.g1)).computed(takeoffRun)
 
       if let previous {
         PerformanceCase.expect(

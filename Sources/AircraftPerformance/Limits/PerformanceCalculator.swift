@@ -6,7 +6,7 @@ public import Foundation
 /// main-actor view model or shared across a server's concurrent requests alike.
 ///
 /// ```swift
-/// let calculator = PerformanceCalculator(settings: .init(aircraftType: .g2Plus))
+/// let calculator = PerformanceCalculator(settings: .init(aircraft: .sf50(.g2Plus)))
 /// let report = try calculator.takeoff(
 ///   conditions: conditions,
 ///   weight: .init(value: 5800, unit: .pounds),
@@ -52,7 +52,7 @@ public struct PerformanceCalculator: Sendable {
       runway: runway,
       notam: runway.notam,
       kind: settings.modelKind,
-      aircraftType: settings.aircraftType
+      aircraft: settings.aircraft
     )
   }
 

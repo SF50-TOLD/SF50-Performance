@@ -28,7 +28,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: makeWindsAloft(altitudes: [0, 5000, 7250]),
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -43,7 +43,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -61,7 +61,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 5500,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -85,7 +85,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -106,7 +106,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -128,7 +128,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -153,7 +153,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -177,7 +177,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -215,7 +215,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -235,7 +235,7 @@ struct ClimbProfileGeneratorTests {
         .init(altitudeFt: 30_000, temperatureC: -40, windDirectionDeg: 0, windSpeedKts: 0)
       ],
       weightLb: 6000,
-      aircraftType: .g2(updatedThrustSchedule: false),
+      aircraft: .sf50(.g2(updatedThrustSchedule: false)),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -249,7 +249,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: makeWindsAloft(altitudes: [5000, 20000, 30000]),
       weightLb: 5500,
-      aircraftType: .g2Plus,
+      aircraft: .sf50(.g2Plus),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )
@@ -269,7 +269,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: false
     )
@@ -284,7 +284,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: [.init(altitudeFt: 0, temperatureC: 10, windDirectionDeg: 0, windSpeedKts: 0)],
       weightLb: 6000,
-      aircraftType: .g2(updatedThrustSchedule: false),
+      aircraft: .sf50(.g2(updatedThrustSchedule: false)),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: false
     )
@@ -304,7 +304,7 @@ struct ClimbProfileGeneratorTests {
         .init(altitudeFt: 18000, temperatureC: -14, windDirectionDeg: 315, windSpeedKts: 52)
       ],
       weightLb: 5500,
-      aircraftType: .g2(updatedThrustSchedule: false),
+      aircraft: .sf50(.g2(updatedThrustSchedule: false)),
       seaLevelPressureInHg: 30.12,
       useRegressionModel: false
     )
@@ -321,7 +321,7 @@ struct ClimbProfileGeneratorTests {
     let profile = try ClimbProfileGenerator.generate(
       windsAloft: winds,
       weightLb: 6000,
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       seaLevelPressureInHg: 29.92,
       useRegressionModel: true
     )

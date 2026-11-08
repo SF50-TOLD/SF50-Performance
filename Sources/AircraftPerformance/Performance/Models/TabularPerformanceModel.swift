@@ -1,17 +1,17 @@
 import Foundation
 
-/// Unified tabular performance model for all SF50 Vision Jet variants.
+/// Tabular performance model for any aircraft with a data package.
 ///
 /// ``TabularPerformanceModel`` calculates takeoff and landing performance using
-/// direct interpolation from digitized AFM table data. The `aircraftType` parameter
-/// drives which data files are loaded and determines vref loading behavior.
+/// direct interpolation from digitized AFM table data. The `aircraft` parameter
+/// drives which data files are loaded.
 final class TabularPerformanceModel: BasePerformanceModel {
 
   // MARK: - Properties
 
   private static let seaLevelFt = 0.0
 
-  private let limitations: any Limitations.Type
+  private let limitations: AircraftLimitations
   private let landingTables: LandingTables
   private let takeoffRunData: DataTable
   private let takeoffDistanceData: DataTable
@@ -105,9 +105,9 @@ final class TabularPerformanceModel: BasePerformanceModel {
     configuration: Configuration,
     runway: RunwayInput,
     notam: NOTAMInput?,
-    aircraftType: AircraftType
+    aircraft: Aircraft
   ) throws {
-    let definition = aircraftType.definition,
+    let definition = aircraft.definition,
       loader = DataTableLoader(data: try definition.data())
     landingTables = definition.landingTables(for: configuration.flapSetting)
     let landingPrefix = loader.tablePrefix(for: landingTables.flapSetting)

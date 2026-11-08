@@ -54,8 +54,8 @@ struct AircraftData: Sendable {
   /// - Parameter aircraftType: The aircraft whose data is wanted.
   /// - Returns: The G1, G2 or updated-thrust data set.
   /// - Throws: ``PerformanceDataError`` if the data set could not be read from the bundle.
-  static func forType(_ aircraftType: AircraftType) throws -> Self {
-    try aircraftType.definition.data()
+  static func forType(_ aircraft: Aircraft) throws -> Self {
+    try aircraft.definition.data()
   }
 
   /// Reads each table from the document the manifest names for it.

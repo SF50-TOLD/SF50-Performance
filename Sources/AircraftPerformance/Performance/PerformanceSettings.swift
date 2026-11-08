@@ -15,8 +15,8 @@ public enum PerformanceModelKind: String, Sendable, Hashable, CaseIterable, Coda
 /// None of these are read from storage here: an app passes in whatever its pilot set, and a server
 /// whatever its caller asked for.
 public struct PerformanceSettings: Sendable, Hashable {
-  /// The aircraft generation and thrust schedule.
-  public var aircraftType: AircraftType
+  /// The aircraft and its installed options.
+  public var aircraft: Aircraft
 
   /// Which performance model answers.
   public var modelKind: PerformanceModelKind
@@ -31,7 +31,7 @@ public struct PerformanceSettings: Sendable, Hashable {
   public var VREFAdditive: Measurement<UnitSpeed>
 
   /// The aircraft's operating limitations.
-  public var limitations: any Limitations.Type { aircraftType.limitations }
+  public var limitations: AircraftLimitations { aircraft.limitations }
 
   /// ``VREFAdditive`` in knots.
   public var VREFAdditiveKts: Double { VREFAdditive.converted(to: .knots).value }
@@ -43,20 +43,20 @@ public struct PerformanceSettings: Sendable, Hashable {
    * Creates engine settings.
    *
    * - Parameters:
-   *   - aircraftType: The aircraft generation and thrust schedule.
+   *   - aircraft: The aircraft and its installed options.
    *   - modelKind: Which performance model answers.
    *   - safetyFactorDry: The multiplier for takeoff distances and dry or wet landing distances.
    *   - safetyFactorContaminated: The multiplier for contaminated landing distances.
    *   - VREFAdditive: The speed added to VREF on approach.
    */
   public init(
-    aircraftType: AircraftType,
+    aircraft: Aircraft,
     modelKind: PerformanceModelKind = .tabular,
     safetyFactorDry: Double = 1,
     safetyFactorContaminated: Double = 1,
     VREFAdditive: Measurement<UnitSpeed> = .init(value: 0, unit: .knots)
   ) {
-    self.aircraftType = aircraftType
+    self.aircraft = aircraft
     self.modelKind = modelKind
     self.safetyFactorDry = safetyFactorDry
     self.safetyFactorContaminated = safetyFactorContaminated

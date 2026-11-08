@@ -1,12 +1,12 @@
 import Foundation
 
-/// Unified regression-based performance model for all SF50 Vision Jet variants.
+/// Regression-based performance model for any aircraft with a data package.
 ///
 /// ``RegressionPerformanceModel`` calculates takeoff and landing performance using
-/// polynomial regression equations derived from AFM table data. The `aircraftType`
+/// polynomial regression equations derived from AFM table data. The `aircraft`
 /// parameter drives which JSON data files get loaded (via the
 /// ``RegressionEquationLoader``), selecting the appropriate coefficients and
-/// adjustment factors for each variant.
+/// adjustment factors for each configuration.
 ///
 /// ## Bounds Checking
 ///
@@ -187,9 +187,9 @@ final class RegressionPerformanceModel: BasePerformanceModel {
     configuration: Configuration,
     runway: RunwayInput,
     notam: NOTAMInput?,
-    aircraftType: AircraftType
+    aircraft: Aircraft
   ) throws {
-    let definition = aircraftType.definition,
+    let definition = aircraft.definition,
       data = try definition.data()
     landingTables = definition.landingTables(for: configuration.flapSetting)
     self.boundsChecker = try BoundsChecker(loader: DataTableLoader(data: data))
