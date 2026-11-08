@@ -45,6 +45,10 @@ final class RegressionEquation: Sendable {
   /// Uncertainty key for residual error lookup, if applicable
   let uncertaintyKey: String?
 
+  /// The fitting error reported as each figure's uncertainty, or `nil` if it isn't bounded
+  /// statistically.
+  private let residuals: ResidualData?
+
   /// Name of the base equation for delta polynomial types, nil otherwise.
   let baseEquationName: String?
 
@@ -55,19 +59,27 @@ final class RegressionEquation: Sendable {
 
   /// Creates a regression equation by loading JSON from a file URL.
   ///
-  /// - Parameter fileURL: The URL of the JSON file to load.
+  /// - Parameters:
+  ///   - fileURL: The URL of the JSON file to load.
+  ///   - residuals: The package's residuals, which hold the equation's error bounds.
   /// - Throws: `Errors.badEncoding` if the file cannot be read,
-  ///           `Errors.decodingFailed` if the JSON structure is invalid.
-  convenience init(fileURL: URL) throws {
+  ///           `Errors.decodingFailed` if the JSON structure is invalid, or
+  ///           ``PerformanceDataError/missingResiduals(table:)`` if the residuals lack the
+  ///           equation's.
+  convenience init(fileURL: URL, residuals: [String: ResidualData]) throws {
     let data = try Data(contentsOf: fileURL)
-    try self.init(json: data)
+    try self.init(json: data, residuals: residuals)
   }
 
   /// Creates a regression equation from JSON data.
   ///
-  /// - Parameter json: The JSON data to parse.
-  /// - Throws: `Errors.decodingFailed` if the JSON structure is invalid.
-  init(json: Data) throws {
+  /// - Parameters:
+  ///   - json: The JSON data to parse.
+  ///   - residuals: The package's residuals, which hold the equation's error bounds.
+  /// - Throws: `Errors.decodingFailed` if the JSON structure is invalid, or
+  ///           ``PerformanceDataError/missingResiduals(table:)`` if the residuals lack the
+  ///           equation's.
+  init(json: Data, residuals: [String: ResidualData]) throws {
     let decoder = JSONDecoder()
     let file: EquationFile
     do {
@@ -83,6 +95,14 @@ final class RegressionEquation: Sendable {
     self.type = file.type
     self.variables = file.variables
     self.uncertaintyKey = file.uncertaintyKey
+    if let key = file.uncertaintyKey {
+      guard let residuals = residuals[key] else {
+        throw PerformanceDataError.missingResiduals(table: key)
+      }
+      self.residuals = residuals
+    } else {
+      self.residuals = nil
+    }
     self.baseEquationName = file.baseEquation
 
     // Parse type-specific equation content
@@ -164,9 +184,8 @@ final class RegressionEquation: Sendable {
     }
 
     // Apply uncertainty if available
-    if let key = uncertaintyKey {
-      let rmse = ResidualErrorCalculator.RMSE(for: key, binParameters: inputs)
-      return .valueWithUncertainty(result, uncertainty: rmse)
+    if let residuals {
+      return .valueWithUncertainty(result, uncertainty: residuals.RMSE(binParameters: inputs))
     }
     return .value(result)
   }

@@ -8,10 +8,10 @@ struct DataTableTests {
   // MARK: - Named Inputs
 
   @Test
-  func `named inputs are read in the header's column order, under either spelling`() {
+  func `named inputs are read in the header's column order`() {
     let table = DataTable(
       csv: """
-        pressure_alt_ft,oat_c,weight_lb,value
+        altitude,temperature,weight,value
         0,0,5000,100
         0,0,6000,200
         2000,0,5000,300

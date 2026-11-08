@@ -105,7 +105,8 @@
         "vref/up ice.csv": "g1",
         "vref/up.csv": "g1"
       },
-      "notes": []
+      "notes": [],
+      "limits": {}
     },
     "g2": {
       "base": "g2",
@@ -152,6 +153,8 @@
         "landing/contamination/dry snow.csv": "g2",
         "landing/contamination/slush, wet snow.csv": "g2",
         "landing/contamination/water.csv": "g2",
+        "landing/rwycc_ldf_grooved.csv": "g1",
+        "landing/rwycc_ldf_smooth.csv": "g1",
         "takeoff climb/gradient.csv": "g2",
         "takeoff climb/rate.csv": "g2",
         "takeoff/ground run - downhill factor.csv": "g2",
@@ -169,7 +172,8 @@
         "vref/up ice.csv": "g2",
         "vref/up.csv": "g2"
       },
-      "notes": []
+      "notes": [],
+      "limits": {}
     },
     "g2+": {
       "base": "g2",
@@ -218,6 +222,8 @@
         "landing/contamination/dry snow.csv": "g2",
         "landing/contamination/slush, wet snow.csv": "g2",
         "landing/contamination/water.csv": "g2",
+        "landing/rwycc_ldf_grooved.csv": "g1",
+        "landing/rwycc_ldf_smooth.csv": "g1",
         "takeoff climb/gradient.csv": "g2+",
         "takeoff climb/rate.csv": "g2+",
         "takeoff/ground run - downhill factor.csv": "g2+",
@@ -235,7 +241,8 @@
         "vref/up ice.csv": "g2",
         "vref/up.csv": "g2"
       },
-      "notes": []
+      "notes": [],
+      "limits": {}
     }
   },
   "precedence": [],

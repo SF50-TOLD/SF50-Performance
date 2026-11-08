@@ -156,41 +156,6 @@ struct DataTableLoader {
     try loadDataTable(path: "landing/\(landingPrefix)/total distance - unpaved factor.csv")
   }
 
-  // MARK: - Contamination Data Tables
-
-  func loadCompactSnowLandingData() throws -> DataTable {
-    try loadDataTable(path: "landing/contamination/compact snow.csv")
-  }
-
-  func loadDrySnowLandingData() throws -> DataTable {
-    try loadDataTable(path: "landing/contamination/dry snow.csv")
-  }
-
-  func loadSlushLandingData() throws -> DataTable {
-    try loadDataTable(path: "landing/contamination/slush, wet snow.csv")
-  }
-
-  func loadWaterLandingData() throws -> DataTable {
-    try loadDataTable(path: "landing/contamination/water.csv")
-  }
-
-  // Alias methods for contamination data
-  func loadContaminationCompactSnowData() throws -> DataTable {
-    try loadCompactSnowLandingData()
-  }
-
-  func loadContaminationDrySnowData() throws -> DataTable {
-    try loadDrySnowLandingData()
-  }
-
-  func loadContaminationSlushData() throws -> DataTable {
-    try loadSlushLandingData()
-  }
-
-  func loadContaminationWaterData() throws -> DataTable {
-    try loadWaterLandingData()
-  }
-
   // MARK: - Prefix Helpers
 
   /// The name the tables give a flap setting, as a VREF table's file name or a landing table
