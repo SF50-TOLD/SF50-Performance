@@ -1,7 +1,7 @@
 import Foundation
 
-/// A quantity a ``DataTable``'s input column holds, whatever name its header gives it.
-enum TableInput: Sendable, Hashable, CaseIterable {
+/// A quantity a ``DataTable``'s input column holds, under the name its header gives it.
+enum TableInput: String, Sendable, Hashable, CaseIterable {
   /// Aircraft weight, in pounds.
   case weight
 
@@ -18,25 +18,10 @@ enum TableInput: Sendable, Hashable, CaseIterable {
   case depth
 
   /// A runway condition code.
-  case rwyCC
-
-  /// The header names a column holding this input may have.
-  private var columnNames: Set<String> {
-    switch self {
-      case .weight: ["weight", "weight_lb"]
-      case .altitude: ["altitude", "pressure_alt_ft"]
-      case .temperature: ["temperature", "oat_c"]
-      case .distance: ["distance"]
-      case .depth: ["depth"]
-      case .rwyCC: ["rwycc"]
-    }
-  }
+  case rwyCC = "rwycc"
 
   /// The input a header names, or `nil` for a name that isn't one.
   init?(columnName: String) {
-    guard let input = Self.allCases.first(where: { $0.columnNames.contains(columnName) }) else {
-      return nil
-    }
-    self = input
+    self.init(rawValue: columnName)
   }
 }

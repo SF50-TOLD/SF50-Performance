@@ -1,4 +1,4 @@
-pressure_alt_ft,oat_c,weight_lb,value
+altitude,temperature,weight,value
 0,-54,4500,1555
 0,-54,5000,1360
 0,-54,5500,1196

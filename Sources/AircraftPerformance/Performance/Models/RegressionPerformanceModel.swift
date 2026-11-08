@@ -256,7 +256,7 @@ final class RegressionPerformanceModel: BasePerformanceModel {
     landingDistanceUnpavedFactorEquation = try loader.loadLandingDistanceUnpavedFactorEquation()
 
     super.init(conditions: conditions, configuration: configuration, runway: runway, notam: notam)
-    contaminationCalculator = try ContaminationCalculator()
+    contaminationCalculator = try ContaminationCalculator(data: data, usesTables: false)
   }
 
   // MARK: - Base Values

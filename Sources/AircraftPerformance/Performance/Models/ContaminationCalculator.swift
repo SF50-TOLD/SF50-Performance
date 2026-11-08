@@ -28,10 +28,10 @@ import Foundation
 ///
 /// ```swift
 /// // For tabular model
-/// let calculator = try ContaminationCalculator(loader: dataTableLoader)
+/// let calculator = try ContaminationCalculator(data: data, usesTables: true)
 ///
 /// // For regression model
-/// let calculator = try ContaminationCalculator()
+/// let calculator = try ContaminationCalculator(data: data, usesTables: false)
 ///
 /// let adjustedDistance = calculator.landingRunContaminationAddition(
 ///   distance: baseDistance,
@@ -69,18 +69,15 @@ final class ContaminationCalculator: Sendable {
   /// factored wet tables are the dry ones times 1.92, that is the dry 1.67 times 1.15, for both.
   private static let wetRunwayFactor: Double = 1.15
 
-  /// The RwyCC landing distance factor tables, relative to the configuration that holds them.
+  /// The RwyCC landing distance factor tables.
   private static let rwyCCGroovedPath = "landing/rwycc_ldf_grooved.csv",
     rwyCCSmoothPath = "landing/rwycc_ldf_smooth.csv"
 
-  /// The RwyCC landing distance factors, grooved or PFC first, read once.
-  private static let rwyCCFactors = Result {
-    let data = try DataPackage.sf50.get().configuration(SF50Definition.rwyCCConfiguration)
-    return (
-      grooved: factors(from: try data.table(rwyCCGroovedPath)),
-      smooth: factors(from: try data.table(rwyCCSmoothPath))
-    )
-  }
+  /// The contamination tables, whose residuals bound the regression formulas fitted to them.
+  private static let waterPath = "landing/contamination/water.csv",
+    slushPath = "landing/contamination/slush, wet snow.csv",
+    drySnowPath = "landing/contamination/dry snow.csv",
+    compactSnowPath = "landing/contamination/compact snow.csv"
 
   // MARK: - Properties
 
@@ -94,38 +91,35 @@ final class ContaminationCalculator: Sendable {
   private let rwyCCLDFGrooved: [UInt8: Double]
   private let rwyCCLDFSmooth: [UInt8: Double]
 
+  /// The fitting error of each contaminant's regression formula.
+  private let waterResiduals: ResidualData,
+    slushResiduals: ResidualData,
+    drySnowResiduals: ResidualData,
+    compactSnowResiduals: ResidualData
+
   /// Whether this calculator uses tabular data (vs regression formulas)
   private var usesTabularData: Bool { waterData != nil }
 
   // MARK: - Initializers
 
-  /// Creates a contamination calculator for tabular model (with data tables).
+  /// Creates a contamination calculator from a configuration's tables.
   ///
-  /// Use this initializer when the performance model uses tabular interpolation
-  /// from digitized AFM data.
-  ///
-  /// - Parameter loader: The data table loader to load contamination tables from
-  /// - Throws: ``PerformanceDataError`` if the bundled tables could not be read.
-  init(loader: DataTableLoader) throws {
-    self.compactSnowData = try loader.loadContaminationCompactSnowData()
-    self.drySnowData = try loader.loadContaminationDrySnowData()
-    self.slushData = try loader.loadContaminationSlushData()
-    self.waterData = try loader.loadContaminationWaterData()
-    (rwyCCLDFGrooved, rwyCCLDFSmooth) = try Self.rwyCCFactors.get()
-  }
-
-  /// Creates a contamination calculator for regression model (no data tables).
-  ///
-  /// Use this initializer when the performance model uses polynomial regression
-  /// formulas derived from AFM data.
-  ///
-  /// - Throws: ``PerformanceDataError`` if the bundled RwyCC factors could not be read.
-  init() throws {
-    self.compactSnowData = nil
-    self.drySnowData = nil
-    self.slushData = nil
-    self.waterData = nil
-    (rwyCCLDFGrooved, rwyCCLDFSmooth) = try Self.rwyCCFactors.get()
+  /// - Parameters:
+  ///   - data: The configuration whose contamination and RwyCC tables apply.
+  ///   - usesTables: Whether to interpolate the contamination tables, as the tabular model does,
+  ///     rather than evaluate the regression formulas fitted to them.
+  /// - Throws: ``PerformanceDataError`` if the configuration lacks a table or its residuals.
+  init(data: AircraftData, usesTables: Bool) throws {
+    compactSnowData = usesTables ? try data.table(Self.compactSnowPath) : nil
+    drySnowData = usesTables ? try data.table(Self.drySnowPath) : nil
+    slushData = usesTables ? try data.table(Self.slushPath) : nil
+    waterData = usesTables ? try data.table(Self.waterPath) : nil
+    rwyCCLDFGrooved = Self.factors(from: try data.table(Self.rwyCCGroovedPath))
+    rwyCCLDFSmooth = Self.factors(from: try data.table(Self.rwyCCSmoothPath))
+    waterResiduals = try data.residuals(forTable: Self.waterPath)
+    slushResiduals = try data.residuals(forTable: Self.slushPath)
+    drySnowResiduals = try data.residuals(forTable: Self.drySnowPath)
+    compactSnowResiduals = try data.residuals(forTable: Self.compactSnowPath)
   }
 
   // MARK: - Type Methods
@@ -345,10 +339,8 @@ final class ContaminationCalculator: Sendable {
         - 1.319545e+00 * distanceValue * depthInches
         + 4.370052e+00
 
-      let contaminationUncertainty = ResidualErrorCalculator.contaminationRMSE(
-        for: "water",
-        distance: distanceValue,
-        depth: depthInches
+      let contaminationUncertainty = waterResiduals.RMSE(
+        binParameters: ["distance": distanceValue, "depth": depthInches]
       )
 
       let newUncertainty =
@@ -378,10 +370,8 @@ final class ContaminationCalculator: Sendable {
         + 1.113034e-01 * pow(depthInches, 2)
         + 7.443967e+00
 
-      let contaminationUncertainty = ResidualErrorCalculator.contaminationRMSE(
-        for: "slush, wet snow",
-        distance: distanceValue,
-        depth: depthInches
+      let contaminationUncertainty = slushResiduals.RMSE(
+        binParameters: ["distance": distanceValue, "depth": depthInches]
       )
 
       let newUncertainty =
@@ -401,9 +391,8 @@ final class ContaminationCalculator: Sendable {
         1.328947e+00 * distanceValue
         + 5.263158e+00
 
-      let contaminationUncertainty = ResidualErrorCalculator.contaminationRMSE(
-        for: "dry snow",
-        distance: distanceValue
+      let contaminationUncertainty = drySnowResiduals.RMSE(
+        binParameters: ["distance": distanceValue]
       )
 
       let newUncertainty =
@@ -423,9 +412,8 @@ final class ContaminationCalculator: Sendable {
         1.578947e+00 * distanceValue
         + 5.263158e+00
 
-      let contaminationUncertainty = ResidualErrorCalculator.contaminationRMSE(
-        for: "compact snow",
-        distance: distanceValue
+      let contaminationUncertainty = compactSnowResiduals.RMSE(
+        binParameters: ["distance": distanceValue]
       )
 
       let newUncertainty =

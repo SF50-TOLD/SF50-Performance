@@ -20,6 +20,10 @@ final class DataPackage: Sendable {
   /// The package's manifest.
   let manifest: PackageManifest
 
+  /// Every equation's and lookup table's error bounds, keyed by
+  /// `<document>/<table path without .csv>`.
+  let residuals: [String: ResidualData]
+
   private let loadedConfigurations = Mutex<[String: Result<AircraftData, any Error>]>([:])
 
   /**
@@ -33,6 +37,7 @@ final class DataPackage: Sendable {
     directory = try Self.directory(named: name)
     manifest = try Self.loadManifest(in: directory)
     try manifest.validateFormat()
+    residuals = try ResidualData.load(in: directory)
   }
 
   // MARK: - Loading

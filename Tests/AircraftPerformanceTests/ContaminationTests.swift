@@ -1044,12 +1044,12 @@ struct ContaminationTests {
   /// inside it.
   @Test(arguments: [SF50Variant.g1, .g2(updatedThrustSchedule: false), .g2Plus, .g3])
   func `the tabulated depth range matches the AFM tables`(aircraftType: SF50Variant) throws {
-    let loader = try DataTableLoader(aircraft: .sf50(aircraftType)),
+    let data = try Aircraft.sf50(aircraftType).definition.data(),
       shallowest = Contamination.shallowestTabulatedDepth.converted(to: .inches).value,
       deepest = Contamination.deepestTabulatedDepth.converted(to: .inches).value
 
-    for table in [try loader.loadContaminationWaterData(), try loader.loadContaminationSlushData()]
-    {
+    for path in ["landing/contamination/water.csv", "landing/contamination/slush, wet snow.csv"] {
+      let table = try data.table(path)
       #expect(table.min(dimension: Self.depthDimension) == shallowest)
       #expect(table.max(dimension: Self.depthDimension) == deepest)
     }

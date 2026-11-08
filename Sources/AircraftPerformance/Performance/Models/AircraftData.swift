@@ -20,6 +20,12 @@ struct AircraftData: Sendable {
   /// Regression equations keyed by file name, such as `takeoff-ground-run.json`.
   private let equations: [String: RegressionEquation]
 
+  /// The document each table is read from, keyed by table path.
+  private let tableDocuments: [String: String]
+
+  /// The package's residuals.
+  private let residuals: [String: ResidualData]
+
   /**
    * Reads a configuration's tables and equations from its package.
    *
@@ -36,27 +42,15 @@ struct AircraftData: Sendable {
     tables = try Self.loadTables(tablePaths, in: package.directory)
     equations = try Self.loadEquations(
       in: package.directory.appending(component: configuration)
-        .appending(component: Self.regressionsDirectoryName)
+        .appending(component: Self.regressionsDirectoryName),
+      residuals: package.residuals
     )
-
-    try ResidualErrorCalculator.validate(
-      tables: equations.values.compactMap(\.uncertaintyKey)
-        + ResidualErrorCalculator.contaminationTables
-    )
-
+    tableDocuments = tablePaths
+    residuals = package.residuals
     directoryName = configuration
   }
 
   // MARK: - Type Methods
-
-  /// The data set for an aircraft type.
-  ///
-  /// - Parameter aircraftType: The aircraft whose data is wanted.
-  /// - Returns: The G1, G2 or updated-thrust data set.
-  /// - Throws: ``PerformanceDataError`` if the data set could not be read from the bundle.
-  static func forType(_ aircraft: Aircraft) throws -> Self {
-    try aircraft.definition.data()
-  }
 
   /// Reads each table from the document the manifest names for it.
   private static func loadTables(
@@ -78,12 +72,20 @@ struct AircraftData: Sendable {
     }
   }
 
-  private static func loadEquations(in directory: URL) throws -> [String: RegressionEquation] {
+  private static func loadEquations(
+    in directory: URL,
+    residuals: [String: ResidualData]
+  ) throws -> [String: RegressionEquation] {
     try files(withExtension: equationExtension, in: directory).reduce(into: [:]) {
       equations,
       path in
       do {
-        equations[path] = try RegressionEquation(fileURL: directory.appending(path: path))
+        equations[path] = try RegressionEquation(
+          fileURL: directory.appending(path: path),
+          residuals: residuals
+        )
+      } catch let error as PerformanceDataError {
+        throw error
       } catch {
         throw PerformanceDataError.unreadableResource(path: path, underlying: error)
       }
@@ -118,6 +120,19 @@ struct AircraftData: Sendable {
       throw PerformanceDataError.missingResource(path: "\(directoryName)/\(path)")
     }
     return table
+  }
+
+  /// The residuals of a table, keyed by the document the configuration reads it from.
+  ///
+  /// - Parameter path: The table's path, such as `landing/contamination/water.csv`.
+  /// - Throws: ``PerformanceDataError/missingResiduals(table:)`` if the package has none for it.
+  func residuals(forTable path: String) throws -> ResidualData {
+    let tableName = String(path.dropLast(".csv".count)),
+      key = tableDocuments[path].map { "\($0)/\(tableName)" } ?? tableName
+    guard let residuals = residuals[key] else {
+      throw PerformanceDataError.missingResiduals(table: key)
+    }
+    return residuals
   }
 
   /// The regression equation in a file of the configuration's `regressions` directory.

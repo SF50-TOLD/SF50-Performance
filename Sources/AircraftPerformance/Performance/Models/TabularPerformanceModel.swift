@@ -108,7 +108,8 @@ final class TabularPerformanceModel: BasePerformanceModel {
     aircraft: Aircraft
   ) throws {
     let definition = aircraft.definition,
-      loader = DataTableLoader(data: try definition.data())
+      data = try definition.data(),
+      loader = DataTableLoader(data: data)
     landingTables = definition.landingTables(for: configuration.flapSetting)
     let landingPrefix = loader.tablePrefix(for: landingTables.flapSetting)
 
@@ -164,7 +165,7 @@ final class TabularPerformanceModel: BasePerformanceModel {
     )
 
     super.init(conditions: conditions, configuration: configuration, runway: runway, notam: notam)
-    contaminationCalculator = try ContaminationCalculator(loader: loader)
+    contaminationCalculator = try ContaminationCalculator(data: data, usesTables: true)
   }
 
   // MARK: - Base Values

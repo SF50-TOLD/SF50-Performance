@@ -8,16 +8,6 @@ struct SF50Definition: AircraftDefinition {
     flapsUpLandingDistanceFactor = 1.38,
     flapsUpIceLandingDistanceFactor = 1.52
 
-  /// The configuration that holds the RwyCC landing distance factor tables.
-  ///
-  /// AC 91-79B's factors don't depend on the aircraft, so the package carries one copy, with the
-  /// G1 AFM's tables.
-  static let rwyCCConfiguration = ConfigurationSelection(base: g1AFM, supplements: [])
-
-  /// The document whose contamination tables the regression contamination formulas' residuals
-  /// are keyed by. The G1 and G2 AFMs print the same contamination tables.
-  static let contaminationResidualDocument = g1AFM
-
   /// The G1 AFM's limitations (31452-001 Section 2).
   static let g1Limitations = limitations(maxEnrouteAltitudeFt: 28_000)
 
