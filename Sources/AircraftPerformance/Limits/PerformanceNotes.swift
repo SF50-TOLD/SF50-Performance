@@ -212,12 +212,13 @@ public enum PerformanceNotes {
   /// exceeds neither.
   private static func windNotes(
     inputs: PerformanceNoteInputs,
-    limitations: any Limitations.Type
+    limitations: AircraftLimitations
   ) -> [PerformanceNote] {
     var notes: [PerformanceNote] = []
-    let crosswindLimit = limitations.maxCrosswind(for: inputs.configuration.flapSetting),
-      crosswind = inputs.runway.crosswind(conditions: inputs.conditions).magnitude
-    if crosswind > crosswindLimit {
+    let crosswind = inputs.runway.crosswind(conditions: inputs.conditions).magnitude
+    if let crosswindLimit = limitations.maxCrosswind(for: inputs.configuration.flapSetting),
+      crosswind > crosswindLimit
+    {
       notes.append(.crosswindExceedance(crosswind: crosswind, limit: crosswindLimit))
     }
 
@@ -235,7 +236,7 @@ public enum PerformanceNotes {
   /// The elevation limits bound only the tables; the regression model may extrapolate past them.
   private static func environmentNotes(
     inputs: PerformanceNoteInputs,
-    limitations: any Limitations.Type
+    limitations: AircraftLimitations
   ) -> [PerformanceNote] {
     var notes: [PerformanceNote] = []
     let elevation = inputs.runway.elevation,
@@ -258,7 +259,7 @@ public enum PerformanceNotes {
   private static func weightNotes(
     for operation: Operation,
     inputs: PerformanceNoteInputs,
-    limitations: any Limitations.Type
+    limitations: AircraftLimitations
   ) -> [PerformanceNote] {
     var notes: [PerformanceNote] = []
     let weight = inputs.configuration.weight,
@@ -267,10 +268,10 @@ public enum PerformanceNotes {
     if weight > maxWeight {
       notes.append(.weightAboveMax(weight: weight, limit: maxWeight))
     }
-    if let zeroFuelWeight = inputs.zeroFuelWeight, zeroFuelWeight > limitations.maxZeroFuelWeight {
-      notes.append(
-        .zeroFuelWeightExceeded(weight: zeroFuelWeight, limit: limitations.maxZeroFuelWeight)
-      )
+    if let zeroFuelWeight = inputs.zeroFuelWeight, let limit = limitations.maxZeroFuelWeight,
+      zeroFuelWeight > limit
+    {
+      notes.append(.zeroFuelWeightExceeded(weight: zeroFuelWeight, limit: limit))
     }
     if let fuel = inputs.fuel, fuel > limitations.maxFuel {
       notes.append(.fuelExceedsCapacity(fuel: fuel, limit: limitations.maxFuel))

@@ -25,7 +25,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let cleanRun: Double
@@ -35,7 +35,7 @@ struct ContaminationTests {
       case .valueWithUncertainty(let val, _):
         cleanRun = val
       default:
-        PerformanceCase(for: cleanModel, aircraftType: .g1)
+        PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
           .fail("Expected clean landing run value", computing: "clean landing run")
         return
     }
@@ -56,18 +56,18 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .value(let contaminatedRun) = contaminatedModel.landingRunFt else {
-      PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+      PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
         .fail("Expected contaminated landing run value", computing: "contaminated landing run")
       return
     }
 
-    PerformanceCase(for: cleanModel, aircraftType: .g1)
+    PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
       .expect(cleanRun, of: 1961.19, computing: "clean landing run")
-    PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
       .expect(contaminatedRun, of: 2946.79, computing: "contaminated landing run")
   }
 
@@ -83,7 +83,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     let cleanRun: Double
@@ -93,7 +93,7 @@ struct ContaminationTests {
       case .valueWithUncertainty(let val, _):
         cleanRun = val
       default:
-        PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+        PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
           .fail("Expected clean landing run value", computing: "clean landing run")
         return
     }
@@ -114,18 +114,18 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     guard case .value(let contaminatedRun) = contaminatedModel.landingRunFt else {
-      PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+      PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
         .fail("Expected contaminated landing run value", computing: "contaminated landing run")
       return
     }
 
-    PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+    PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
       .expect(cleanRun, of: 1961.19, computing: "clean landing run")
-    PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
       .expect(contaminatedRun, of: 2725.67, computing: "contaminated landing run")
   }
 
@@ -141,11 +141,11 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .valueWithUncertainty(let cleanRun, _) = cleanModel.landingRunFt else {
-      PerformanceCase(for: cleanModel, aircraftType: .g1)
+      PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
         .fail("Expected clean landing run value", computing: "clean landing run")
       return
     }
@@ -165,19 +165,19 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .valueWithUncertainty(let contaminatedRun, _) = contaminatedModel.landingRunFt
     else {
-      PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+      PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
         .fail("Expected contaminated landing run value", computing: "contaminated landing run")
       return
     }
 
-    PerformanceCase(for: cleanModel, aircraftType: .g1)
+    PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
       .expect(cleanRun, of: 1983.17, computing: "clean landing run")
-    PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
       .expect(contaminatedRun, of: 2640.79, computing: "contaminated landing run")
   }
 
@@ -193,10 +193,10 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
-    let cleanCase = PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+    let cleanCase = PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
     guard case .valueWithUncertainty(let cleanRun, _) = cleanModel.landingRunFt else {
       cleanCase.fail("Expected clean landing run value", computing: "clean landing run")
       return
@@ -217,10 +217,10 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
-    let contaminatedCase = PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+    let contaminatedCase = PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
     guard case .valueWithUncertainty(let contaminatedRun, _) = contaminatedModel.landingRunFt
     else {
       contaminatedCase
@@ -252,7 +252,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let cleanDistance: Double
@@ -262,7 +262,7 @@ struct ContaminationTests {
       case .valueWithUncertainty(let val, _):
         cleanDistance = val
       default:
-        PerformanceCase(for: cleanModel, aircraftType: .g1)
+        PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
           .fail("Expected clean landing distance value", computing: "clean landing distance")
         return
     }
@@ -282,11 +282,11 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .value(let contaminatedDistance) = contaminatedModel.landingDistanceFt else {
-      PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+      PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
         .fail(
           "Expected contaminated landing distance value",
           computing: "contaminated landing distance"
@@ -294,9 +294,9 @@ struct ContaminationTests {
       return
     }
 
-    PerformanceCase(for: cleanModel, aircraftType: .g1)
+    PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
       .expect(cleanDistance, of: 2789.19, computing: "clean landing distance")
-    PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
       .expect(contaminatedDistance, of: 3347.55, computing: "contaminated landing distance")
   }
 
@@ -312,7 +312,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     let cleanDistance: Double
@@ -322,7 +322,7 @@ struct ContaminationTests {
       case .valueWithUncertainty(let val, _):
         cleanDistance = val
       default:
-        PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+        PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
           .fail("Expected clean landing distance value", computing: "clean landing distance")
         return
     }
@@ -342,11 +342,11 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     guard case .value(let contaminatedDistance) = contaminatedModel.landingDistanceFt else {
-      PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+      PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
         .fail(
           "Expected contaminated landing distance value",
           computing: "contaminated landing distance"
@@ -354,9 +354,9 @@ struct ContaminationTests {
       return
     }
 
-    PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+    PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
       .expect(cleanDistance, of: 2431.57, computing: "clean landing distance")
-    PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
       .expect(contaminatedDistance, of: 3034.39, computing: "contaminated landing distance")
   }
 
@@ -372,10 +372,10 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
-    let cleanCase = PerformanceCase(for: cleanModel, aircraftType: .g1)
+    let cleanCase = PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
     guard case .valueWithUncertainty(let cleanDistance, _) = cleanModel.landingDistanceFt else {
       cleanCase.fail("Expected clean landing distance value", computing: "clean landing distance")
       return
@@ -396,10 +396,10 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
-    let contaminatedCase = PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+    let contaminatedCase = PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
     guard
       case .valueWithUncertainty(let contaminatedDistance, _) = contaminatedModel
         .landingDistanceFt
@@ -434,11 +434,11 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     guard case .valueWithUncertainty(let cleanDistance, _) = cleanModel.landingDistanceFt else {
-      PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+      PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
         .fail("Expected clean landing distance value", computing: "clean landing distance")
       return
     }
@@ -458,14 +458,14 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     guard
       case .valueWithUncertainty(let contaminatedDistance, _) = contaminatedModel
         .landingDistanceFt
     else {
-      PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+      PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
         .fail(
           "Expected contaminated landing distance value",
           computing: "contaminated landing distance"
@@ -473,9 +473,9 @@ struct ContaminationTests {
       return
     }
 
-    PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+    PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
       .expect(cleanDistance, of: 2933.23, computing: "clean landing distance")
-    PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
       .expect(contaminatedDistance, of: 4064.51, computing: "contaminated landing distance")
   }
 
@@ -506,7 +506,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: shallowNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     // Deep water (0.5 inches)
@@ -527,7 +527,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: deepNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let shallowRun: Double
@@ -537,7 +537,7 @@ struct ContaminationTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         shallowRun = val
       default:
-        PerformanceCase(for: shallowModel, aircraftType: .g1)
+        PerformanceCase(for: shallowModel, aircraft: .sf50(.g1))
           .fail("Expected landing run values", computing: "shallow landing run")
         return
     }
@@ -546,14 +546,14 @@ struct ContaminationTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         deepRun = val
       default:
-        PerformanceCase(for: deepModel, aircraftType: .g1)
+        PerformanceCase(for: deepModel, aircraft: .sf50(.g1))
           .fail("Expected landing run values", computing: "deep landing run")
         return
     }
 
-    PerformanceCase(for: shallowModel, aircraftType: .g1)
+    PerformanceCase(for: shallowModel, aircraft: .sf50(.g1))
       .expect(shallowRun, of: 2946.79, computing: "landing run")
-    PerformanceCase(for: deepModel, aircraftType: .g1)
+    PerformanceCase(for: deepModel, aircraft: .sf50(.g1))
       .expect(deepRun, of: 2519.55, computing: "landing run")
   }
 
@@ -575,7 +575,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let waterContamination4 = Contamination.waterOrSlush(depth: .init(value: 0.5, unit: .inches))
@@ -593,7 +593,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let cleanDistance: Double
@@ -603,7 +603,7 @@ struct ContaminationTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         cleanDistance = val
       default:
-        PerformanceCase(for: cleanModel, aircraftType: .g1)
+        PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
           .fail("Expected landing distance values", computing: "clean landing distance")
         return
     }
@@ -612,14 +612,14 @@ struct ContaminationTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         contaminatedDistance = val
       default:
-        PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+        PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
           .fail("Expected landing distance values", computing: "contaminated landing distance")
         return
     }
 
-    PerformanceCase(for: cleanModel, aircraftType: .g1)
+    PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
       .expect(cleanDistance, of: 2607.23, computing: "clean landing distance")
-    PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
       .expect(contaminatedDistance, of: 3129.16, computing: "contaminated landing distance")
   }
 
@@ -635,7 +635,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let compactSnowContamination3 = Contamination.compactSnow
@@ -653,7 +653,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let cleanDistance: Double
@@ -663,7 +663,7 @@ struct ContaminationTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         cleanDistance = val
       default:
-        PerformanceCase(for: cleanModel, aircraftType: .g1)
+        PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
           .fail("Expected landing distance values", computing: "clean landing distance")
         return
     }
@@ -672,14 +672,14 @@ struct ContaminationTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         contaminatedDistance = val
       default:
-        PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+        PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
           .fail("Expected landing distance values", computing: "contaminated landing distance")
         return
     }
 
-    PerformanceCase(for: cleanModel, aircraftType: .g1)
+    PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
       .expect(cleanDistance, of: 2789.19, computing: "clean landing distance")
-    PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
       .expect(contaminatedDistance, of: 3927.85, computing: "contaminated landing distance")
   }
 
@@ -698,7 +698,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     let cleanRun: Double
@@ -708,7 +708,7 @@ struct ContaminationTests {
       case .valueWithUncertainty(let val, _):
         cleanRun = val
       default:
-        PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+        PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
           .fail("Expected clean landing run value", computing: "clean landing run")
         return
     }
@@ -729,7 +729,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     let contaminatedRun: Double
@@ -739,12 +739,12 @@ struct ContaminationTests {
       case .valueWithUncertainty(let val, _):
         contaminatedRun = val
       default:
-        PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+        PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
           .fail("Expected contaminated landing run value", computing: "contaminated landing run")
         return
     }
 
-    PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
       .expect(contaminatedRun, of: cleanRun * 1.15, computing: "wet landing run")
   }
 
@@ -761,11 +761,11 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     guard case .valueWithUncertainty(let cleanRun, _) = cleanModel.landingRunFt else {
-      PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+      PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
         .fail("Expected clean landing run value", computing: "clean landing run")
       return
     }
@@ -786,16 +786,16 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     guard case .valueWithUncertainty(let contaminatedRun, _) = contaminatedModel.landingRunFt else {
-      PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+      PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
         .fail("Expected contaminated landing run value", computing: "contaminated landing run")
       return
     }
 
-    PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
       .expect(contaminatedRun, of: cleanRun * 1.15, computing: "wet landing run")
   }
 
@@ -812,7 +812,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let cleanRun: Double
@@ -822,7 +822,7 @@ struct ContaminationTests {
       case .valueWithUncertainty(let val, _):
         cleanRun = val
       default:
-        PerformanceCase(for: cleanModel, aircraftType: .g1)
+        PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
           .fail("Expected clean landing run value", computing: "clean landing run")
         return
     }
@@ -843,7 +843,7 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let contaminatedRun: Double
@@ -853,12 +853,12 @@ struct ContaminationTests {
       case .valueWithUncertainty(let val, _):
         contaminatedRun = val
       default:
-        PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+        PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
           .fail("Expected contaminated landing run value", computing: "contaminated landing run")
         return
     }
 
-    PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
       .expect(contaminatedRun, of: cleanRun * 1.15, computing: "wet landing run")
   }
 
@@ -875,11 +875,11 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .valueWithUncertainty(let cleanRun, _) = cleanModel.landingRunFt else {
-      PerformanceCase(for: cleanModel, aircraftType: .g1)
+      PerformanceCase(for: cleanModel, aircraft: .sf50(.g1))
         .fail("Expected clean landing run value", computing: "clean landing run")
       return
     }
@@ -900,16 +900,16 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .valueWithUncertainty(let contaminatedRun, _) = contaminatedModel.landingRunFt else {
-      PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+      PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
         .fail("Expected contaminated landing run value", computing: "contaminated landing run")
       return
     }
 
-    PerformanceCase(for: contaminatedModel, aircraftType: .g1)
+    PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g1))
       .expect(contaminatedRun, of: cleanRun * 1.15, computing: "wet landing run")
   }
 
@@ -925,10 +925,10 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
-    let cleanCase = PerformanceCase(for: cleanModel, aircraftType: .g2Plus)
+    let cleanCase = PerformanceCase(for: cleanModel, aircraft: .sf50(.g2Plus))
     let cleanDistance: Double
     switch cleanModel.landingDistanceFt {
       case .value(let val):
@@ -955,10 +955,10 @@ struct ContaminationTests {
       configuration: config,
       runway: runwayInput,
       notam: contaminatedNotam,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
-    let contaminatedCase = PerformanceCase(for: contaminatedModel, aircraftType: .g2Plus)
+    let contaminatedCase = PerformanceCase(for: contaminatedModel, aircraft: .sf50(.g2Plus))
     let contaminatedDistance: Double
     switch contaminatedModel.landingDistanceFt {
       case .value(let val):
@@ -1018,13 +1018,13 @@ struct ContaminationTests {
         configuration: config,
         runway: runwayInput,
         notam: notam,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       if case .value(let run) = model.landingRunFt,
         case .value(let distance) = model.landingDistanceFt
       {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .expect(
             run <= distance,
             "Landing run should not exceed total landing distance",
@@ -1042,9 +1042,9 @@ struct ContaminationTests {
   /// describe, so this checks them against those: were they widened without the data widening
   /// too, the regression would extrapolate exactly as far past the fit as they claim is still
   /// inside it.
-  @Test(arguments: [AircraftType.g1, .g2(updatedThrustSchedule: false), .g2Plus, .g3])
-  func `the tabulated depth range matches the AFM tables`(aircraftType: AircraftType) throws {
-    let loader = try DataTableLoader(aircraftType: aircraftType),
+  @Test(arguments: [SF50Variant.g1, .g2(updatedThrustSchedule: false), .g2Plus, .g3])
+  func `the tabulated depth range matches the AFM tables`(aircraftType: SF50Variant) throws {
+    let loader = try DataTableLoader(aircraft: .sf50(aircraftType)),
       shallowest = Contamination.shallowestTabulatedDepth.converted(to: .inches).value,
       deepest = Contamination.deepestTabulatedDepth.converted(to: .inches).value
 
@@ -1190,14 +1190,14 @@ extension ContaminationTests {
         configuration: configuration,
         runway: runwayInput,
         notam: notamInput,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       ).landingRunFt
       : try RegressionPerformanceModel(
         conditions: conditions,
         configuration: configuration,
         runway: runwayInput,
         notam: notamInput,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       ).landingRunFt
   }
 

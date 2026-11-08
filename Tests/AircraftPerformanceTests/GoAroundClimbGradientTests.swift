@@ -11,12 +11,12 @@ struct GoAroundClimbGradientTests {
     (.flaps100, "100"), (.flaps50, "50"), (.flapsUp, "50")
   ]
 
-  private static let aircraft: [AircraftType] = [
+  private static let aircraft: [SF50Variant] = [
     .g1, .g2(updatedThrustSchedule: false), .g2Plus
   ]
 
   private func model(
-    _ aircraftType: AircraftType,
+    _ aircraftType: SF50Variant,
     flapSetting: FlapSetting,
     weight: Double,
     elevation: Double,
@@ -27,16 +27,16 @@ struct GoAroundClimbGradientTests {
       configuration: Helper.createTestConfiguration(weight: weight, flapSetting: flapSetting),
       runway: Helper.createTestRunway(elevation: elevation),
       notam: nil,
-      aircraftType: aircraftType
+      aircraft: .sf50(aircraftType)
     )
   }
 
   /// Every cell of a landing table's grid, and whether the AFM prints a distance there.
   private func afmCells(
-    _ aircraftType: AircraftType,
+    _ aircraftType: SF50Variant,
     landingTable: String
   ) throws -> [(weight: Double, altitude: Double, temperature: Double, printed: Bool)] {
-    let table = try DataTableLoader(aircraftType: aircraftType)
+    let table = try DataTableLoader(aircraft: .sf50(aircraftType))
       .loadLandingDistanceData(landingPrefix: landingTable)
     let printed = Set(table.rows.map { table.inputs(from: $0) })
     func axis(_ dimension: Int) -> [Double] {
@@ -56,7 +56,7 @@ struct GoAroundClimbGradientTests {
 
   @Test(arguments: aircraft, configurations)
   func `the regression meets the gradient exactly where the AFM prints a landing distance`(
-    aircraftType: AircraftType,
+    aircraftType: SF50Variant,
     configuration: (FlapSetting, landingTable: String)
   ) throws {
     for cell in try afmCells(aircraftType, landingTable: configuration.landingTable) {

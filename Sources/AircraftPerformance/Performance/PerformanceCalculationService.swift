@@ -57,7 +57,7 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
    *   - runway: Runway data snapshot.
    *   - notam: Active NOTAM data if present.
    *   - useRegressionModel: Whether to use the regression model rather than the tabular one.
-   *   - aircraftType: The aircraft type.
+   *   - aircraft: The aircraft.
    * - Returns: A configured performance model ready for calculation.
    * - Throws: ``PerformanceDataError`` if the bundled performance data could not be read.
    */
@@ -67,7 +67,7 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
     runway: RunwayInput,
     notam: NOTAMInput?,
     useRegressionModel: Bool,
-    aircraftType: AircraftType
+    aircraft: Aircraft
   ) throws -> any PerformanceModel {
     try createPerformanceModel(
       conditions: conditions,
@@ -75,7 +75,7 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
       runway: runway,
       notam: notam,
       kind: useRegressionModel ? .regression : .tabular,
-      aircraftType: aircraftType
+      aircraft: aircraft
     )
   }
 
@@ -88,7 +88,7 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
    *   - runway: Runway data snapshot.
    *   - notam: Active NOTAM data if present.
    *   - kind: Whether to read the AFM tables or the regression equations fitted to them.
-   *   - aircraftType: The aircraft type.
+   *   - aircraft: The aircraft.
    * - Returns: A configured performance model ready for calculation.
    * - Throws: ``PerformanceDataError`` if the bundled performance data could not be read.
    */
@@ -98,7 +98,7 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
     runway: RunwayInput,
     notam: NOTAMInput?,
     kind: PerformanceModelKind,
-    aircraftType: AircraftType
+    aircraft: Aircraft
   ) throws -> any PerformanceModel {
     switch kind {
       case .regression:
@@ -107,7 +107,7 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
           configuration: configuration,
           runway: runway,
           notam: notam,
-          aircraftType: aircraftType
+          aircraft: aircraft
         )
       case .tabular:
         try TabularPerformanceModel(
@@ -115,7 +115,7 @@ public final class DefaultPerformanceCalculationService: PerformanceCalculationS
           configuration: configuration,
           runway: runway,
           notam: notam,
-          aircraftType: aircraftType
+          aircraft: aircraft
         )
     }
   }

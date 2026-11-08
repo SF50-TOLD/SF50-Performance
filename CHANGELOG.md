@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+### Changed
+
+- The package, product and module are renamed `AircraftPerformance`, since the package is no
+  longer SF50-only. The repository keeps its name for now
+- Each aircraft's data is a Data-Extraction data package, mirrored unchanged into
+  `Data/<aircraft>/` by `script/update-data`; tables resolve through the package's manifest
+- The aircraft is an `Aircraft`, such as `.sf50(.g2Plus)`, wherever an `AircraftType` was taken.
+  `Aircraft` and its options are `Codable`, and say which calculations they have figures for
+  (`capabilities`), which flap settings they have takeoff and landing figures for, and which
+  manuals the figures come from (`configurationInfo()`)
+- Limitations are an `AircraftLimitations` value instead of a type conforming to `Limitations`.
+  The demonstrated crosswind is looked up by flap setting, and the zero fuel weight is optional
+
+| 1.x | 2.0 |
+|---|---|
+| `import SF50Performance` | `import AircraftPerformance` |
+| `AircraftType` | `SF50Variant`, wrapped as `Aircraft.sf50(_:)` |
+| `AircraftTypeSetting` | `SF50Generation` (same raw values) |
+| `AircraftType(setting:updatedThrustSchedule:)` | `SF50Variant(generation:updatedThrustSchedule:)` |
+| `aircraftType:` arguments and `PerformanceSettings.aircraftType` | `aircraft:` and `.aircraft` |
+| `any Limitations.Type`, `LimitationsG1`, `LimitationsG2` | `AircraftLimitations`, from `Aircraft.limitations` |
+| `maxCrosswind_flaps50`, `maxCrosswind_flaps100` | `maxCrosswind(for:)`, optional |
+| `maxZeroFuelWeight` | `maxZeroFuelWeight`, optional |
+
 ## [1.0.0] - 2026-11-04
 
 ### Added

@@ -33,10 +33,10 @@ struct DataTableLoader {
 
   /// Creates a loader reading an aircraft type's data set.
   ///
-  /// - Parameter aircraftType: The aircraft whose tables are wanted.
+  /// - Parameter aircraft: The aircraft whose tables are wanted.
   /// - Throws: ``PerformanceDataError`` if the data set could not be read from the bundle.
-  init(aircraftType: AircraftType) throws {
-    data = try AircraftData.forType(aircraftType)
+  init(aircraft: Aircraft) throws {
+    data = try aircraft.definition.data()
   }
 
   /// Creates a loader reading a data set already in hand.

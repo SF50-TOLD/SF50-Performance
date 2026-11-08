@@ -23,7 +23,7 @@ enum BoundsStatus: Sendable {
 /// ## Usage
 ///
 /// ```swift
-/// let checker = try BoundsChecker(loader: DataTableLoader(aircraftType: .g1))
+/// let checker = try BoundsChecker(loader: DataTableLoader(aircraft: .sf50(.g1)))
 ///
 /// let status = checker.takeoffBoundsStatus(
 ///     weight: 5800,

@@ -56,12 +56,12 @@ struct TabularPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.takeoffRunFt
       guard case .value(let value) = result else {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected value for weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature), got \(result)",
             computing: "takeoff run"
@@ -85,12 +85,12 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let result = model.takeoffRunFt
     guard case .value(let value) = result else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail("Expected interpolated value, got \(result)", computing: "takeoff run")
       return
     }
@@ -118,12 +118,12 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let result = model.takeoffRunFt
     guard case .value(let value) = result else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail("Expected interpolated value, got \(result)", computing: "takeoff run")
       return
     }
@@ -157,12 +157,12 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let result = model.takeoffDistanceFt
     guard case .value(let value) = result else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail("Expected interpolated value, got \(result)", computing: "takeoff distance")
       return
     }
@@ -200,12 +200,12 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let result = model.takeoffRunFt
     guard case .value(let value) = result else {
-      PerformanceCase(for: model, aircraftType: .g1)
+      PerformanceCase(for: model, aircraft: .sf50(.g1))
         .fail("Expected interpolated value, got \(result)", computing: "takeoff run")
       return
     }
@@ -250,12 +250,12 @@ struct TabularPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.takeoffDistanceFt
       guard case .value(let value) = result else {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected value for weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature), got \(result)",
             computing: "takeoff distance"
@@ -289,7 +289,7 @@ struct TabularPerformanceModelG1Tests {
         configuration: Helper.createTestConfiguration(weight: weight, flapSetting: flapSetting),
         runway: Helper.createTestRunway(elevation: elevation),
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
     }
 
@@ -343,12 +343,12 @@ struct TabularPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.takeoffClimbGradientFtNM
       guard case .value(let value) = result else {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected value for weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature), got \(result)",
             computing: "takeoff climb gradient"
@@ -400,12 +400,12 @@ struct TabularPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.takeoffClimbRateFtMin
       guard case .value(let value) = result else {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected value for weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature), got \(result)",
             computing: "takeoff climb rate"
@@ -463,12 +463,12 @@ struct TabularPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.VrefKts
       guard case .value(let value) = result else {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected value for weight: \(testCase.weight), flaps: \(testCase.flapSetting), got \(result)",
             computing: "Vref"
@@ -512,12 +512,12 @@ struct TabularPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.landingRunFt
       guard case .value(let value) = result else {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected value for weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature), got \(result)",
             computing: "landing run"
@@ -558,12 +558,12 @@ struct TabularPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.landingRunFt
       guard case .value(let value) = result else {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected value for weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature), got \(result)",
             computing: "landing run"
@@ -607,12 +607,12 @@ struct TabularPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.landingDistanceFt
       guard case .value(let value) = result else {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected value for weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature), got \(result)",
             computing: "landing distance"
@@ -653,12 +653,12 @@ struct TabularPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let result = model.landingDistanceFt
       guard case .value(let value) = result else {
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected value for weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature), got \(result)",
             computing: "landing distance"
@@ -686,7 +686,7 @@ struct TabularPerformanceModelG1Tests {
         configuration: Helper.createTestConfiguration(weight: 5550, flapSetting: flapSetting),
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
     }
 
@@ -714,7 +714,7 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let modelHeadwind = try TabularPerformanceModel(
@@ -722,11 +722,11 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .value(let noWindValue) = modelNoWind.takeoffRunFt else {
-      PerformanceCase(for: modelNoWind, aircraftType: .g1)
+      PerformanceCase(for: modelNoWind, aircraft: .sf50(.g1))
         .fail(
           "Expected a no-wind takeoff run, got \(modelNoWind.takeoffRunFt)",
           computing: "no-wind takeoff run"
@@ -734,7 +734,7 @@ struct TabularPerformanceModelG1Tests {
       return
     }
     guard case .value(let headwindValue) = modelHeadwind.takeoffRunFt else {
-      PerformanceCase(for: modelHeadwind, aircraftType: .g1)
+      PerformanceCase(for: modelHeadwind, aircraft: .sf50(.g1))
         .fail(
           "Expected a headwind takeoff run, got \(modelHeadwind.takeoffRunFt)",
           computing: "headwind takeoff run"
@@ -763,7 +763,7 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let modelTailwind = try TabularPerformanceModel(
@@ -771,11 +771,11 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .value(let noWindValue) = modelNoWind.takeoffRunFt else {
-      PerformanceCase(for: modelNoWind, aircraftType: .g1)
+      PerformanceCase(for: modelNoWind, aircraft: .sf50(.g1))
         .fail(
           "Expected a no-wind takeoff run, got \(modelNoWind.takeoffRunFt)",
           computing: "no-wind takeoff run"
@@ -783,7 +783,7 @@ struct TabularPerformanceModelG1Tests {
       return
     }
     guard case .value(let tailwindValue) = modelTailwind.takeoffRunFt else {
-      PerformanceCase(for: modelTailwind, aircraftType: .g1)
+      PerformanceCase(for: modelTailwind, aircraft: .sf50(.g1))
         .fail(
           "Expected a tailwind takeoff run, got \(modelTailwind.takeoffRunFt)",
           computing: "tailwind takeoff run"
@@ -811,7 +811,7 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runwayFlat,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let modelUphill = try TabularPerformanceModel(
@@ -819,11 +819,11 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runwayUphill,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .value(let flatValue) = modelFlat.takeoffRunFt else {
-      PerformanceCase(for: modelFlat, aircraftType: .g1)
+      PerformanceCase(for: modelFlat, aircraft: .sf50(.g1))
         .fail(
           "Expected a flat takeoff run, got \(modelFlat.takeoffRunFt)",
           computing: "flat takeoff run"
@@ -831,7 +831,7 @@ struct TabularPerformanceModelG1Tests {
       return
     }
     guard case .value(let uphillValue) = modelUphill.takeoffRunFt else {
-      PerformanceCase(for: modelUphill, aircraftType: .g1)
+      PerformanceCase(for: modelUphill, aircraft: .sf50(.g1))
         .fail(
           "Expected a uphill takeoff run, got \(modelUphill.takeoffRunFt)",
           computing: "uphill takeoff run"
@@ -857,7 +857,7 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runwayFlat,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let modelDownhill = try TabularPerformanceModel(
@@ -865,11 +865,11 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runwayDownhill,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .value(let flatValue) = modelFlat.takeoffRunFt else {
-      PerformanceCase(for: modelFlat, aircraftType: .g1)
+      PerformanceCase(for: modelFlat, aircraft: .sf50(.g1))
         .fail(
           "Expected a flat takeoff run, got \(modelFlat.takeoffRunFt)",
           computing: "flat takeoff run"
@@ -877,7 +877,7 @@ struct TabularPerformanceModelG1Tests {
       return
     }
     guard case .value(let downhillValue) = modelDownhill.takeoffRunFt else {
-      PerformanceCase(for: modelDownhill, aircraftType: .g1)
+      PerformanceCase(for: modelDownhill, aircraft: .sf50(.g1))
         .fail(
           "Expected a downhill takeoff run, got \(modelDownhill.takeoffRunFt)",
           computing: "downhill takeoff run"
@@ -905,7 +905,7 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runwayPaved,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let modelUnpaved = try TabularPerformanceModel(
@@ -913,11 +913,11 @@ struct TabularPerformanceModelG1Tests {
       configuration: config,
       runway: runwayUnpaved,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .value(let pavedValue) = modelPaved.takeoffDistanceFt else {
-      PerformanceCase(for: modelPaved, aircraftType: .g1)
+      PerformanceCase(for: modelPaved, aircraft: .sf50(.g1))
         .fail(
           "Expected a paved takeoff distance, got \(modelPaved.takeoffDistanceFt)",
           computing: "paved takeoff distance"
@@ -925,7 +925,7 @@ struct TabularPerformanceModelG1Tests {
       return
     }
     guard case .value(let unpavedValue) = modelUnpaved.takeoffDistanceFt else {
-      PerformanceCase(for: modelUnpaved, aircraftType: .g1)
+      PerformanceCase(for: modelUnpaved, aircraft: .sf50(.g1))
         .fail(
           "Expected a unpaved takeoff distance, got \(modelUnpaved.takeoffDistanceFt)",
           computing: "unpaved takeoff distance"

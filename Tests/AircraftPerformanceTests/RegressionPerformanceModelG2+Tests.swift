@@ -21,11 +21,11 @@ struct RegressionPerformanceModelG2PlusTests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g2Plus
+          aircraft: .sf50(.g2Plus)
         )
       },
       valueExtractor: { $0.takeoffRunFt },
-      aircraftType: .g2Plus,
+      aircraft: .sf50(.g2Plus),
       testName: "takeoffGroundRun"
     )
   }
@@ -46,11 +46,11 @@ struct RegressionPerformanceModelG2PlusTests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g2Plus
+          aircraft: .sf50(.g2Plus)
         )
       },
       valueExtractor: { $0.takeoffDistanceFt },
-      aircraftType: .g2Plus,
+      aircraft: .sf50(.g2Plus),
       testName: "takeoffDistance"
     )
   }
@@ -71,11 +71,11 @@ struct RegressionPerformanceModelG2PlusTests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g2Plus
+          aircraft: .sf50(.g2Plus)
         )
       },
       valueExtractor: { $0.takeoffClimbGradientFtNM },
-      aircraftType: .g2Plus,
+      aircraft: .sf50(.g2Plus),
       testName: "takeoffClimbGradient"
     )
   }
@@ -94,11 +94,11 @@ struct RegressionPerformanceModelG2PlusTests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g2Plus
+          aircraft: .sf50(.g2Plus)
         )
       },
       valueExtractor: { $0.takeoffClimbRateFtMin },
-      aircraftType: .g2Plus,
+      aircraft: .sf50(.g2Plus),
       testName: "takeoffClimbRate"
     )
   }
@@ -122,7 +122,7 @@ struct RegressionPerformanceModelG2PlusTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     let modelTailwind = try RegressionPerformanceModel(
@@ -130,7 +130,7 @@ struct RegressionPerformanceModelG2PlusTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     // Extract values from the results (which may include uncertainty)
@@ -141,7 +141,7 @@ struct RegressionPerformanceModelG2PlusTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         noWindValue = val
       default:
-        PerformanceCase(for: modelNoWind, aircraftType: .g2Plus)
+        PerformanceCase(for: modelNoWind, aircraft: .sf50(.g2Plus))
           .fail(
             "Expected a no-wind takeoff distance, got \(modelNoWind.takeoffDistanceFt)",
             computing: "no-wind takeoff distance"
@@ -153,7 +153,7 @@ struct RegressionPerformanceModelG2PlusTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         tailwindValue = val
       default:
-        PerformanceCase(for: modelTailwind, aircraftType: .g2Plus)
+        PerformanceCase(for: modelTailwind, aircraft: .sf50(.g2Plus))
           .fail(
             "Expected a tailwind takeoff distance, got \(modelTailwind.takeoffDistanceFt)",
             computing: "tailwind takeoff distance"
@@ -184,7 +184,7 @@ struct RegressionPerformanceModelG2PlusTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     let modelHeadwind = try RegressionPerformanceModel(
@@ -192,7 +192,7 @@ struct RegressionPerformanceModelG2PlusTests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     // Extract values from the results (which may include uncertainty)
@@ -203,7 +203,7 @@ struct RegressionPerformanceModelG2PlusTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         noWindValue = val
       default:
-        PerformanceCase(for: modelNoWind, aircraftType: .g2Plus)
+        PerformanceCase(for: modelNoWind, aircraft: .sf50(.g2Plus))
           .fail(
             "Expected a no-wind landing run, got \(modelNoWind.landingRunFt)",
             computing: "no-wind landing run"
@@ -215,7 +215,7 @@ struct RegressionPerformanceModelG2PlusTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         headwindValue = val
       default:
-        PerformanceCase(for: modelHeadwind, aircraftType: .g2Plus)
+        PerformanceCase(for: modelHeadwind, aircraft: .sf50(.g2Plus))
           .fail(
             "Expected a headwind landing run, got \(modelHeadwind.landingRunFt)",
             computing: "headwind landing run"
@@ -243,7 +243,7 @@ struct RegressionPerformanceModelG2PlusTests {
       configuration: config,
       runway: runwayFlat,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     let modelUphill = try RegressionPerformanceModel(
@@ -251,7 +251,7 @@ struct RegressionPerformanceModelG2PlusTests {
       configuration: config,
       runway: runwayUphill,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     let modelDownhill = try RegressionPerformanceModel(
@@ -259,7 +259,7 @@ struct RegressionPerformanceModelG2PlusTests {
       configuration: config,
       runway: runwayDownhill,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     // Extract values from the results (which may include uncertainty)
@@ -271,7 +271,7 @@ struct RegressionPerformanceModelG2PlusTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         flatValue = val
       default:
-        PerformanceCase(for: modelFlat, aircraftType: .g2Plus)
+        PerformanceCase(for: modelFlat, aircraft: .sf50(.g2Plus))
           .fail(
             "Expected a flat takeoff run, got \(modelFlat.takeoffRunFt)",
             computing: "flat takeoff run"
@@ -283,7 +283,7 @@ struct RegressionPerformanceModelG2PlusTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         uphillValue = val
       default:
-        PerformanceCase(for: modelUphill, aircraftType: .g2Plus)
+        PerformanceCase(for: modelUphill, aircraft: .sf50(.g2Plus))
           .fail(
             "Expected a uphill takeoff run, got \(modelUphill.takeoffRunFt)",
             computing: "uphill takeoff run"
@@ -295,7 +295,7 @@ struct RegressionPerformanceModelG2PlusTests {
       case .value(let val), .valueWithUncertainty(let val, _):
         downhillValue = val
       default:
-        PerformanceCase(for: modelDownhill, aircraftType: .g2Plus)
+        PerformanceCase(for: modelDownhill, aircraft: .sf50(.g2Plus))
           .fail(
             "Expected a downhill takeoff run, got \(modelDownhill.takeoffRunFt)",
             computing: "downhill takeoff run"
@@ -352,13 +352,13 @@ struct RegressionPerformanceModelG2PlusTests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g2Plus
+        aircraft: .sf50(.g2Plus)
       )
 
       let regressionResult = regressionModel.meetsGoAroundClimbGradient
 
       guard case .value(let meetsGradient) = regressionResult else {
-        PerformanceCase(for: regressionModel, aircraftType: .g2Plus)
+        PerformanceCase(for: regressionModel, aircraft: .sf50(.g2Plus))
           .fail(
             "Expected .value for regression model at weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature)",
             computing: "regression go-around climb gradient"
@@ -377,7 +377,7 @@ struct RegressionPerformanceModelG2PlusTests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g2Plus
+        aircraft: .sf50(.g2Plus)
       )
 
       let tabularLandingDistance = tabularModel.landingDistanceFt
@@ -386,7 +386,7 @@ struct RegressionPerformanceModelG2PlusTests {
       // When tabular landing distance is offscale high, go-around should be false
       if case .offscaleHigh = tabularLandingDistance {
         guard case .value(false) = tabularGoAround else {
-          PerformanceCase(for: tabularModel, aircraftType: .g2Plus)
+          PerformanceCase(for: tabularModel, aircraft: .sf50(.g2Plus))
             .fail(
               "Tabular model should return false for go-around when landing distance is offscale high",
               computing: "tabular go-around climb gradient"
@@ -419,11 +419,11 @@ struct RegressionPerformanceModelG2PlusTests {
       configuration: minWeightConfig,
       runway: minWeightRunway,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     guard case .value(let minWeightMeets) = minWeightModel.meetsGoAroundClimbGradient else {
-      PerformanceCase(for: minWeightModel, aircraftType: .g2Plus)
+      PerformanceCase(for: minWeightModel, aircraft: .sf50(.g2Plus))
         .fail(
           "Expected .value for minimum weight test",
           computing: "minimum weight go-around climb gradient"
@@ -445,11 +445,11 @@ struct RegressionPerformanceModelG2PlusTests {
       configuration: maxWeightConfig,
       runway: maxWeightRunway,
       notam: nil,
-      aircraftType: .g2Plus
+      aircraft: .sf50(.g2Plus)
     )
 
     guard case .value(let maxWeightMeets) = maxWeightModel.meetsGoAroundClimbGradient else {
-      PerformanceCase(for: maxWeightModel, aircraftType: .g2Plus)
+      PerformanceCase(for: maxWeightModel, aircraft: .sf50(.g2Plus))
         .fail(
           "Expected .value for maximum weight test",
           computing: "maximum weight go-around climb gradient"
@@ -486,7 +486,7 @@ struct RegressionPerformanceModelG2PlusTests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g2Plus
+        aircraft: .sf50(.g2Plus)
       )
 
       let g2PlusModel = try RegressionPerformanceModel(
@@ -494,7 +494,7 @@ struct RegressionPerformanceModelG2PlusTests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g2Plus
+        aircraft: .sf50(.g2Plus)
       )
 
       if case .value(let g1Meets) = g1Model.meetsGoAroundClimbGradient,

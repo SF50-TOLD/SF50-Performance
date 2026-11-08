@@ -37,7 +37,7 @@ for pre-flight planning only, never in the cockpit.
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/SF50-TOLD/SF50-Performance.git", from: "1.0.0")
+  .package(url: "https://github.com/SF50-TOLD/SF50-Performance.git", from: "2.0.0")
 ]
 ```
 
@@ -48,7 +48,7 @@ Then add `AircraftPerformance` to your target's dependencies.
 ```swift
 import AircraftPerformance
 
-let calculator = PerformanceCalculator(settings: .init(aircraftType: .g2Plus))
+let calculator = PerformanceCalculator(settings: .init(aircraft: .sf50(.g2Plus)))
 let conditions = Conditions(
   windDirection: .init(value: 280, unit: .degrees),
   windSpeed: .init(value: 12, unit: .knots),

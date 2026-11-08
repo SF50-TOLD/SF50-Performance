@@ -17,7 +17,7 @@ func validateRegressionPredictions<Model: BasePerformanceModel>(
   },
   modelBuilder: (Conditions, Configuration, RunwayInput) throws -> Model,
   valueExtractor: (Model) -> Value<Double>,
-  aircraftType: AircraftType,
+  aircraft: Aircraft,
   testName: String
 ) throws {
   var totalPoints = 0
@@ -52,7 +52,7 @@ func validateRegressionPredictions<Model: BasePerformanceModel>(
     }
 
     guard case .valueWithUncertainty(let predicted, let uncertainty) = result else {
-      PerformanceCase(for: model, aircraftType: aircraftType)
+      PerformanceCase(for: model, aircraft: aircraft)
         .fail(
           "\(testName): expected a value with uncertainty, got \(result)",
           computing: testName

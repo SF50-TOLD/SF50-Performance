@@ -22,11 +22,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.takeoffRunFt },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "takeoffGroundRun"
     )
   }
@@ -47,11 +47,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.takeoffDistanceFt },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "takeoffDistance"
     )
   }
@@ -72,11 +72,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.takeoffClimbGradientFtNM },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "takeoffClimbGradient"
     )
   }
@@ -95,11 +95,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.takeoffClimbRateFtMin },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "takeoffClimbRate"
     )
   }
@@ -142,14 +142,14 @@ struct RegressionPerformanceModelG1Tests {
           configuration: testConfig,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
 
         let result = model.VrefKts
 
         // VREF runs through the AFM's own points rather than a fit, so it has no uncertainty
         guard case .value(let value) = result else {
-          PerformanceCase(for: model, aircraftType: .g1)
+          PerformanceCase(for: model, aircraft: .sf50(.g1))
             .fail("Vref should return a plain value, got \(result)", computing: "Vref")
           continue
         }
@@ -181,11 +181,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.landingRunFt },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "landingGroundRun_flaps50"
     )
   }
@@ -207,11 +207,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.landingRunFt },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "landingGroundRun_flaps100"
     )
   }
@@ -235,11 +235,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.landingDistanceFt },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "landingDistance_flaps50"
     )
   }
@@ -261,11 +261,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.landingDistanceFt },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "landingDistance_flaps100"
     )
   }
@@ -278,7 +278,7 @@ struct RegressionPerformanceModelG1Tests {
       configuration: Helper.createTestConfiguration(weight: 5550, flapSetting: flapSetting),
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     #expect(model.landingDistanceFt.nominal != nil)
@@ -306,11 +306,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.enrouteClimbGradientFtNM },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "enrouteClimbGradient_normal"
     )
   }
@@ -334,11 +334,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.enrouteClimbRateFtMin },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "enrouteClimbRate_normal"
     )
   }
@@ -362,11 +362,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.enrouteClimbSpeedKIAS },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "enrouteClimbSpeed_normal"
     )
   }
@@ -391,11 +391,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.enrouteClimbGradientFtNM },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "enrouteClimbGradient_iceContaminated"
     )
   }
@@ -418,11 +418,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.enrouteClimbRateFtMin },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "enrouteClimbRate_iceContaminated"
     )
   }
@@ -445,11 +445,11 @@ struct RegressionPerformanceModelG1Tests {
           configuration: config,
           runway: runway,
           notam: nil,
-          aircraftType: .g1
+          aircraft: .sf50(.g1)
         )
       },
       valueExtractor: { $0.enrouteClimbSpeedKIAS },
-      aircraftType: .g1,
+      aircraft: .sf50(.g1),
       testName: "enrouteClimbSpeed_iceContaminated"
     )
   }
@@ -473,7 +473,7 @@ struct RegressionPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let modelHeadwind = try RegressionPerformanceModel(
@@ -481,7 +481,7 @@ struct RegressionPerformanceModelG1Tests {
       configuration: config,
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     // Extract values from the results (which may include uncertainty)
@@ -492,7 +492,7 @@ struct RegressionPerformanceModelG1Tests {
       case .value(let val), .valueWithUncertainty(let val, _):
         noWindValue = val
       default:
-        PerformanceCase(for: modelNoWind, aircraftType: .g1)
+        PerformanceCase(for: modelNoWind, aircraft: .sf50(.g1))
           .fail(
             "Expected a no-wind takeoff run, got \(modelNoWind.takeoffRunFt)",
             computing: "no-wind takeoff run"
@@ -504,7 +504,7 @@ struct RegressionPerformanceModelG1Tests {
       case .value(let val), .valueWithUncertainty(let val, _):
         headwindValue = val
       default:
-        PerformanceCase(for: modelHeadwind, aircraftType: .g1)
+        PerformanceCase(for: modelHeadwind, aircraft: .sf50(.g1))
           .fail(
             "Expected a headwind takeoff run, got \(modelHeadwind.takeoffRunFt)",
             computing: "headwind takeoff run"
@@ -529,7 +529,7 @@ struct RegressionPerformanceModelG1Tests {
       configuration: config,
       runway: runwayPaved,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     let modelUnpaved = try RegressionPerformanceModel(
@@ -537,7 +537,7 @@ struct RegressionPerformanceModelG1Tests {
       configuration: config,
       runway: runwayUnpaved,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     // Extract values from the results (which may include uncertainty)
@@ -548,7 +548,7 @@ struct RegressionPerformanceModelG1Tests {
       case .value(let val), .valueWithUncertainty(let val, _):
         pavedValue = val
       default:
-        PerformanceCase(for: modelPaved, aircraftType: .g1)
+        PerformanceCase(for: modelPaved, aircraft: .sf50(.g1))
           .fail(
             "Expected a paved landing distance, got \(modelPaved.landingDistanceFt)",
             computing: "paved landing distance"
@@ -560,7 +560,7 @@ struct RegressionPerformanceModelG1Tests {
       case .value(let val), .valueWithUncertainty(let val, _):
         unpavedValue = val
       default:
-        PerformanceCase(for: modelUnpaved, aircraftType: .g1)
+        PerformanceCase(for: modelUnpaved, aircraft: .sf50(.g1))
           .fail(
             "Expected a unpaved landing distance, got \(modelUnpaved.landingDistanceFt)",
             computing: "unpaved landing distance"
@@ -614,13 +614,13 @@ struct RegressionPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let regressionResult = regressionModel.meetsGoAroundClimbGradient
 
       guard case .value(let meetsGradient) = regressionResult else {
-        PerformanceCase(for: regressionModel, aircraftType: .g1)
+        PerformanceCase(for: regressionModel, aircraft: .sf50(.g1))
           .fail(
             "Expected .value for regression model at weight: \(testCase.weight), altitude: \(testCase.altitude), temp: \(testCase.temperature)",
             computing: "regression go-around climb gradient"
@@ -639,7 +639,7 @@ struct RegressionPerformanceModelG1Tests {
         configuration: config,
         runway: runway,
         notam: nil,
-        aircraftType: .g1
+        aircraft: .sf50(.g1)
       )
 
       let tabularLandingDistance = tabularModel.landingDistanceFt
@@ -648,7 +648,7 @@ struct RegressionPerformanceModelG1Tests {
       // When tabular landing distance is offscale high, go-around should be false
       if case .offscaleHigh = tabularLandingDistance {
         guard case .value(false) = tabularGoAround else {
-          PerformanceCase(for: tabularModel, aircraftType: .g1)
+          PerformanceCase(for: tabularModel, aircraft: .sf50(.g1))
             .fail(
               "Tabular model should return false for go-around when landing distance is offscale high",
               computing: "tabular go-around climb gradient"
@@ -681,11 +681,11 @@ struct RegressionPerformanceModelG1Tests {
       configuration: minWeightConfig,
       runway: minWeightRunway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .value(let minWeightMeets) = minWeightModel.meetsGoAroundClimbGradient else {
-      PerformanceCase(for: minWeightModel, aircraftType: .g1)
+      PerformanceCase(for: minWeightModel, aircraft: .sf50(.g1))
         .fail(
           "Expected .value for minimum weight test",
           computing: "minimum weight go-around climb gradient"
@@ -707,11 +707,11 @@ struct RegressionPerformanceModelG1Tests {
       configuration: maxWeightConfig,
       runway: maxWeightRunway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     guard case .value(let maxWeightMeets) = maxWeightModel.meetsGoAroundClimbGradient else {
-      PerformanceCase(for: maxWeightModel, aircraftType: .g1)
+      PerformanceCase(for: maxWeightModel, aircraft: .sf50(.g1))
         .fail(
           "Expected .value for maximum weight test",
           computing: "maximum weight go-around climb gradient"
@@ -731,7 +731,7 @@ struct RegressionPerformanceModelG1Tests {
     func landingDistanceFt(additiveKts: Double) throws -> Double {
       let calculator = PerformanceCalculator(
         settings: .init(
-          aircraftType: .g1,
+          aircraft: .sf50(.g1),
           modelKind: .regression,
           VREFAdditive: .init(value: additiveKts, unit: .knots)
         )

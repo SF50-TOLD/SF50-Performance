@@ -7,15 +7,15 @@ struct DataPackageTests {
   @Test(
     "each SF50 type reads its AFM's configuration",
     arguments: [
-      (AircraftType.g1, "g1"),
+      (SF50Variant.g1, "g1"),
       (.g2(updatedThrustSchedule: false), "g2"),
       (.g2(updatedThrustSchedule: true), "g2+"),
       (.g2Plus, "g2+"),
       (.g3, "g2+")
     ]
   )
-  func configurationForType(type: AircraftType, configuration: String) throws {
-    #expect(try AircraftData.forType(type).directoryName == configuration)
+  func configurationForType(type: SF50Variant, configuration: String) throws {
+    #expect(try Aircraft.sf50(type).definition.data().directoryName == configuration)
   }
 
   @Test("a manifest in another package format is rejected")

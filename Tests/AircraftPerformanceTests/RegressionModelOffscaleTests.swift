@@ -18,7 +18,7 @@ struct `Regression Model Offscale Detection` {
       ),
       runway: runway,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
   }
 
@@ -36,7 +36,7 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     // Regression models should still return computed values, not .offscaleLow
@@ -44,7 +44,7 @@ struct `Regression Model Offscale Detection` {
       case .value, .valueWithUncertainty:
         break  // Expected
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
@@ -68,7 +68,7 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     // Regression models should still return computed values, not .offscaleHigh
@@ -76,7 +76,7 @@ struct `Regression Model Offscale Detection` {
       case .value, .valueWithUncertainty:
         break  // Expected
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
@@ -100,7 +100,7 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     // Regression models should still return computed values
@@ -108,7 +108,7 @@ struct `Regression Model Offscale Detection` {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
@@ -131,7 +131,7 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     // Regression models should still return computed values
@@ -139,7 +139,7 @@ struct `Regression Model Offscale Detection` {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
@@ -164,14 +164,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.takeoffRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.takeoffRunFt)",
             computing: "takeoff run"
@@ -194,14 +194,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.takeoffRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.takeoffRunFt)",
             computing: "takeoff run"
@@ -224,14 +224,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.takeoffRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.takeoffRunFt)",
             computing: "takeoff run"
@@ -254,14 +254,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.takeoffRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.takeoffRunFt)",
             computing: "takeoff run"
@@ -287,14 +287,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.landingRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
@@ -318,14 +318,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.landingRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
@@ -348,14 +348,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.takeoffRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.takeoffRunFt)",
             computing: "takeoff run"
@@ -378,14 +378,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.takeoffRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.takeoffRunFt)",
             computing: "takeoff run"
@@ -410,14 +410,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.landingRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
@@ -440,14 +440,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.takeoffRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.takeoffRunFt)",
             computing: "takeoff run"
@@ -472,7 +472,7 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     // Should return actual values, not offscale
@@ -480,7 +480,7 @@ struct `Regression Model Offscale Detection` {
       case .value, .valueWithUncertainty:
         break  // Expected
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
@@ -491,7 +491,7 @@ struct `Regression Model Offscale Detection` {
       case .value, .valueWithUncertainty:
         break  // Expected
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingDistanceFt)",
             computing: "landing distance"
@@ -515,7 +515,7 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     // Should return actual values, not offscale
@@ -523,7 +523,7 @@ struct `Regression Model Offscale Detection` {
       case .value, .valueWithUncertainty:
         break  // Expected
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.takeoffRunFt)",
             computing: "takeoff run"
@@ -534,7 +534,7 @@ struct `Regression Model Offscale Detection` {
       case .value, .valueWithUncertainty:
         break  // Expected
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.takeoffDistanceFt)",
             computing: "takeoff distance"
@@ -562,14 +562,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.landingRunFt {
       case .value, .valueWithUncertainty:
         break
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
@@ -594,14 +594,14 @@ struct `Regression Model Offscale Detection` {
       configuration: config,
       runway: runwayInput,
       notam: nil,
-      aircraftType: .g1
+      aircraft: .sf50(.g1)
     )
 
     switch model.landingRunFt {
       case .value, .valueWithUncertainty:
         break  // Expected
       case .offscaleLow, .offscaleHigh, .notAvailable, .invalid, .notAuthorized:
-        PerformanceCase(for: model, aircraftType: .g1)
+        PerformanceCase(for: model, aircraft: .sf50(.g1))
           .fail(
             "Expected a computed value, got \(model.landingRunFt)",
             computing: "landing run"
