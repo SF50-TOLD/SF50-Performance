@@ -55,11 +55,7 @@ struct AircraftData: Sendable {
   /// - Returns: The G1, G2 or updated-thrust data set.
   /// - Throws: ``PerformanceDataError`` if the data set could not be read from the bundle.
   static func forType(_ aircraftType: AircraftType) throws -> Self {
-    let selection = aircraftType.dataConfiguration
-    return try DataPackage.sf50.get().configuration(
-      base: selection.base,
-      supplements: selection.supplements
-    )
+    try aircraftType.definition.data()
   }
 
   /// Reads each table from the document the manifest names for it.
@@ -136,17 +132,5 @@ struct AircraftData: Sendable {
       )
     }
     return equation
-  }
-}
-
-extension AircraftType {
-  /// The SF50 package's base AFM and the supplements layered over it for this aircraft.
-  ///
-  /// The G2 and G3 share the G2 AFM, and the updated thrust schedule is its 31452-111 supplement.
-  var dataConfiguration: (base: String, supplements: Set<String>) {
-    switch self {
-      case .g1: ("g1", [])
-      case .g2, .g2Plus, .g3: ("g2", hasUpdatedThrustSchedule ? ["g2+"] : [])
-    }
   }
 }

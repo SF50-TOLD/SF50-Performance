@@ -109,7 +109,7 @@ enum ResidualErrorCalculator {
   }
 
   private static func contaminationTable(for contaminationType: String) -> String {
-    "g1/landing/contamination/\(contaminationType)"
+    "\(SF50Definition.contaminationResidualDocument)/landing/contamination/\(contaminationType)"
   }
 
   private static func loadResidualData() throws -> [String: ResidualData] {

@@ -69,14 +69,13 @@ final class ContaminationCalculator: Sendable {
   /// factored wet tables are the dry ones times 1.92, that is the dry 1.67 times 1.15, for both.
   private static let wetRunwayFactor: Double = 1.15
 
-  /// The RwyCC landing distance factor tables, relative to the G1 data set. AC 91-79B factors are
-  /// aircraft-independent, so every aircraft reads the G1 copy.
+  /// The RwyCC landing distance factor tables, relative to the configuration that holds them.
   private static let rwyCCGroovedPath = "landing/rwycc_ldf_grooved.csv",
     rwyCCSmoothPath = "landing/rwycc_ldf_smooth.csv"
 
   /// The RwyCC landing distance factors, grooved or PFC first, read once.
   private static let rwyCCFactors = Result {
-    let data = try AircraftData.forType(.g1)
+    let data = try DataPackage.sf50.get().configuration(SF50Definition.rwyCCConfiguration)
     return (
       grooved: factors(from: try data.table(rwyCCGroovedPath)),
       smooth: factors(from: try data.table(rwyCCSmoothPath))

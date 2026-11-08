@@ -18,6 +18,7 @@ final class RegressionPerformanceModel: BasePerformanceModel {
   // MARK: - Stored Properties
 
   private let boundsChecker: BoundsChecker
+  private let landingTables: LandingTables
 
   // Takeoff
   private let takeoffRunEquation: RegressionEquation
@@ -176,7 +177,7 @@ final class RegressionPerformanceModel: BasePerformanceModel {
   }
 
   private var flapsUpFactor: Double {
-    configuration.flapSetting.flapsUpLandingDistanceFactor ?? 1
+    landingTables.totalDistanceFactor ?? 1
   }
 
   // MARK: - Initializer
@@ -188,7 +189,9 @@ final class RegressionPerformanceModel: BasePerformanceModel {
     notam: NOTAMInput?,
     aircraftType: AircraftType
   ) throws {
-    let data = try AircraftData.forType(aircraftType)
+    let definition = aircraftType.definition,
+      data = try definition.data()
+    landingTables = definition.landingTables(for: configuration.flapSetting)
     self.boundsChecker = try BoundsChecker(loader: DataTableLoader(data: data))
 
     let loader = RegressionEquationLoader(data: data)
@@ -233,7 +236,7 @@ final class RegressionPerformanceModel: BasePerformanceModel {
     takeoffDistanceTailwindFactorEquation = try loader.loadTakeoffDistanceTailwindFactorEquation()
     takeoffDistanceUnpavedFactorEquation = try loader.loadTakeoffDistanceUnpavedFactorEquation()
 
-    let landingFlapSetting = configuration.flapSetting.landingFactorFlapSetting
+    let landingFlapSetting = landingTables.flapSetting
     landingRunHeadwindFactorEquation = try loader.loadLandingRunHeadwindFactorEquation(
       flapSetting: landingFlapSetting
     )

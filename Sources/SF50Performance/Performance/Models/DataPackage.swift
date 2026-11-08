@@ -64,17 +64,20 @@ final class DataPackage: Sendable {
 
   /// The data of the configuration with a base manual and exactly a set of supplements.
   ///
-  /// - Parameters:
-  ///   - base: The base document's name.
-  ///   - supplements: The names of the supplements installed over it.
+  /// - Parameter selection: The base manual and the supplements installed over it.
   /// - Throws: ``PerformanceDataError`` if the package has no such configuration, or its data
   ///   could not be read.
-  func configuration(base: String, supplements: Set<String> = []) throws -> AircraftData {
-    guard let name = manifest.configurationName(base: base, supplements: supplements) else {
+  func configuration(_ selection: ConfigurationSelection) throws -> AircraftData {
+    guard
+      let name = manifest.configurationName(
+        base: selection.base,
+        supplements: selection.supplements
+      )
+    else {
       throw PerformanceDataError.missingConfiguration(
         package: manifest.aircraft.name,
-        base: base,
-        supplements: supplements.sorted()
+        base: selection.base,
+        supplements: selection.supplements.sorted()
       )
     }
     return try configuration(named: name)

@@ -12,6 +12,7 @@ final class TabularPerformanceModel: BasePerformanceModel {
   private static let seaLevelFt = 0.0
 
   private let limitations: any Limitations.Type
+  private let landingTables: LandingTables
   private let takeoffRunData: DataTable
   private let takeoffDistanceData: DataTable
   private let takeoffClimbGradientData: DataTable
@@ -106,10 +107,12 @@ final class TabularPerformanceModel: BasePerformanceModel {
     notam: NOTAMInput?,
     aircraftType: AircraftType
   ) throws {
-    let loader = try DataTableLoader(aircraftType: aircraftType)
-    let landingPrefix = loader.landingPrefix(for: configuration.flapSetting)
+    let definition = aircraftType.definition,
+      loader = DataTableLoader(data: try definition.data())
+    landingTables = definition.landingTables(for: configuration.flapSetting)
+    let landingPrefix = loader.tablePrefix(for: landingTables.flapSetting)
 
-    limitations = aircraftType.limitations
+    limitations = definition.limitations
 
     takeoffRunData = try loader.loadTakeoffRunData()
     takeoffDistanceData = try loader.loadTakeoffDistanceData()
@@ -117,7 +120,7 @@ final class TabularPerformanceModel: BasePerformanceModel {
     takeoffClimbRateData = try loader.loadTakeoffClimbRateData()
 
     vrefData = try loader.loadVrefData(
-      vrefPrefix: loader.vrefPrefix(for: configuration.flapSetting)
+      vrefPrefix: loader.tablePrefix(for: configuration.flapSetting)
     )
 
     landingRunData = try loader.loadLandingRunData(landingPrefix: landingPrefix)
@@ -187,7 +190,7 @@ final class TabularPerformanceModel: BasePerformanceModel {
             clamping: [.clampLow, .clampLow, .clampLow]
           )
         case .landingRun:
-          configuration.flapSetting.hasLandingGroundRun
+          landingTables.hasGroundRun
             ? landingRunData.value(
               for: [weight, chartElevation, temperature],
               clamping: [.clampLow, .clampLow, .clampLow]
@@ -197,7 +200,7 @@ final class TabularPerformanceModel: BasePerformanceModel {
           landingDistanceData.value(
             for: [weight, chartElevation, temperature],
             clamping: [.clampLow, .clampLow, .clampLow]
-          ) * (configuration.flapSetting.flapsUpLandingDistanceFactor ?? 1)
+          ) * (landingTables.totalDistanceFactor ?? 1)
       }
     }
   }
