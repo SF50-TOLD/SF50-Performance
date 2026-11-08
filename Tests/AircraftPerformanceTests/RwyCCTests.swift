@@ -2,7 +2,7 @@ import Foundation
 import RealModule
 import Testing
 
-@testable import SF50Performance
+@testable import AircraftPerformance
 
 /// Tests for RwyCC (Runway Condition Code) landing distance factors per AC 91-79B.
 struct RwyCCTests {

@@ -328,7 +328,7 @@ public struct ClimbProfile: Sendable {
         altitudeM: altitudeFt * feetToMeters
       )
       return .value(
-        SF50Performance.trueAirspeed(
+        AircraftPerformance.trueAirspeed(
           indicatedAirspeedKts: IASKts,
           pressurePa: P,
           temperatureC: outsideAirTemperatureC

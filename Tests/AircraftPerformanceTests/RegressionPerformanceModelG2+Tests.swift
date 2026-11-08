@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import SF50Performance
+@testable import AircraftPerformance
 
 struct RegressionPerformanceModelG2PlusTests {
 

@@ -1,7 +1,7 @@
 import RealModule
 import Testing
 
-@testable import SF50Performance
+@testable import AircraftPerformance
 
 struct DataTableTests {
 

@@ -1,6 +1,6 @@
 import Foundation
 
-@testable import SF50Performance
+@testable import AircraftPerformance
 
 enum Helper {
 

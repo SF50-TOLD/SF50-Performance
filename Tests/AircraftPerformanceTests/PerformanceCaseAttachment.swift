@@ -2,7 +2,7 @@ import Foundation
 import RealModule
 import Testing
 
-@testable import SF50Performance
+@testable import AircraftPerformance
 
 /// The inputs of one performance calculation, attached to a failing test as CSV.
 ///
