@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-08
+
 ### Added
 
 - The Cirrus SR22 without the G3 wing, from POH 13772-001 Rev A10, as `Aircraft.sr22(_:)` with
