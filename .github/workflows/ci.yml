@@ -1,8 +1,9 @@
 # CI Matrix Policy
 #
-# Darwin: the package targets the iOS 27 and macOS 27 SDKs, which ship with Xcode 27 on the
-#         `xcode-27` image. Its bundled toolchain is Swift 6.4, so selecting Xcode is the whole
-#         toolchain setup.
+# Darwin: the package targets the iOS 27 and macOS 27 SDKs, which ship with Xcode 27. Its
+#         bundled toolchain is Swift 6.4, so selecting Xcode is the whole toolchain setup. Tests
+#         run on macOS 27: the Minerva macOS 27 pool for verified commits, the hosted `xcode-27`
+#         image otherwise.
 # Linux:  the official `swift:6.4.1-noble` image, the toolchain the server consumers build with.
 #
 # `// swift-tools-version:` is 6.4 because `.macOS("27.0")` needs a 6.4 manifest.
@@ -20,9 +21,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route:
+    uses: RISCfuture/ci-workflows/.github/workflows/minerva-route.yml@1.1.0
+    permissions:
+      contents: read
+  # Runs macOS 27 tests with no Homebrew tools, so it uses the macOS 27 pool.
   tests-darwin:
     name: Build and Test (macOS)
-    runs-on: xcode-27
+    needs: route
+    runs-on: ${{ fromJSON(needs.route.outputs.macos-27) }}
     steps:
       - uses: actions/checkout@v7.0.1
       # `latest` rather than `latest-stable`: the macOS 27 SDK is what this
